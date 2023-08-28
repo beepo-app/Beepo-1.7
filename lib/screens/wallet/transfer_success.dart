@@ -1,3 +1,4 @@
+import 'package:beepo/components/reusable_elevated_button.dart';
 import 'package:beepo/constants/constants.dart';
 import 'package:beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
@@ -45,25 +46,10 @@ class TransferSuccess extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 40.h),
-            SizedBox(
-              height: 35.h,
-              width: MediaQuery.of(context).size.width * 0.7,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.secondaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.r),
-                  ),
-                ),
-                child: AppText(
-                  text: "Done",
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14.sp,
-                  color: AppColors.white,
-                ),
-              ),
-            )
+            const ReusableElevatedButton(
+              title: 'Done',
+              color: AppColors.secondaryColor,
+            ),
           ],
         ),
       ),
