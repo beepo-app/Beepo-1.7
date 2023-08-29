@@ -1,4 +1,4 @@
-import 'package:beepo/screens/wallet/transfer_success.dart';
+import 'package:beepo/screens/wallet/transfer_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             useMaterial3: true,
           ),
-          home: const TransferSuccess(),
+          home: const TransactionInfo(),
         );
       },
       designSize: const Size(360, 546),

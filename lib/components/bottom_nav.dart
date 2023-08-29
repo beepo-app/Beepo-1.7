@@ -1,10 +1,51 @@
-import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
 
-class BottomNav extends StatelessWidget {
-  const BottomNav({super.key});
+// class BottomNavHome extends StatefulWidget {
+//   const BottomNavHome({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
+//   @override
+//   State<BottomNavHome> createState() => _BottomNavHomeState();
+// }
+
+// class _BottomNavHomeState extends State<BottomNavHome> {
+//   int index = 0;
+//   List<Widget> body = [
+//     ChatScreen(),
+//     WalletScreen(),
+//     Browser(),
+//     Profile(),
+//   ];
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: body[index],
+//       extendBody: false,
+//       bottomNavigationBar: BottomNavigationBar(
+//         backgroundColor: Colors.white,
+//         currentIndex: index,
+//         type: BottomNavigationBarType.fixed,
+//         unselectedItemColor: Colors.grey,
+//         selectedItemColor: const Color(0xffFF9C34),
+//         onTap: (int selectedPage) {
+//           setState(() => index = selectedPage);
+//         },
+//         items: const [
+//           BottomNavigationBarItem(
+//             icon: Icon(Iconsax.message),
+//             label: 'Chats',
+//           ),
+//           BottomNavigationBarItem(icon: Icon(Iconsax.wallet), label: 'Wallet'),
+//           BottomNavigationBarItem(
+//             icon: Icon(Iconsax.global),
+//             label: 'Browser',
+//           ),
+//           BottomNavigationBarItem(
+//             icon: Icon(Iconsax.security_user),
+//             label: 'Profile',
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }

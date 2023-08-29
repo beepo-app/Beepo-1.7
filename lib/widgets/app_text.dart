@@ -6,6 +6,7 @@ class AppText extends StatelessWidget {
   final FontWeight? fontWeight;
   final double? fontSize;
   final TextAlign? textAlign;
+  final TextOverflow? textOverflow;
 
   const AppText({
     super.key,
@@ -14,6 +15,7 @@ class AppText extends StatelessWidget {
     this.fontWeight,
     this.fontSize,
     this.textAlign,
+    this.textOverflow,
   });
 
   @override
