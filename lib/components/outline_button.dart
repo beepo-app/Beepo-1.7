@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../utils/styles.dart';
 
@@ -18,8 +19,8 @@ class OutlnButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 237,
-      height: 42,
+      width: MediaQuery.of(context).size.width * 0.8,
+      height: 30.h,
       child: TextButton(
         onPressed: onPressed,
         style: ButtonStyle(

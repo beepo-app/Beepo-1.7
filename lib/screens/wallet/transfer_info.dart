@@ -41,7 +41,7 @@ class TransactionInfo extends StatelessWidget {
                                 onPressed: () {}),
                             AppText(
                               text: "Transfer",
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w900,
                               color: Colors.white,
                               fontSize: 14.sp,
                             ),
@@ -56,14 +56,14 @@ class TransactionInfo extends StatelessWidget {
             const SizedBox(height: 40),
             AppText(
               text: "-0.06171059372171178 ETH",
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w900,
               color: Colors.red,
               fontSize: 20.sp,
             ),
             SizedBox(height: 5.h),
             AppText(
               text: "113,96",
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w900,
               color: AppColors.textGrey,
               fontSize: 14.sp,
             ),
@@ -75,13 +75,13 @@ class TransactionInfo extends StatelessWidget {
                 children: [
                   AppText(
                     text: "Date",
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w900,
                     color: AppColors.textGrey,
                     fontSize: 14.sp,
                   ),
                   AppText(
                     text: "2-19-2023 18:12",
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w900,
                     color: AppColors.textGrey,
                     fontSize: 14.sp,
                     textOverflow: TextOverflow.ellipsis,
@@ -97,13 +97,13 @@ class TransactionInfo extends StatelessWidget {
                 children: [
                   AppText(
                     text: "Status",
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w900,
                     color: AppColors.textGrey,
                     fontSize: 14.sp,
                   ),
                   AppText(
                     text: "Completed",
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w900,
                     color: Colors.green.shade500,
                     fontSize: 14.sp,
                     textOverflow: TextOverflow.ellipsis,
@@ -119,13 +119,13 @@ class TransactionInfo extends StatelessWidget {
                 children: [
                   AppText(
                     text: "Transaction Type",
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w900,
                     color: AppColors.textGrey,
                     fontSize: 14.sp,
                   ),
                   AppText(
                     text: "Internal",
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w900,
                     color: AppColors.textGrey,
                     fontSize: 14.sp,
                     textOverflow: TextOverflow.ellipsis,
@@ -140,7 +140,7 @@ class TransactionInfo extends StatelessWidget {
                 children: [
                   AppText(
                     text: "Recipient",
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w900,
                     color: AppColors.textGrey,
                     fontSize: 14.sp,
                     textOverflow: TextOverflow.ellipsis,
@@ -149,7 +149,7 @@ class TransactionInfo extends StatelessWidget {
                   Expanded(
                     child: AppText(
                       text: " Get username",
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w900,
                       color: AppColors.textGrey,
                       textAlign: TextAlign.right,
                       fontSize: 14.sp,
@@ -167,7 +167,7 @@ class TransactionInfo extends StatelessWidget {
                 children: [
                   AppText(
                     text: "Network Fee",
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w900,
                     color: AppColors.textGrey,
                     textAlign: TextAlign.right,
                     fontSize: 14.sp,

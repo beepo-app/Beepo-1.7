@@ -1,4 +1,4 @@
-import 'package:beepo/components/reusable_elevated_button.dart';
+import 'package:beepo/components/filled_button.dart';
 import 'package:beepo/constants/constants.dart';
 import 'package:beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
@@ -46,9 +46,10 @@ class TransferSuccess extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 40.h),
-            const ReusableElevatedButton(
-              title: 'Done',
+            FilledButtons(
+              text: 'Done',
               color: AppColors.secondaryColor,
+              onPressed: () {},
             ),
           ],
         ),

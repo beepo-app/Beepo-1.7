@@ -1,5 +1,6 @@
 import 'package:beepo/utils/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class FilledButtons extends StatelessWidget {
   final String? text;
@@ -13,8 +14,8 @@ class FilledButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 237,
-      height: 42,
+      width: MediaQuery.of(context).size.width * 0.8,
+      height: 30.h,
       child: TextButton(
         onPressed: onPressed,
         style: ButtonStyle(

@@ -1,4 +1,5 @@
-import 'package:beepo/screens/wallet/transfer_info.dart';
+import 'package:beepo/screens/auth/signup_screen.dart';
+import 'package:beepo/screens/profile/user_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             useMaterial3: true,
           ),
-          home: const TransactionInfo(),
+          home: const UserProfileScreen(),
         );
       },
       designSize: const Size(360, 546),
