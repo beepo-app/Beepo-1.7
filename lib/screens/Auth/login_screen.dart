@@ -55,7 +55,7 @@ class Login extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            FilledButtons(
+            BeepoFilledButtons(
               text: 'Login',
               onPressed: () async {
                 String phrase = phraseController.text.trim();

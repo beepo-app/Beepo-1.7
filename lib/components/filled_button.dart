@@ -2,12 +2,12 @@ import 'package:beepo/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class FilledButtons extends StatelessWidget {
+class BeepoFilledButtons extends StatelessWidget {
   final String? text;
   final VoidCallback onPressed;
   final Color? color;
 
-  const FilledButtons(
+  const BeepoFilledButtons(
       {Key? key, required this.text, this.color, required this.onPressed})
       : super(key: key);
 

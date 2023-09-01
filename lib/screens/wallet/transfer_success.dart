@@ -11,6 +11,7 @@ class TransferSuccess extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.backgroundGrey,
       appBar: AppBar(
         backgroundColor: AppColors.secondaryColor,
         centerTitle: true,
@@ -46,7 +47,7 @@ class TransferSuccess extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 40.h),
-            FilledButtons(
+            BeepoFilledButtons(
               text: 'Done',
               color: AppColors.secondaryColor,
               onPressed: () {},

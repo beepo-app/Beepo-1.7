@@ -18,6 +18,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.backgroundGrey,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: const Color(0xff0e014c),

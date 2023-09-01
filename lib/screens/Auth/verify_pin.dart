@@ -56,7 +56,7 @@ class _VerifyCodeState extends State<VerifyCode> {
             ),
             const SizedBox(height: 70),
             const Spacer(),
-            FilledButtons(
+            BeepoFilledButtons(
               text: 'Continue',
               onPressed: () async {},
             ),

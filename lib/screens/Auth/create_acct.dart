@@ -112,7 +112,7 @@ class _CreateAccountState extends State<CreateAccount> {
               controller: displayName,
             ),
             const Spacer(),
-            FilledButtons(
+            BeepoFilledButtons(
               text: 'Next',
               color: Color(0xffFF9C34),
               onPressed: () async {

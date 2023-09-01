@@ -29,7 +29,7 @@ class SignUp extends StatelessWidget {
                 width: 252,
               ),
               const Spacer(),
-              FilledButtons(
+              BeepoFilledButtons(
                 text: 'Create Account',
                 onPressed: () => Get.to(CreateAccount()),
               ),

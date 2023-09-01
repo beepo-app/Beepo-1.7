@@ -10,6 +10,7 @@ class TransactionInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.backgroundGrey,
       body: Container(
         color: Colors.white,
         child: Column(
