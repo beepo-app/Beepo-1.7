@@ -4,8 +4,8 @@ import 'package:beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class WalletSendTokenScreen extends StatelessWidget {
-  const WalletSendTokenScreen({super.key});
+class SendTokenConfirmScreen extends StatelessWidget {
+  const SendTokenConfirmScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
