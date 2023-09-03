@@ -1,5 +1,4 @@
-import 'package:beepo/Screens/Profile/edit_profile.dart';
-import 'package:beepo/screens/profile/profile_screen.dart';
+import 'package:beepo/screens/wallet/wallet_phrase_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -16,7 +15,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             useMaterial3: true,
           ),
-          home: const EditProfile(),
+          home: const WalletPhraseScreen(),
         );
       },
       designSize: const Size(360, 546),

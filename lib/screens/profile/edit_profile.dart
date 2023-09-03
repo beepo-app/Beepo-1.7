@@ -15,7 +15,9 @@ class EditProfile extends StatefulWidget {
 
 class _EditProfileState extends State<EditProfile> {
   TextEditingController displayNameController = TextEditingController();
+
   TextEditingController userNameController = TextEditingController();
+
   TextEditingController bioController = TextEditingController();
 
   @override

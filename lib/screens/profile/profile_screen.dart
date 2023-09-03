@@ -87,7 +87,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   AppText(
                     text: "Standard",
-                    fontSize: 14.sp,
+                    fontSize: 11.sp,
                     color: AppColors.secondaryColor,
                     fontWeight: FontWeight.w400,
                   ),
@@ -108,7 +108,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   AppText(
                     text: "System Default",
-                    fontSize: 14.sp,
+                    fontSize: 11.sp,
                     color: AppColors.secondaryColor,
                     fontWeight: FontWeight.w400,
                   ),
