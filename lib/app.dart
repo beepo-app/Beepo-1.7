@@ -1,4 +1,4 @@
-import 'package:beepo/screens/wallet/wallet_token.dart';
+import 'package:beepo/screens/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             useMaterial3: true,
           ),
-          home: const WalletToken(),
+          home: const ProfileScreen(),
         );
       },
       designSize: const Size(360, 546),
