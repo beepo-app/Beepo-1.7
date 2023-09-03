@@ -2,7 +2,6 @@ import 'package:beepo/constants/constants.dart';
 import 'package:beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
 
 class WalletToken extends StatefulWidget {
   const WalletToken({
@@ -95,12 +94,12 @@ class _WalletTokenState extends State<WalletToken> {
                             onPressed: () {},
                             icon: const Icon(
                               Icons.send_outlined,
-                              size: 20,
+                              size: 30,
                               color: AppColors.white,
                             ),
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 2.h),
                         AppText(
                           text: "Send",
                           fontSize: 18.sp,
@@ -115,11 +114,11 @@ class _WalletTokenState extends State<WalletToken> {
                           onPressed: () {},
                           icon: const Icon(
                             Icons.file_download_sharp,
-                            size: 20,
+                            size: 30,
                             color: AppColors.white,
                           ),
                         ),
-                        SizedBox(height: 4.h),
+                        SizedBox(height: 2.h),
                         AppText(
                           text: "Receive",
                           fontSize: 18.sp,
