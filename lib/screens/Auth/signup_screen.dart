@@ -5,8 +5,6 @@ import 'package:beepo/components/outline_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-//import '../../Widgets/components.dart';
-
 class SignUp extends StatelessWidget {
   const SignUp({Key? key}) : super(key: key);
 
@@ -34,17 +32,39 @@ class SignUp extends StatelessWidget {
                 onPressed: () => Get.to(CreateAccount()),
               ),
               const SizedBox(height: 35),
-              const Text(
-                "Already have an account?",
-                style: TextStyle(
-                  color: Color(0x4c0e014c),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                ),
+              FilledButtons(
+                text: 'Import Wallet',
+                onPressed: () => Get.to(CreateAccount()),
               ),
+              const SizedBox(height: 35),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Container(
+                  width: 70,
+                  height: 1,
+                  color: Colors.black,
+                ),
+                const SizedBox(height: 20),
+                const Padding(
+                  padding: EdgeInsets.all(12.0),
+                  child: Text(
+                    "or",
+                    style: TextStyle(
+                      color: Color(0x4c0e014c),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  width: 70, // Width of the line
+                  height: 1, // Height of the line (thickness)
+                  color: Colors.black, // Color of the line
+                ),
+              ]),
               const SizedBox(height: 12),
               OutlnButton(
-                text: 'Login',
+                text: 'Continue with Google',
                 onPressed: () => Get.to(const Login()),
               ),
               const SizedBox(height: 90),

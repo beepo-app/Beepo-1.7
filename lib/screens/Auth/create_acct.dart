@@ -4,17 +4,11 @@ import 'dart:io';
 
 import 'package:beepo/Utils/styles.dart';
 import 'package:beepo/components/filled_button.dart';
-import 'package:beepo/screens/Auth/pin_code.dart';
-import 'package:beepo/widgets/toast.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
-//import '../../Utils/functions.dart';
-//import '../../Widgets/components.dart';
-//import 'pin_code.dart';
+import 'package:flutter/material.dart';
 
 class CreateAccount extends StatefulWidget {
-  // const CreateAccount({Key key}) : super(key: key);
+  //const CreateAccount({required Key key}) : super(key: key);
 
   @override
   State<CreateAccount> createState() => _CreateAccountState();
@@ -113,20 +107,7 @@ class _CreateAccountState extends State<CreateAccount> {
             ),
             const Spacer(),
             FilledButtons(
-              text: 'Next',
-              color: Color(0xffFF9C34),
-              onPressed: () async {
-                if (displayName.text.trim().isEmpty) {
-                  showToast('Please enter a display name');
-                  return;
-                } else {
-                  Get.to(PinCode(
-                    image: selectedImage,
-                    name: displayName.text.trim(),
-                  ));
-                }
-              },
-            ),
+                text: 'Next', color: Color(0xffFF9C34), onPressed: () {}),
             const Spacer()
           ],
         ),

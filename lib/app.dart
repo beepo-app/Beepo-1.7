@@ -1,4 +1,4 @@
-import 'package:beepo/screens/Auth/onboarding.dart';
+import 'package:beepo/screens/Auth/signup_screen.dart';
 import 'package:flutter/material.dart';
 
 class MyApp extends StatelessWidget {
@@ -14,7 +14,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Onboarding(),
+      // ignore: prefer_const_constructors
+      home: SignUp(),
     );
   }
 }

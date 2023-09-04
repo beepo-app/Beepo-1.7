@@ -1,21 +1,24 @@
 // ignore_for_file: prefer_const_constructors
-
-import 'dart:io';
 import 'package:beepo/components/filled_button.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
+import '../../Utils/styles.dart';
 
 class VerifyCode extends StatefulWidget {
-  final File image;
-  final String name;
-  final bool isSignUp;
-  final String seedPhrase;
-  const VerifyCode(
-      {Key? key,
-      required this.image,
-      required this.name,
-      required this.isSignUp,
-      required this.seedPhrase})
-      : super(key: key);
+  const VerifyCode({super.key});
+
+  //final File image;
+  //final String name;
+  //final bool isSignUp;
+  //final String seedPhrase;
+  // const VerifyCode(
+  // {Key? key,
+  //required this.image,
+  //required this.name,
+  //required this.isSignUp,
+  //required this.seedPhrase})
+  // : super(key: key);
 
   @override
   State<VerifyCode> createState() => _VerifyCodeState();
@@ -55,11 +58,37 @@ class _VerifyCodeState extends State<VerifyCode> {
               width: 127,
             ),
             const SizedBox(height: 70),
-            const Spacer(),
-            FilledButtons(
-              text: 'Continue',
-              onPressed: () async {},
+            SizedBox(
+              width: Get.size.width * 0.6,
+              child: PinCodeTextField(
+                appContext: context,
+                keyboardType: TextInputType.number,
+                length: 4,
+                obscureText: true,
+                obscuringCharacter: '*',
+                blinkWhenObscuring: false,
+                animationType: AnimationType.fade,
+                pinTheme: PinTheme(
+                  shape: PinCodeFieldShape.circle,
+                  fieldHeight: 30,
+                  fieldWidth: 30,
+                  activeColor: primaryColor,
+                  inactiveFillColor: Colors.white,
+                  inactiveColor: Colors.grey,
+                  borderWidth: 3,
+                  fieldOuterPadding: EdgeInsets.zero,
+                  activeFillColor: Colors.white,
+                  selectedColor: primaryColor,
+                  selectedFillColor: Colors.white,
+                ),
+                animationDuration: const Duration(milliseconds: 300),
+                enableActiveFill: true,
+                controller: otp,
+                onChanged: (val) {},
+              ),
             ),
+            const Spacer(),
+            FilledButtons(text: 'Continue', onPressed: () async {}),
             const SizedBox(height: 40, width: double.infinity),
           ],
         ),

@@ -14,10 +14,16 @@ class Login extends StatelessWidget {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
-        // leading: Ba,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_left,
+            size: 30.0,
+          ),
+          onPressed: () {},
+        ),
         foregroundColor: Colors.black,
         title: const Text(
-          "Login",
+          "Enter your secret phrase below to login",
           style: TextStyle(
             color: Color(0xb20e014c),
             fontSize: 14,
@@ -31,6 +37,10 @@ class Login extends StatelessWidget {
         color: Colors.white,
         child: Column(
           children: [
+            Container(
+              alignment: Alignment.topLeft,
+              child: const Text('Phrase'),
+            ),
             TextField(
               controller: phraseController,
               minLines: 5,
