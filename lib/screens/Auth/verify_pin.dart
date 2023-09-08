@@ -2,6 +2,7 @@
 import 'package:beepo/components/filled_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../Utils/styles.dart';
 
@@ -34,6 +35,11 @@ class _VerifyCodeState extends State<VerifyCode> {
         elevation: 0,
         centerTitle: true,
         backgroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Iconsax.arrow_left),
+          //size: 30.0,
+          onPressed: () {},
+        ),
         title: const Text(
           "Verify your PIN",
           style: TextStyle(

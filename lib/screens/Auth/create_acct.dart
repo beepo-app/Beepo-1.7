@@ -6,6 +6,7 @@ import 'package:beepo/Utils/styles.dart';
 import 'package:beepo/components/filled_button.dart';
 
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 
 class CreateAccount extends StatefulWidget {
   //const CreateAccount({required Key key}) : super(key: key);
@@ -25,6 +26,11 @@ class _CreateAccountState extends State<CreateAccount> {
         elevation: 0,
         centerTitle: true,
         backgroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Iconsax.arrow_left),
+          //size: 30.0,
+          onPressed: () {},
+        ),
         foregroundColor: Colors.black,
         title: const Text(
           "Create your account",

@@ -5,6 +5,7 @@ import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../Utils/styles.dart';
@@ -36,6 +37,11 @@ class _PinCodeState extends State<PinCode> {
         elevation: 0,
         centerTitle: true,
         backgroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Iconsax.arrow_left),
+          //size: 30.0,
+          onPressed: () {},
+        ),
         foregroundColor: Colors.black,
         title: const Text(
           "Secure your account",

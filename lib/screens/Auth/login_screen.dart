@@ -3,6 +3,7 @@ import 'package:beepo/components/filled_button.dart';
 import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 
 class Login extends StatelessWidget {
   const Login({Key? key}) : super(key: key);
@@ -15,10 +16,8 @@ class Login extends StatelessWidget {
         elevation: 0,
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_left,
-            size: 30.0,
-          ),
+          icon: const Icon(Iconsax.arrow_left),
+          //size: 30.0,
           onPressed: () {},
         ),
         foregroundColor: Colors.black,

@@ -41,6 +41,7 @@ dependencies:
   fluttertoast: ^8.2.2
   hive: any
   hive_flutter: any
+  iconsax: ^0.0.8
   
 
 dev_dependencies:

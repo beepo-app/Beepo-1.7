@@ -1,4 +1,4 @@
-import 'package:beepo/screens/Auth/signup_screen.dart';
+import 'package:beepo/screens/Auth/verify_pin.dart';
 import 'package:flutter/material.dart';
 
 class MyApp extends StatelessWidget {
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       // ignore: prefer_const_constructors
-      home: SignUp(),
+      home: VerifyCode(),
     );
   }
 }
