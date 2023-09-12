@@ -6,6 +6,7 @@ class BeepoTextField extends StatelessWidget {
   final Widget? suffixIcon;
   final Icon? prefixIcon;
   final String? hintText;
+  final bool? filled;
   final TextEditingController? controller;
   const BeepoTextField({
     super.key,
@@ -13,6 +14,7 @@ class BeepoTextField extends StatelessWidget {
     this.prefixIcon,
     this.hintText,
     this.controller,
+    this.filled = true,
   });
 
   @override
@@ -22,25 +24,25 @@ class BeepoTextField extends StatelessWidget {
       cursorColor: const Color(0xff0e014c),
       decoration: InputDecoration(
         hintText: hintText,
-        filled: true,
+        filled: filled,
         contentPadding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 15.w),
         fillColor: AppColors.backgroundGrey,
         border: OutlineInputBorder(
           borderSide: const BorderSide(color: Colors.grey, width: 0.0),
           borderRadius: BorderRadius.all(
-            Radius.circular(15.r),
+            Radius.circular(10.r),
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: const BorderSide(color: Colors.grey, width: 0.0),
           borderRadius: BorderRadius.all(
-            Radius.circular(15.r),
+            Radius.circular(10.r),
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderSide: const BorderSide(color: Colors.grey, width: 0.0),
           borderRadius: BorderRadius.all(
-            Radius.circular(15.r),
+            Radius.circular(10.r),
           ),
         ),
         prefixIcon: prefixIcon,

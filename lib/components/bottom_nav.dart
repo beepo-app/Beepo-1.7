@@ -1,5 +1,10 @@
+import 'package:beepo/screens/browser/browser.dart';
+import 'package:beepo/screens/profile/profile_screen.dart';
+import 'package:beepo/screens/wallet/wallet_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+
+import '../screens/messaging/chat_tabs_screen.dart';
 
 class BottomNavHome extends StatefulWidget {
   const BottomNavHome({Key? key}) : super(key: key);
@@ -11,10 +16,10 @@ class BottomNavHome extends StatefulWidget {
 class _BottomNavHomeState extends State<BottomNavHome> {
   int index = 0;
   List<Widget> body = [
-    // ChatScreen(),
-    // WalletScreen(),
-    // Browser(),
-    // Profile(),
+    const ChatTabsScreen(),
+    const WalletScreen(),
+    const Browser(),
+    const ProfileScreen(),
   ];
 
   @override
@@ -36,7 +41,10 @@ class _BottomNavHomeState extends State<BottomNavHome> {
             icon: Icon(Iconsax.message),
             label: 'Chats',
           ),
-          BottomNavigationBarItem(icon: Icon(Iconsax.wallet), label: 'Wallet'),
+          BottomNavigationBarItem(
+            icon: Icon(Iconsax.wallet),
+            label: 'Wallet',
+          ),
           BottomNavigationBarItem(
             icon: Icon(Iconsax.global),
             label: 'Browser',

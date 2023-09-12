@@ -60,11 +60,14 @@ class _WalletScreenState extends State<WalletScreen> {
             color: Colors.white,
             child: Column(
               children: [
-                AppText(
-                  text: "Wallet",
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.secondaryColor,
+                SizedBox(height: 10.h),
+                Text(
+                  "Wallet",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.sp,
+                    color: AppColors.secondaryColor,
+                  ),
                 ),
                 Container(
                   width: double.infinity,
@@ -74,11 +77,14 @@ class _WalletScreenState extends State<WalletScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      AppText(
-                        text: "15,678.13",
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.secondaryColor,
+                      Text(
+                        "15,678.13",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20.sp,
+                          letterSpacing: 3,
+                          color: AppColors.secondaryColor,
+                        ),
                       ),
                       const SizedBox(height: 11),
                       AppText(
@@ -89,7 +95,7 @@ class _WalletScreenState extends State<WalletScreen> {
                       ),
                       SizedBox(height: 18.h),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           WalletIcon(
                             text: 'Send',
@@ -113,7 +119,7 @@ class _WalletScreenState extends State<WalletScreen> {
                     ],
                   ),
                 ),
-                const Padding(
+                Padding(
                   padding: EdgeInsets.all(1.0),
                   child: TabBar(
                     indicatorColor: secondaryColor,
@@ -125,6 +131,7 @@ class _WalletScreenState extends State<WalletScreen> {
                           text: "Crypto Assets",
                           color: AppColors.secondaryColor,
                           fontWeight: FontWeight.bold,
+                          fontSize: 16.sp,
                         ),
                       ),
                       Tab(
@@ -132,6 +139,7 @@ class _WalletScreenState extends State<WalletScreen> {
                           text: "NFTs",
                           color: AppColors.secondaryColor,
                           fontWeight: FontWeight.bold,
+                          fontSize: 16.sp,
                         ),
                       ),
                     ],

@@ -26,10 +26,14 @@ class _WalletListState extends State<WalletList> {
         vertical: 10,
       ),
       separatorBuilder: (_, int index) {
-        return const SizedBox(height: 10);
+        return const SizedBox(height: 20);
       },
       itemBuilder: (_, int index) {
-        return Card(
+        return Material(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15.r),
+          ),
           color: AppColors.white,
           child: ListTile(
             leading: Image.asset(AppImages.bCoin),

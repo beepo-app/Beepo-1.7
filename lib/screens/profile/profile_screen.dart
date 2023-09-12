@@ -13,14 +13,17 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 50.h,
+        toolbarHeight: 60.h,
         centerTitle: true,
         backgroundColor: AppColors.secondaryColor,
-        title: AppText(
-          text: "My Profile",
-          fontWeight: FontWeight.bold,
-          fontSize: 18.sp,
-          color: AppColors.white,
+        title: Padding(
+          padding: EdgeInsets.only(top: 15.h),
+          child: AppText(
+            text: "My Profile",
+            fontWeight: FontWeight.bold,
+            fontSize: 18.sp,
+            color: AppColors.white,
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -62,9 +65,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(
-                height: 5.h,
-              ),
+              SizedBox(height: 2.h),
               Center(
                 child: AppText(
                   text: "@username",
