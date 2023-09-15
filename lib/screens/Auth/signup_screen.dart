@@ -1,11 +1,8 @@
-import 'package:beepo/Screens/Auth/create_acct.dart';
-import 'package:beepo/Screens/Auth/login_screen.dart';
-import 'package:beepo/components/filled_button.dart';
+import 'package:beepo/components/beepo_filled_button.dart';
 import 'package:beepo/components/outline_button.dart';
+import 'package:beepo/screens/auth/create_acct_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
-//import '../../Widgets/components.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SignUp extends StatelessWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -25,29 +22,65 @@ class SignUp extends StatelessWidget {
               const Spacer(),
               Image.asset(
                 'assets/login.png',
-                height: 252,
-                width: 252,
+                height: 250.h,
+                width: 250.w,
               ),
               const Spacer(),
               BeepoFilledButtons(
                 text: 'Create Account',
-                onPressed: () => Get.to(CreateAccount()),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CreateAccountScreen(),
+                    ),
+                  );
+                },
               ),
-              const SizedBox(height: 35),
-              const Text(
-                "Already have an account?",
-                style: TextStyle(
-                  color: Color(0x4c0e014c),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
+              SizedBox(height: 33.h),
+              BeepoFilledButtons(
+                text: 'Import Wallet',
+                onPressed: () {},
+              ),
+              SizedBox(height: 33.h),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Container(
+                  width: 70,
+                  height: 1,
+                  color: Colors.black,
                 ),
-              ),
-              const SizedBox(height: 12),
+                SizedBox(height: 18.h),
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Text(
+                    "or",
+                    style: TextStyle(
+                      color: const Color(0x4c0e014c),
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                Container(
+                  width: 70,
+                  height: 1,
+                  color: Colors.black,
+                ),
+              ]),
+              SizedBox(height: 10.h),
               OutlnButton(
-                text: 'Login',
-                onPressed: () => Get.to(const Login()),
+                text: 'Continue with Google',
+                onPressed: () {
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => const Login(),
+                  //   ),
+                  // );
+                },
               ),
-              const SizedBox(height: 90),
+              SizedBox(height: 80.h),
             ],
           ),
         ),

@@ -1,18 +1,17 @@
 import 'package:beepo/screens/Auth/signup_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../Utils/styles.dart';
 import "package:lottie/lottie.dart";
 
-class Onboarding extends StatefulWidget {
-  const Onboarding({Key? key}) : super(key: key);
+class OnboardingScreen extends StatefulWidget {
+  const OnboardingScreen({Key? key}) : super(key: key);
 
   @override
-  State<Onboarding> createState() => _OnboardingState();
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingState extends State<Onboarding> {
+class _OnboardingScreenState extends State<OnboardingScreen> {
   int check = 0;
   late PageController controller;
 
@@ -85,23 +84,23 @@ class _OnboardingState extends State<Onboarding> {
                       children: [
                         const Spacer(),
                         Lottie.asset(lotties[index]),
-                        const SizedBox(height: 30),
+                        SizedBox(height: 28.h),
                         Text(
                           titles[index],
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: secondaryColor,
-                            fontSize: 24,
+                            fontSize: 22.sp,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: 18.h),
                         Text(
                           body[index]['text']!,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: secondaryColor,
-                            fontSize: 14,
+                            fontSize: 12.sp,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -112,12 +111,15 @@ class _OnboardingState extends State<Onboarding> {
                 ),
               ),
               SizedBox(
-                width: 237,
-                height: 42,
+                width: MediaQuery.of(context).size.width * 0.8,
+                height: 30.h,
                 child: TextButton(
                   onPressed: () {
                     if (check == body.length - 1) {
-                      Get.to(const SignUp());
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SignUp()));
                     } else {
                       controller.animateToPage(
                         check + 1,
@@ -125,7 +127,6 @@ class _OnboardingState extends State<Onboarding> {
                         curve: Curves.easeInOut,
                       );
                     }
-
                     controller.nextPage(
                         duration: const Duration(milliseconds: 500),
                         curve: Curves.easeIn);
@@ -143,15 +144,15 @@ class _OnboardingState extends State<Onboarding> {
                   child: Text(
                     check == body.length - 1 ? 'Completed' : 'Next',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
-                      fontSize: 16,
+                      fontSize: 14.sp,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 30)
+              SizedBox(height: 28.h)
             ],
           ),
         ),

@@ -1,4 +1,5 @@
 import 'package:beepo/constants/constants.dart';
+import 'package:beepo/screens/wallet/wallet_token_screen.dart';
 import 'package:beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -36,6 +37,11 @@ class _WalletListState extends State<WalletList> {
           ),
           color: AppColors.white,
           child: ListTile(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return const WalletTokenScreen();
+              }));
+            },
             leading: Image.asset(AppImages.bCoin),
             title: const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

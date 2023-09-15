@@ -1,5 +1,6 @@
-import 'package:beepo/components/filled_button.dart';
+import 'package:beepo/components/beepo_filled_button.dart';
 import 'package:beepo/constants/constants.dart';
+import 'package:beepo/screens/profile/profile_screen.dart';
 import 'package:beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -99,7 +100,12 @@ class WalletPhraseScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 30.h),
                 BeepoFilledButtons(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return const ProfileScreen();
+                    }));
+                  },
                   text: "I have written it down",
                 ),
               ],

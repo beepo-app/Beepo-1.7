@@ -1,4 +1,5 @@
 import 'package:beepo/constants/constants.dart';
+import 'package:beepo/screens/messaging/chats/chat_dm_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -47,10 +48,21 @@ class ChatTab extends StatelessWidget {
           Expanded(
             child: ListView.builder(
               itemCount: 15,
+              shrinkWrap: true,
               itemBuilder: (context, index) {
                 return Container(
                   padding: EdgeInsets.symmetric(horizontal: 4.w),
                   child: ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return const ChatDmScreen();
+                          },
+                        ),
+                      );
+                    },
                     leading: Container(
                       height: 50.h,
                       width: 50.w,

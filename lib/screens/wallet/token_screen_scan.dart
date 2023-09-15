@@ -1,10 +1,11 @@
 import 'package:beepo/constants/constants.dart';
+import 'package:beepo/screens/wallet/received_assets_screen.dart';
 import 'package:beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class RecievedTokenScreen extends StatelessWidget {
-  const RecievedTokenScreen({super.key});
+class TokenScreenScan extends StatelessWidget {
+  const TokenScreenScan({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,11 @@ class RecievedTokenScreen extends StatelessWidget {
         ),
         centerTitle: true,
         leading: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return const ReceivedAssetScreen();
+            }));
+          },
           icon: const Icon(
             Icons.arrow_back,
             color: AppColors.white,
@@ -37,10 +42,33 @@ class RecievedTokenScreen extends StatelessWidget {
               width: 80.w,
             ),
             AppText(
-              text: "CELO",
+              text: "BRISE",
               fontSize: 20.sp,
               fontWeight: FontWeight.bold,
               letterSpacing: 2,
+            ),
+            SizedBox(height: 15.h),
+            SizedBox(
+              height: 200.h,
+              width: 250.w,
+              child: Image.asset("assets/scan.png"),
+            ),
+            SizedBox(height: 10.h),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "0x0E61830c8e35db159eF8",
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: AppColors.secondaryColor,
+                  ),
+                ),
+                const Icon(
+                  Icons.folder,
+                  color: AppColors.secondaryColor,
+                ),
+              ],
             ),
           ],
         ),

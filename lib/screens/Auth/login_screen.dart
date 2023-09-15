@@ -1,11 +1,12 @@
+import 'package:beepo/components/beepo_filled_button.dart';
 import 'package:beepo/screens/Auth/pin_code.dart';
-import 'package:beepo/components/filled_button.dart';
 import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:iconsax/iconsax.dart';
 
-class Login extends StatelessWidget {
-  const Login({Key? key}) : super(key: key);
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,10 +15,13 @@ class Login extends StatelessWidget {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
-        // leading: Ba,
+        leading: IconButton(
+          icon: const Icon(Iconsax.arrow_left),
+          onPressed: () {},
+        ),
         foregroundColor: Colors.black,
         title: const Text(
-          "Login",
+          "Enter your secret phrase below to login",
           style: TextStyle(
             color: Color(0xb20e014c),
             fontSize: 14,
@@ -31,6 +35,10 @@ class Login extends StatelessWidget {
         color: Colors.white,
         child: Column(
           children: [
+            Container(
+              alignment: Alignment.topLeft,
+              child: const Text('Phrase'),
+            ),
             TextField(
               controller: phraseController,
               minLines: 5,
@@ -45,7 +53,7 @@ class Login extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 7.h),
             const Text(
               "This is usually a 12 word phrase",
               style: TextStyle(
@@ -59,7 +67,6 @@ class Login extends StatelessWidget {
               text: 'Login',
               onPressed: () async {
                 String phrase = phraseController.text.trim();
-
                 if (phrase.isEmpty) {
                   showToast('Please enter your secret phrase');
                 } else {
@@ -68,13 +75,16 @@ class Login extends StatelessWidget {
                   //   fullscreenDialog: true,
                   // );
                   // bool result = await AuthService().loginWithSecretPhrase(phrase);
-
                   // AuthService().verifyPhrase(phrase);
-                  Get.to(PinCode(
-                    isSignUp: false,
-                    seedPhrase: phrase,
-                  ));
-
+                  // Get.to(PinCode(
+                  //   isSignUp: false,
+                  //   seedPhrase: phrase,
+                  // ));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const PinCode(),
+                      ));
                   // Get.back();
                   // if (result) {
                   //   showToast('Logged in successfully');

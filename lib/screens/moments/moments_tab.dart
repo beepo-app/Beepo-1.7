@@ -1,4 +1,5 @@
 import 'package:beepo/constants/constants.dart';
+import 'package:beepo/screens/moments/moments_screen.dart';
 import 'package:beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -59,67 +60,81 @@ class _MomentsTabState extends State<MomentsTab> {
                   mainAxisSpacing: 15,
                 ),
                 itemBuilder: (BuildContext context, index) {
-                  return Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.r),
-                      color: AppColors.greyBoxBg,
-                      // image: DecorationImage(image: )
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Container(
-                          // height: 40.h,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: AppColors.black.withOpacity(0.3),
-                            borderRadius: BorderRadius.only(
-                              bottomLeft: const Radius.circular(10),
-                              bottomRight: Radius.circular(10.r),
-                              topLeft: const Radius.circular(0),
-                              topRight: const Radius.circular(0),
-                            ),
-                          ),
-                          child: Padding(
-                            padding: EdgeInsets.only(
-                                left: 10.w, bottom: 10.h, top: 15.h),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                CircleAvatar(
-                                  radius: 20.r,
-                                  backgroundColor: AppColors.white,
-                                ),
-                                SizedBox(width: 8.w),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    AppText(
-                                      text: "Andrey Hugh",
-                                      fontSize: 12.sp,
-                                      color: AppColors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    RichText(
-                                      text: TextSpan(
-                                        style: TextStyle(
-                                          fontSize: 10.sp,
-                                          color: AppColors.white,
-                                        ),
-                                        children: const [
-                                          TextSpan(text: "11.1k "),
-                                          TextSpan(text: "Views")
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
+                  return InkWell(
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return const MomentsScreens();
+                      }));
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.r),
+                        color: AppColors.greyBoxBg,
+                        image: const DecorationImage(
+                          image: AssetImage("assets/mBg.jpg"),
+                          fit: BoxFit.cover,
                         ),
-                      ],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Container(
+                            // height: 40.h,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: AppColors.black.withOpacity(0.3),
+                              borderRadius: BorderRadius.only(
+                                bottomLeft: const Radius.circular(10),
+                                bottomRight: Radius.circular(10.r),
+                                topLeft: const Radius.circular(0),
+                                topRight: const Radius.circular(0),
+                              ),
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                  left: 10.w, bottom: 10.h, top: 15.h),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 20.r,
+                                    backgroundColor: AppColors.white,
+                                    backgroundImage: const AssetImage(
+                                        "assets/profile_img1.png"),
+                                  ),
+                                  SizedBox(width: 8.w),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      AppText(
+                                        text: "Andrey Hugh",
+                                        fontSize: 12.sp,
+                                        color: AppColors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      RichText(
+                                        text: TextSpan(
+                                          style: TextStyle(
+                                            fontSize: 10.sp,
+                                            color: AppColors.white,
+                                          ),
+                                          children: const [
+                                            TextSpan(text: "11.1k "),
+                                            TextSpan(text: "Views")
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },

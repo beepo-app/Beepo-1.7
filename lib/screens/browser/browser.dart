@@ -42,7 +42,7 @@ class _BrowserState extends State<Browser> {
                     height: 13,
                     width: 13,
                   ),
-                  SizedBox(width: 5),
+                  const SizedBox(width: 5),
                   Text(
                     "Celo Network",
                     style: TextStyle(

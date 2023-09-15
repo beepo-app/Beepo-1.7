@@ -1,5 +1,6 @@
-import 'package:beepo/components/filled_button.dart';
+import 'package:beepo/components/beepo_filled_button.dart';
 import 'package:beepo/constants/constants.dart';
+import 'package:beepo/screens/wallet/send_token_confirm_screen.dart';
 import 'package:beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -65,7 +66,7 @@ class _SendTokenState extends State<SendToken> {
                 controller: amount,
                 keyboardType: TextInputType.number,
                 style: TextStyle(
-                  color: Color(0xff0d004c),
+                  color: const Color(0xff0d004c),
                   fontSize: 14.sp,
                 ),
                 decoration: InputDecoration(
@@ -73,7 +74,7 @@ class _SendTokenState extends State<SendToken> {
                     padding:
                         EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.w),
                     child: AppText(
-                      text: "SOL",
+                      text: "BRISE",
                       fontSize: 16.sp,
                       color: AppColors.textGrey,
                     ),
@@ -185,7 +186,11 @@ class _SendTokenState extends State<SendToken> {
               SizedBox(height: MediaQuery.of(context).size.height / 10),
               BeepoFilledButtons(
                 text: 'complete',
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return const SendTokenConfirmScreen();
+                  }));
+                },
               ),
             ],
           ),

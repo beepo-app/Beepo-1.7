@@ -1,10 +1,14 @@
+import 'package:beepo/components/bottom_nav.dart';
 import 'package:beepo/constants/constants.dart';
+import 'package:beepo/screens/messaging/chat_tabs_screen.dart';
+import 'package:beepo/screens/messaging/chats/chat_tab.dart';
+import 'package:beepo/screens/profile/user_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax/iconsax.dart';
 
-class ChatDmsScreen extends StatelessWidget {
-  const ChatDmsScreen({super.key});
+class ChatDmScreen extends StatelessWidget {
+  const ChatDmScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +16,11 @@ class ChatDmsScreen extends StatelessWidget {
       backgroundColor: AppColors.white,
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return const BottomNavHome();
+            }));
+          },
           icon: const Icon(
             Icons.arrow_back,
             color: AppColors.white,
@@ -20,35 +28,43 @@ class ChatDmsScreen extends StatelessWidget {
         ),
         backgroundColor: AppColors.secondaryColor,
         toolbarHeight: 60.h,
-        title: Row(
-          children: [
-            const CircleAvatar(
-              radius: 30,
-              backgroundColor: AppColors.backgroundGrey,
-            ),
-            SizedBox(width: 15.w),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Sylvia Chirah",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16.sp,
-                    color: AppColors.white,
+        title: TextButton(
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return const UserProfileScreen();
+            }));
+          },
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 25.r,
+                backgroundColor: AppColors.backgroundGrey,
+                backgroundImage: const AssetImage("assets/profile.png"),
+              ),
+              SizedBox(width: 15.w),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Sylvia Chirah",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16.sp,
+                      color: AppColors.white,
+                    ),
                   ),
-                ),
-                Text(
-                  "@sylvia",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 10.sp,
-                    color: AppColors.white,
+                  Text(
+                    "@sylvia",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 10.sp,
+                      color: AppColors.white,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
         actions: [
           IconButton(

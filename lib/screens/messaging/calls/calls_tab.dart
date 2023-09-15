@@ -56,6 +56,7 @@ class CallTab extends StatelessWidget {
               child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: 5,
+                scrollDirection: Axis.vertical,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.all(5.0),

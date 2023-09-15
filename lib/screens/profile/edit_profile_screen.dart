@@ -1,4 +1,5 @@
-import 'package:beepo/components/filled_button.dart';
+import 'package:beepo/components/beepo_filled_button.dart';
+import 'package:beepo/screens/wallet/phrase_confirm_screen.dart';
 import 'package:beepo/widgets/app_text.dart';
 import 'package:beepo/widgets/beepo_text_field.dart';
 import 'package:flutter/material.dart';
@@ -6,14 +7,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../constants/constants.dart';
 
-class EditProfile extends StatefulWidget {
-  const EditProfile({Key? key}) : super(key: key);
+class EditProfileScreen extends StatefulWidget {
+  const EditProfileScreen({Key? key}) : super(key: key);
 
   @override
-  State<EditProfile> createState() => _EditProfileState();
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
-class _EditProfileState extends State<EditProfile> {
+class _EditProfileScreenState extends State<EditProfileScreen> {
   TextEditingController displayNameController = TextEditingController();
 
   TextEditingController userNameController = TextEditingController();
@@ -45,7 +46,8 @@ class _EditProfileState extends State<EditProfile> {
                   children: [
                     CircleAvatar(
                       radius: 60.r,
-                      backgroundColor: AppColors.chipBgGrey,
+                      backgroundImage:
+                          const AssetImage("assets/profile_img1.png"),
                     ),
                     Positioned(
                       bottom: 12.h,
@@ -122,7 +124,12 @@ class _EditProfileState extends State<EditProfile> {
               Center(
                 child: BeepoFilledButtons(
                   text: "Save",
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return const PhraseConfirmationScreen();
+                    }));
+                  },
                 ),
               )
             ],
