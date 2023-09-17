@@ -5,6 +5,9 @@ import 'package:beepo/screens/moments/moments_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../moments/add_story.dart';
+import '../moments/moments_screen.dart';
+
 class ChatTabsScreen extends StatefulWidget {
   const ChatTabsScreen({super.key});
 
@@ -152,31 +155,39 @@ class _MyTabBarState extends State<MyTabBar> {
             Row(
               children: [
                 const SizedBox(width: 20),
-                Column(
-                  children: [
-                    Container(
-                      height: 70,
-                      width: 70,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFC4C4C4),
-                        shape: BoxShape.circle,
+                InkWell(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return const AddStory();
+                    }));
+                  },
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 70,
+                        width: 70,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFC4C4C4),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.add,
+                          size: 35,
+                          color: Colors.black,
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.add,
-                        size: 35,
-                        color: Colors.black,
+                      SizedBox(height: 8.9.h),
+                      Text(
+                        "Update Moment",
+                        style: TextStyle(
+                          color: const Color(0xb2ffffff),
+                          fontSize: 8.sp,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 8.9.h),
-                    Text(
-                      "Update Moment",
-                      style: TextStyle(
-                        color: const Color(0xb2ffffff),
-                        fontSize: 8.sp,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -193,13 +204,24 @@ class _MyTabBarState extends State<MyTabBar> {
                           children: [
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 10.w),
-                              child: Container(
-                                height: 70,
-                                width: 70,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFC4C4C4),
-                                  shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.orange),
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (context) {
+                                    return const MomentsScreens();
+                                  }));
+                                },
+                                child: Container(
+                                  height: 70,
+                                  width: 70,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFC4C4C4),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(color: Colors.orange),
+                                    image: const DecorationImage(
+                                      image: AssetImage("assets/mBg.jpg"),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),

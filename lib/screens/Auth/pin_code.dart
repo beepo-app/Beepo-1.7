@@ -1,14 +1,17 @@
 import 'dart:io';
 
-import 'package:beepo/components/filled_button.dart';
+import 'package:beepo/components/bottom_nav.dart';
+import 'package:beepo/screens/Auth/verify_code.dart';
 import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../Utils/styles.dart';
-import 'verify_pin.dart';
+import '../../components/beepo_filled_button.dart';
 
 class PinCode extends StatefulWidget {
   final File? image;
@@ -34,11 +37,16 @@ class _PinCodeState extends State<PinCode> {
         elevation: 0,
         centerTitle: true,
         backgroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Iconsax.arrow_left),
+          //size: 30.0,
+          onPressed: () {},
+        ),
         foregroundColor: Colors.black,
-        title: const Text(
+        title: Text(
           "Secure your account",
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 13.sp,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -50,12 +58,12 @@ class _PinCodeState extends State<PinCode> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text(
+            Text(
               "Create a PIN to protect your\ndata and transactions",
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: secondaryColor,
-                fontSize: 14,
+                fontSize: 13.sp,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -125,8 +133,8 @@ class _PinCodeState extends State<PinCode> {
                 }
               },
             ),
-            const SizedBox(
-              height: 40,
+            SizedBox(
+              height: 38.h,
               width: double.infinity,
             ),
           ],

@@ -1,4 +1,7 @@
 import 'package:beepo/constants/constants.dart';
+import 'package:beepo/screens/profile/account_type_screen.dart';
+import 'package:beepo/screens/profile/edit_profile_screen.dart';
+import 'package:beepo/screens/profile/user_profile_security_screen.dart';
 import 'package:beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -36,13 +39,7 @@ class ProfileScreen extends StatelessWidget {
                 alignment: Alignment.center,
                 child: CircleAvatar(
                   radius: 60.r,
-                  backgroundColor: AppColors.chipBgGrey,
-                  child: const Center(
-                    child: Icon(
-                      Iconsax.user,
-                      color: primaryColor,
-                    ),
-                  ),
+                  backgroundImage: const AssetImage("assets/profile_img1.png"),
                 ),
               ),
               SizedBox(height: 15.h),
@@ -56,7 +53,12 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   SizedBox(width: 8.w),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return const EditProfileScreen();
+                      }));
+                    },
                     child: const Icon(
                       Icons.mode_edit_outlined,
                       color: Color(0xffff9c34),
@@ -74,25 +76,34 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 40.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {},
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return const AccountTypeScreen();
+                      },
+                    ),
+                  );
+                },
+                child: Row(
+                  children: [
+                    Expanded(
                       child: AppText(
                         text: "Account Type",
                         fontSize: 14.sp,
                         color: AppColors.secondaryColor,
                       ),
                     ),
-                  ),
-                  AppText(
-                    text: "Standard",
-                    fontSize: 11.sp,
-                    color: AppColors.secondaryColor,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ],
+                    AppText(
+                      text: "Standard",
+                      fontSize: 11.sp,
+                      color: AppColors.secondaryColor,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ],
+                ),
               ),
               SizedBox(height: 15.h),
               Row(
@@ -116,44 +127,36 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
               SizedBox(height: 15.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: AppText(
-                        text: "Security",
-                        fontSize: 14.sp,
-                        color: AppColors.secondaryColor,
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return const UserProfileSecurityScreen();
+                      },
+                    ),
+                  );
+                },
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {},
+                        child: AppText(
+                          text: "Security",
+                          fontSize: 14.sp,
+                          color: AppColors.secondaryColor,
+                        ),
                       ),
                     ),
-                  ),
-                  const Icon(
-                    Icons.arrow_forward,
-                    color: Color(0x660e014c),
-                    size: 20,
-                  ),
-                ],
-              ),
-              SizedBox(height: 15.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: AppText(
-                        text: "Language",
-                        fontSize: 14.sp,
-                        color: AppColors.secondaryColor,
-                      ),
+                    const Icon(
+                      Icons.arrow_forward,
+                      color: Color(0x660e014c),
+                      size: 20,
                     ),
-                  ),
-                  const Icon(
-                    Icons.arrow_forward,
-                    color: Color(0x660e014c),
-                    size: 20,
-                  ),
-                ],
+                  ],
+                ),
               ),
               SizedBox(height: 15.h),
               Row(

@@ -1,18 +1,21 @@
 import 'package:beepo/constants/constants.dart';
+import 'package:beepo/screens/wallet/token_screen_scan.dart';
+import 'package:beepo/screens/wallet/send_token_screen.dart';
+import 'package:beepo/screens/wallet/transfer_info.dart';
 import 'package:beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class WalletToken extends StatefulWidget {
-  const WalletToken({
+class WalletTokenScreen extends StatefulWidget {
+  const WalletTokenScreen({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<WalletToken> createState() => _WalletTokenState();
+  State<WalletTokenScreen> createState() => _WalletTokenScreenState();
 }
 
-class _WalletTokenState extends State<WalletToken> {
+class _WalletTokenScreenState extends State<WalletTokenScreen> {
   bool isPositive = false;
   bool isSent = false;
 
@@ -83,7 +86,7 @@ class _WalletTokenState extends State<WalletToken> {
                 ),
                 const SizedBox(height: 12),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     const SizedBox(),
                     Column(
@@ -91,7 +94,12 @@ class _WalletTokenState extends State<WalletToken> {
                         Transform.rotate(
                           angle: 24.5,
                           child: IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return const SendToken();
+                              }));
+                            },
                             icon: const Icon(
                               Icons.send_outlined,
                               size: 30,
@@ -111,7 +119,12 @@ class _WalletTokenState extends State<WalletToken> {
                     Column(
                       children: [
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return const TokenScreenScan();
+                            }));
+                          },
                           icon: const Icon(
                             Icons.file_download_sharp,
                             size: 30,
@@ -179,7 +192,12 @@ class _WalletTokenState extends State<WalletToken> {
                     size: 20,
                     color: isSent ? Colors.red : Colors.green,
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return const TransferInfo();
+                    }));
+                  },
                   title: Row(
                     children: [
                       Expanded(

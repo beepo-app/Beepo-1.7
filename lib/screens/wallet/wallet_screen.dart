@@ -1,4 +1,6 @@
 import 'package:beepo/constants/constants.dart';
+import 'package:beepo/screens/wallet/received_assets_screen.dart';
+import 'package:beepo/screens/wallet/send_assets_screen.dart';
 import 'package:beepo/widgets/app_text.dart';
 import 'package:beepo/widgets/wallet_icon.dart';
 import 'package:beepo/widgets/wallet_list.dart';
@@ -41,9 +43,18 @@ class _WalletScreenState extends State<WalletScreen> {
       child: SafeArea(
         child: Scaffold(
           appBar: AppBar(
+            leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(
+                Icons.add,
+                color: AppColors.white,
+              ),
+            ),
             elevation: 0,
             toolbarHeight: 20.h,
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.secondaryColor,
             actions: [
               PopupMenuButton<String>(
                 itemBuilder: (context) {
@@ -101,12 +112,22 @@ class _WalletScreenState extends State<WalletScreen> {
                             text: 'Send',
                             icon: Icons.send_outlined,
                             angle: 5.7,
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return const SendAssetsScreen();
+                              }));
+                            },
                           ),
                           WalletIcon(
                             text: 'Receive',
                             icon: Icons.file_download_sharp,
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return const ReceivedAssetScreen();
+                              }));
+                            },
                           ),
                           WalletIcon(
                             text: 'Buy',
@@ -120,7 +141,7 @@ class _WalletScreenState extends State<WalletScreen> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(1.0),
+                  padding: const EdgeInsets.all(1.0),
                   child: TabBar(
                     indicatorColor: secondaryColor,
                     indicatorSize: TabBarIndicatorSize.label,

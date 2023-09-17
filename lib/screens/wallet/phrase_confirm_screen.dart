@@ -1,6 +1,7 @@
 import 'package:beepo/Utils/styles.dart';
-import 'package:beepo/components/filled_button.dart';
+import 'package:beepo/components/beepo_filled_button.dart';
 import 'package:beepo/constants/constants.dart';
+import 'package:beepo/screens/wallet/phrase_screen.dart';
 import 'package:beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -121,7 +122,11 @@ class _PhraseConfirmationScreenState extends State<PhraseConfirmationScreen> {
               SizedBox(height: 20.h),
               BeepoFilledButtons(
                 text: "Proceed",
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return const WalletPhraseScreen();
+                  }));
+                },
               ),
             ],
           ),

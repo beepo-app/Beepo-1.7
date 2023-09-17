@@ -1,25 +1,25 @@
-// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors
-
 import 'dart:io';
 
-import 'package:beepo/Utils/styles.dart';
-import 'package:beepo/components/filled_button.dart';
+import 'package:beepo/components/beepo_filled_button.dart';
+import 'package:beepo/constants/constants.dart';
 import 'package:beepo/screens/Auth/pin_code.dart';
 import 'package:beepo/utils/functions.dart';
 import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 
-class CreateAccount extends StatefulWidget {
-  // const CreateAccount({Key key}) : super(key: key);
+class CreateAccountScreen extends StatefulWidget {
+  const CreateAccountScreen({Key? key}) : super(key: key);
 
   @override
-  State<CreateAccount> createState() => _CreateAccountState();
+  State<CreateAccountScreen> createState() => _CreateAccountScreenState();
 }
 
-class _CreateAccountState extends State<CreateAccount> {
+class _CreateAccountScreenState extends State<CreateAccountScreen> {
   TextEditingController displayName = TextEditingController();
-  File? selectedImage;
+  late File selectedImage = File(
+      'https://pbs.twimg.com/profile_images/1619846077506621443/uWNSRiRL_400x400.jpg');
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +28,11 @@ class _CreateAccountState extends State<CreateAccount> {
         elevation: 0,
         centerTitle: true,
         backgroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Iconsax.arrow_left),
+          //size: 30.0,
+          onPressed: () {},
+        ),
         foregroundColor: Colors.black,
         title: const Text(
           "Create your account",
@@ -55,21 +60,15 @@ class _CreateAccountState extends State<CreateAccount> {
                     shape: BoxShape.circle,
                     color: Color(0xffc4c4c4),
                   ),
-                  // ignore: unnecessary_null_comparison
-                  child: selectedImage != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(100),
-                          child: Image.file(
-                            selectedImage!,
-                            height: 120,
-                            width: 120,
-                            fit: BoxFit.cover,
-                          ))
-                      : const Icon(
-                          Icons.person_outlined,
-                          size: 117,
-                          color: Color(0x66000000),
-                        ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: Image.file(
+                      selectedImage,
+                      height: 120,
+                      width: 120,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
                 Positioned(
                   right: 10,
@@ -91,7 +90,7 @@ class _CreateAccountState extends State<CreateAccount> {
                       height: 40,
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
-                        color: secondaryColor,
+                        color: AppColors.secondaryColor,
                       ),
                       child: const Icon(
                         Icons.photo_camera_outlined,
@@ -121,14 +120,10 @@ class _CreateAccountState extends State<CreateAccount> {
             const Spacer(),
             BeepoFilledButtons(
               text: 'Next',
-              color: Color(0xffFF9C34),
+              color: const Color(0xffFF9C34),
               onPressed: () async {
                 if (displayName.text.trim().isEmpty) {
                   showToast('Please enter a display name');
-                  return;
-                }
-                if (selectedImage == null) {
-                  showToast('Please sekect a display image');
                   return;
                 } else {
                   Get.to(() => PinCode(

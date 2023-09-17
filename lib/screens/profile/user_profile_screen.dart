@@ -1,4 +1,7 @@
+import 'package:beepo/components/beepo_filled_button.dart';
 import 'package:beepo/constants/constants.dart';
+import 'package:beepo/screens/messaging/chats/chat_dm_screen.dart';
+import 'package:beepo/screens/messaging/chats/chat_tab.dart';
 import 'package:beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -51,12 +54,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 children: [
                   CircleAvatar(
                     backgroundColor: AppColors.white,
-                    radius: 45.h,
-                    child: Icon(
-                      Icons.person,
-                      size: 70.r,
-                      color: AppColors.borderGrey,
-                    ),
+                    radius: 40.r,
+                    backgroundImage: const AssetImage("assets/profile.png"),
                   ),
                   SizedBox(height: 8.h),
                   AppText(
@@ -83,7 +82,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                               size: 35,
                               color: Color(0xffFF9C34),
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return const ChatDmScreen();
+                              }));
+                            },
                           ),
                           SizedBox(height: 2.h),
                           const Text(
@@ -98,7 +102,59 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       SizedBox(width: 20.w),
                       Column(
                         children: [
-                          SvgPicture.asset('assets/block.svg'),
+                          InkWell(
+                            child: SvgPicture.asset('assets/block.svg'),
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    content: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 20),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Text(
+                                            "Hey Beeper, please be aware that once that triggered, this action is irreversible.",
+                                            style: TextStyle(
+                                              color: AppColors.secondaryColor,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          SizedBox(height: 10.h),
+                                          const Text(
+                                            "Are you certain you want to block this user?",
+                                            style: TextStyle(
+                                              color: AppColors.secondaryColor,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          SizedBox(height: 15.h),
+                                          BeepoFilledButtons(
+                                            text: 'Block',
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) {
+                                                  return const ChatTab();
+                                                }),
+                                              );
+                                            },
+                                            color: AppColors.secondaryColor,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
                           SizedBox(height: 6.h),
                           const Text(
                             "Block",

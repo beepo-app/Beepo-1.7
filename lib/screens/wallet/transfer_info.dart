@@ -3,9 +3,9 @@ import 'package:beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class TransactionInfo extends StatelessWidget {
+class TransferInfo extends StatelessWidget {
   final String? walletTicker;
-  const TransactionInfo({Key? key, this.walletTicker}) : super(key: key);
+  const TransferInfo({Key? key, this.walletTicker}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

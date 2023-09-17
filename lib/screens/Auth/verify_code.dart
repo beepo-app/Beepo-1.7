@@ -1,8 +1,8 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'dart:io';
-import 'package:beepo/components/filled_button.dart';
+
+import 'package:beepo/components/beepo_filled_button.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 
 class VerifyCode extends StatefulWidget {
   final File image;
@@ -26,6 +26,11 @@ class _VerifyCodeState extends State<VerifyCode> {
         elevation: 0,
         centerTitle: true,
         backgroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Iconsax.arrow_left),
+          //size: 30.0,
+          onPressed: () {},
+        ),
         title: const Text(
           "Verify your PIN",
           style: TextStyle(
