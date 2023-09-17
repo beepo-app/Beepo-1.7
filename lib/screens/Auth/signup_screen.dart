@@ -31,7 +31,7 @@ class SignUp extends StatelessWidget {
               const Spacer(),
               BeepoFilledButtons(
                 text: 'Create Account',
-                onPressed: () => Get.to(CreateAccount()),
+                onPressed: () => Get.to(() => CreateAccount()),
               ),
               const SizedBox(height: 35),
               const Text(
@@ -44,8 +44,8 @@ class SignUp extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               OutlnButton(
-                text: 'Login',
-                onPressed: () => Get.to(const Login()),
+                text: 'Import Account',
+                onPressed: () => Get.to(() => const Login()),
               ),
               const SizedBox(height: 90),
             ],

@@ -5,13 +5,10 @@ import 'dart:io';
 import 'package:beepo/Utils/styles.dart';
 import 'package:beepo/components/filled_button.dart';
 import 'package:beepo/screens/Auth/pin_code.dart';
+import 'package:beepo/utils/functions.dart';
 import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-//import '../../Utils/functions.dart';
-//import '../../Widgets/components.dart';
-//import 'pin_code.dart';
 
 class CreateAccount extends StatefulWidget {
   // const CreateAccount({Key key}) : super(key: key);
@@ -22,7 +19,7 @@ class CreateAccount extends StatefulWidget {
 
 class _CreateAccountState extends State<CreateAccount> {
   TextEditingController displayName = TextEditingController();
-  late File selectedImage;
+  File? selectedImage;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +60,7 @@ class _CreateAccountState extends State<CreateAccount> {
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(100),
                           child: Image.file(
-                            selectedImage,
+                            selectedImage!,
                             height: 120,
                             width: 120,
                             fit: BoxFit.cover,
@@ -78,7 +75,17 @@ class _CreateAccountState extends State<CreateAccount> {
                   right: 10,
                   bottom: 10,
                   child: GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      ImageUtil()
+                          .pickProfileImage(context: context)
+                          .then((value) {
+                        if (value != null) {
+                          setState(() {
+                            selectedImage = value;
+                          });
+                        }
+                      });
+                    },
                     child: Container(
                       width: 40,
                       height: 40,
@@ -119,11 +126,16 @@ class _CreateAccountState extends State<CreateAccount> {
                 if (displayName.text.trim().isEmpty) {
                   showToast('Please enter a display name');
                   return;
+                }
+                if (selectedImage == null) {
+                  showToast('Please sekect a display image');
+                  return;
                 } else {
-                  Get.to(PinCode(
-                    image: selectedImage,
-                    name: displayName.text.trim(),
-                  ));
+                  Get.to(() => PinCode(
+                        image: selectedImage,
+                        name: displayName.text.trim(),
+                        isSignUp: true,
+                      ));
                 }
               },
             ),

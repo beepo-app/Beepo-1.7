@@ -7,14 +7,9 @@ import 'package:flutter/material.dart';
 class VerifyCode extends StatefulWidget {
   final File image;
   final String name;
-  final bool isSignUp;
-  final String seedPhrase;
+  final String pin;
   const VerifyCode(
-      {Key? key,
-      required this.image,
-      required this.name,
-      required this.isSignUp,
-      required this.seedPhrase})
+      {Key? key, required this.image, required this.name, required this.pin})
       : super(key: key);
 
   @override
@@ -58,7 +53,9 @@ class _VerifyCodeState extends State<VerifyCode> {
             const Spacer(),
             BeepoFilledButtons(
               text: 'Continue',
-              onPressed: () async {},
+              onPressed: () async {
+// if(widget.pin == )
+              },
             ),
             const SizedBox(height: 40, width: double.infinity),
           ],

@@ -117,7 +117,7 @@ class _OnboardingState extends State<Onboarding> {
                 child: TextButton(
                   onPressed: () {
                     if (check == body.length - 1) {
-                      Get.to(const SignUp());
+                      Get.to(() => const SignUp());
                     } else {
                       controller.animateToPage(
                         check + 1,

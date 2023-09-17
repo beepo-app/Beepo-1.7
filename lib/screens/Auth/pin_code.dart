@@ -14,13 +14,11 @@ class PinCode extends StatefulWidget {
   final File? image;
   final String? name;
   final bool isSignUp;
-  final String? seedPhrase;
   const PinCode({
     Key? key,
     this.image,
     this.name,
     this.isSignUp = true,
-    this.seedPhrase,
   }) : super(key: key);
 
   @override
@@ -100,15 +98,28 @@ class _PinCodeState extends State<PinCode> {
             const Spacer(),
             BeepoFilledButtons(
               text: 'Continue',
-              onPressed: () {
+              onPressed: () async {
                 if (otp.text.length == 4) {
-                  Hive.box('beepo').put('PIN', otp.text);
-                  Get.to(VerifyCode(
-                    name: widget.name!,
-                    image: widget.image!,
-                    isSignUp: widget.isSignUp,
-                    seedPhrase: widget.seedPhrase!,
-                  ));
+                  if (widget.isSignUp) {
+                    if (widget.image != null) {
+                      Get.to(() => VerifyCode(
+                            name: widget.name!,
+                            image: widget.image!,
+                            pin: otp.text,
+                          ));
+                    }
+                  } else {
+                    Box box = await Hive.openBox('beepo');
+
+                    var pin = box.get('PIN');
+                    print(pin);
+
+                    Get.to(() => VerifyCode(
+                          name: widget.name!,
+                          image: widget.image!,
+                          pin: otp.text,
+                        ));
+                  }
                 } else {
                   showToast('Please enter a valid PIN');
                 }

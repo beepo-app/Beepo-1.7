@@ -70,10 +70,9 @@ class Login extends StatelessWidget {
                   // bool result = await AuthService().loginWithSecretPhrase(phrase);
 
                   // AuthService().verifyPhrase(phrase);
-                  Get.to(PinCode(
-                    isSignUp: false,
-                    seedPhrase: phrase,
-                  ));
+                  Get.to(() => const PinCode(
+                        isSignUp: false,
+                      ));
 
                   // Get.back();
                   // if (result) {

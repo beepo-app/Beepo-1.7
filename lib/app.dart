@@ -1,4 +1,5 @@
 import 'package:beepo/components/bottom_nav.dart';
+import 'package:beepo/screens/Auth/onboarding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             useMaterial3: true,
           ),
-          home: const BottomNavHome(),
+          home: const Onboarding(),
         );
       },
       designSize: const Size(360, 546),
