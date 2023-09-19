@@ -18,8 +18,7 @@ class CreateAccountScreen extends StatefulWidget {
 
 class _CreateAccountScreenState extends State<CreateAccountScreen> {
   TextEditingController displayName = TextEditingController();
-  late File selectedImage = File(
-      'https://pbs.twimg.com/profile_images/1619846077506621443/uWNSRiRL_400x400.jpg');
+  File? selectedImage;
 
   @override
   Widget build(BuildContext context) {
@@ -60,15 +59,20 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     shape: BoxShape.circle,
                     color: Color(0xffc4c4c4),
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(100),
-                    child: Image.file(
-                      selectedImage,
-                      height: 120,
-                      width: 120,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                  child: selectedImage != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(100),
+                          child: Image.file(
+                            selectedImage!,
+                            height: 120,
+                            width: 120,
+                            fit: BoxFit.cover,
+                          ))
+                      : const Icon(
+                          Icons.person_outlined,
+                          size: 117,
+                          color: Color(0x66000000),
+                        ),
                 ),
                 Positioned(
                   right: 10,
@@ -120,17 +124,23 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
             const Spacer(),
             BeepoFilledButtons(
               text: 'Next',
-              color: const Color(0xffFF9C34),
+              color: Color(0xffFF9C34),
               onPressed: () async {
                 if (displayName.text.trim().isEmpty) {
                   showToast('Please enter a display name');
                   return;
+                }
+                if (selectedImage == null) {
+                  showToast('Please sekect a display image');
+                  return;
                 } else {
-                  Get.to(() => PinCode(
-                        image: selectedImage,
-                        name: displayName.text.trim(),
-                        isSignUp: true,
-                      ));
+                  Get.to(
+                    () => PinCode(
+                      image: selectedImage,
+                      name: displayName.text.trim(),
+                      isSignedUp: false,
+                    ),
+                  );
                 }
               },
             ),

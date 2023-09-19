@@ -1,6 +1,5 @@
 import 'package:beepo/components/beepo_filled_button.dart';
 import 'package:beepo/components/outline_button.dart';
-import 'package:beepo/screens/Auth/login_screen.dart';
 import 'package:beepo/screens/auth/create_acct_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,15 +18,16 @@ class SignUp extends StatelessWidget {
           color: Colors.white,
           padding: const EdgeInsets.all(20),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Spacer(),
+              // const Spacer(),
               Image.asset(
                 'assets/login.png',
                 height: 250.h,
                 width: 250.w,
               ),
-              const Spacer(),
+              // const Spacer(),
               BeepoFilledButtons(
                 text: 'Create Account',
                 onPressed: () => Get.to(() => const CreateAccountScreen()),
@@ -65,10 +65,17 @@ class SignUp extends StatelessWidget {
               ]),
               SizedBox(height: 10.h),
               OutlnButton(
-                text: 'Import Account',
-                onPressed: () => Get.to(() => const LoginScreen()),
+                text: 'Continue with Google',
+                onPressed: () {
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => const Login(),
+                  //   ),
+                  // );
+                },
               ),
-              SizedBox(height: 80.h),
+              // SizedBox(height: 80.h),
             ],
           ),
         ),

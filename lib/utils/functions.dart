@@ -1,6 +1,8 @@
 //Generate key pair
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/cupertino.dart';
@@ -56,7 +58,13 @@ class ImageUtil {
       //     ),
       //   );
 
-      return File(file.path);
+      List<int> imageBytes = await file.readAsBytes();
+
+      String base64Image = base64Encode(imageBytes);
+
+      Uint8List imagby = base64Decode(base64Image);
+
+      return File.fromRawPath(imagby);
       // } catch (e) {
       //   rethrow;
       // }

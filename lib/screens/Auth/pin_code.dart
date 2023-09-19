@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:beepo/components/bottom_nav.dart';
+import 'package:beepo/providers/auth_provider.dart';
+import 'package:beepo/providers/wallet_provider.dart';
 import 'package:beepo/screens/Auth/verify_code.dart';
 import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
@@ -16,12 +18,12 @@ import '../../components/beepo_filled_button.dart';
 class PinCode extends StatefulWidget {
   final File? image;
   final String? name;
-  final bool isSignUp;
+  final bool isSignedUp;
   const PinCode({
     Key? key,
     this.image,
     this.name,
-    this.isSignUp = true,
+    this.isSignedUp = true,
   }) : super(key: key);
 
   @override
@@ -30,6 +32,7 @@ class PinCode extends StatefulWidget {
 
 class _PinCodeState extends State<PinCode> {
   TextEditingController otp = TextEditingController();
+  WalletProvider walletProvider = WalletProvider();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +62,9 @@ class _PinCodeState extends State<PinCode> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              "Create a PIN to protect your\ndata and transactions",
+              widget.isSignedUp
+                  ? "Enter pin to access your account"
+                  : "Create a PIN to protect your\ndata and transactions",
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: secondaryColor,
@@ -108,25 +113,27 @@ class _PinCodeState extends State<PinCode> {
               text: 'Continue',
               onPressed: () async {
                 if (otp.text.length == 4) {
-                  if (widget.isSignUp) {
+                  if (widget.isSignedUp == false) {
                     if (widget.image != null) {
-                      Get.to(() => VerifyCode(
-                            name: widget.name!,
-                            image: widget.image!,
-                            pin: otp.text,
-                          ));
-                    }
-                  } else {
-                    Box box = await Hive.openBox('beepo');
-
-                    var pin = box.get('PIN');
-                    print(pin);
-
-                    Get.to(() => VerifyCode(
+                      Get.to(
+                        () => VerifyCode(
                           name: widget.name!,
                           image: widget.image!,
                           pin: otp.text,
-                        ));
+                        ),
+                      );
+                    }
+                  } else {
+                    String response = await login(otp.text);
+                    if (response.contains("Incorrect Pin Entered")) {
+                      showToast("Incorrect Pin Entered");
+                      return;
+                    }
+                    await walletProvider.initWalletState(response);
+
+                    Get.to(
+                      () => const BottomNavHome(),
+                    );
                   }
                 } else {
                   showToast('Please enter a valid PIN');
