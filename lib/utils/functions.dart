@@ -6,15 +6,15 @@ import 'dart:typed_data';
 
 import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 List createKeywords(String userName) {
   List arrayName = [];
   String nameJoin = '';
-  String userNameJoin = '';
+  // String userNameJoin = '';
 
   userName.toLowerCase().split('').forEach((letter) {
     nameJoin += letter;
@@ -45,7 +45,9 @@ String formatDate(DateTime date) {
 class ImageUtil {
   Future<File?> cropProfileImage(File? file) async {
     if (file != null) {
-      print(file.path);
+      if (kDebugMode) {
+        print(file.path);
+      }
 
       // try {
       //   CroppedFile? croppedFile = await ImageCropper().cropImage(

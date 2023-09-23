@@ -109,7 +109,9 @@ class ChatTab extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.secondaryColor,
-        onPressed: () {},
+        onPressed: () {
+          print('object');
+        },
         child: const Icon(
           Icons.menu,
           color: AppColors.white,

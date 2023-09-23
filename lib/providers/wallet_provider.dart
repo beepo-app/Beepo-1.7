@@ -3,17 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:ed25519_hd_key/ed25519_hd_key.dart';
 import 'package:hex/hex.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:xmtp/xmtp.dart';
 import 'package:web3dart/credentials.dart';
-
-// import 'dart:math';
-
-// abstract class WalletAddressService {
-//   String generateMnemonic();
-//   Future<String> generatePrivateKey(String mnemonic);
-//   Future<EthereumAddress> generatePublicKey(String privateKey);
-// }
 
 class WalletProvider extends ChangeNotifier {
   // Variable to store the private key

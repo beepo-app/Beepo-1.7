@@ -24,36 +24,41 @@ class _BottomNavHomeState extends State<BottomNavHome> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: body[index],
-      extendBody: false,
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
-        currentIndex: index,
-        type: BottomNavigationBarType.fixed,
-        unselectedItemColor: Colors.grey,
-        selectedItemColor: const Color(0xffFF9C34),
-        onTap: (int selectedPage) {
-          setState(() => index = selectedPage);
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Iconsax.message),
-            label: 'Chats',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Iconsax.wallet),
-            label: 'Wallet',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Iconsax.global),
-            label: 'Browser',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Iconsax.security_user),
-            label: 'Profile',
-          ),
-        ],
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+        body: body[index],
+        extendBody: false,
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Colors.white,
+          currentIndex: index,
+          type: BottomNavigationBarType.fixed,
+          unselectedItemColor: Colors.grey,
+          selectedItemColor: const Color(0xffFF9C34),
+          onTap: (int selectedPage) {
+            setState(() => index = selectedPage);
+          },
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Iconsax.message),
+              label: 'Chats',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Iconsax.wallet),
+              label: 'Wallet',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Iconsax.global),
+              label: 'Browser',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Iconsax.security_user),
+              label: 'Profile',
+            ),
+          ],
+        ),
       ),
     );
   }

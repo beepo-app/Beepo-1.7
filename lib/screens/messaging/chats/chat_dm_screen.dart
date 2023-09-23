@@ -1,14 +1,35 @@
 import 'package:beepo/components/bottom_nav.dart';
 import 'package:beepo/constants/constants.dart';
+import 'package:beepo/providers/xmtp.dart';
 import 'package:beepo/screens/messaging/chat_tabs_screen.dart';
 import 'package:beepo/screens/messaging/chats/chat_tab.dart';
 import 'package:beepo/screens/profile/user_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:provider/provider.dart';
+import 'package:xmtp/xmtp.dart';
 
-class ChatDmScreen extends StatelessWidget {
-  const ChatDmScreen({super.key});
+class ChatDmScreen extends StatefulWidget {
+  final Conversation? conversation;
+  const ChatDmScreen({super.key, this.conversation});
+
+  @override
+  State<ChatDmScreen> createState() => _ChatDmScreenState();
+}
+
+class _ChatDmScreenState extends State<ChatDmScreen> {
+  List<DecodedMessage> messages = [];
+  Future<List<DecodedMessage>>? getMessages;
+
+  @override
+  void initState() {
+    super.initState();
+    // getUserDetails =
+    // UsersService().getUserByAddress(widget.conversation.peer.hexEip55);
+    getMessages =
+        context.read<XMTPProvider>().listMessages(convo: widget.conversation);
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,19 +1,19 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:beepo/components/beepo_filled_button.dart';
 import 'package:beepo/components/bottom_nav.dart';
+import 'package:beepo/providers/account_provider.dart';
 import 'package:beepo/providers/wallet_provider.dart';
-import 'package:beepo/services/database.dart';
+import 'package:beepo/providers/xmtp.dart';
 import 'package:beepo/services/encryption.dart';
 import 'package:beepo/utils/styles.dart';
 import 'package:encrypt/encrypt.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:provider/provider.dart';
 import 'package:web3dart/web3dart.dart';
 
 class VerifyCode extends StatefulWidget {
@@ -101,17 +101,19 @@ class _VerifyCodeState extends State<VerifyCode> {
             BeepoFilledButtons(
               text: 'Continue',
               onPressed: () async {
-                WalletProvider walletProvider = WalletProvider();
-                String mnemonic = walletProvider.generateMnemonic();
+                print(widget.pin);
                 if (widget.pin == otp.text) {
+                  final walletProvider =
+                      Provider.of<WalletProvider>(context, listen: false);
+                  final accountProvider =
+                      Provider.of<AccountProvider>(context, listen: false);
+                  final xmtpProvider =
+                      Provider.of<XMTPProvider>(context, listen: false);
+
+                  String mnemonic = walletProvider.generateMnemonic();
                   String padding = "000000000000";
                   Encrypted encrypteData =
                       encryptWithAES('${otp.text}$padding', mnemonic);
-                  await Hive.box('beepo').put(
-                    'encryptedSeedPhrase',
-                    (encrypteData.base64),
-                  );
-                  // await Hive.box('beepo').put('isSignedUp', true);
 
                   await walletProvider.initWalletState(mnemonic);
 
@@ -119,14 +121,27 @@ class _VerifyCodeState extends State<VerifyCode> {
                   List<int> imageBytes = await widget.image.readAsBytes();
                   String base64Image = base64Encode(imageBytes);
 
-                  if (ethAddress != null) {
-                    await createUser(
-                        base64Image, widget.name, ethAddress.toString());
+                  if (ethAddress != null && accountProvider.db != null) {
+                    try {
+                      await accountProvider.createUser(
+                        base64Image,
+                        accountProvider.db,
+                        widget.name,
+                        ethAddress.toString(),
+                        encrypteData,
+                      );
+
+                      await xmtpProvider.initClient(walletProvider.privateKey!);
+                    } catch (e) {
+                      if (kDebugMode) {
+                        print(e.toString());
+                      }
+                    }
                   }
 
-                  // Get.to(
-                  //   () => const BottomNavHome(),
-                  // );
+                  Get.to(
+                    () => const BottomNavHome(),
+                  );
                 }
               },
             ),

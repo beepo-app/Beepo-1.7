@@ -1,8 +1,5 @@
-import 'dart:developer';
-import 'dart:typed_data';
-// import 'package:convert/convert.dart';
 import 'package:beepo/widgets/toast.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:xmtp/xmtp.dart' as xmtp;
 import 'package:web3dart/credentials.dart';
@@ -10,7 +7,7 @@ import 'dart:developer' as dev;
 
 class XMTPProvider extends ChangeNotifier {
   final String _conversationId = 'chat';
-  final Box _box = Hive.box('beepo');
+  final Box _box = Hive.box('beepo2.0');
 
   late xmtp.Client client;
   List<xmtp.Conversation> _conversations = [];
@@ -25,7 +22,7 @@ class XMTPProvider extends ChangeNotifier {
   //get client and notify listeners
   Future<xmtp.Client> getClient(privateKey) async {
     var key = _box.get('xmpt_key');
-    bool isLoggedIn = _box.get('isLogged', defaultValue: false);
+    bool isLoggedIn = _box.get('isLoggedIn', defaultValue: false);
 
     if (isLoggedIn) {
       if (key != null) {
@@ -54,18 +51,20 @@ class XMTPProvider extends ChangeNotifier {
 
       Uint8List key = client.keys.writeToBuffer();
 
-      Hive.box('beepo').put('xmpt_key', key);
+      Hive.box('beepo2.0').put('xmpt_key', key);
       // notifyListeners();
       return client;
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       rethrow;
     }
   }
 
   //init client from key
   Future<xmtp.Client> initClientFromKey() async {
-    Uint8List key = Hive.box('beepo').get('xmpt_key');
+    Uint8List key = Hive.box('beepo2.0').get('xmpt_key');
 
     var privateKey = xmtp.PrivateKeyBundle.fromBuffer(key);
 

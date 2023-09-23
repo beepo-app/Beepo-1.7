@@ -1,15 +1,10 @@
 import 'dart:math';
-
-import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mongo_dart/mongo_dart.dart';
-import 'dart:io' show Platform;
 
-import 'package:web3dart/web3dart.dart';
-
-createUser(String image, String displayName, String ethAddress) async {
-  var db = await Db.create(
-      'mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
-
+dbCreateUser(String image, Db db, String displayName, String ethAddress,
+    encrypteData) async {
   await db.open();
   var usersCollection = db.collection('users');
 
@@ -19,22 +14,30 @@ createUser(String image, String displayName, String ethAddress) async {
 
   var val = await usersCollection.findOne(where.eq("username", username));
 
-  print(val);
-
   if (val == null) {
-    await usersCollection.insertOne({
-      'username': username,
-      'displayName': displayName,
-      'ethAddress': ethAddress,
-      'image': image
-    });
+    try {
+      await usersCollection.insertOne({
+        'username': username,
+        'displayName': displayName,
+        'ethAddress': ethAddress,
+        'image': image
+      });
+
+      await Hive.box('beepo2.0')
+          .put('encryptedSeedPhrase', (encrypteData.base64));
+      await Hive.box('beepo2.0').put('base64Image', image);
+      await Hive.box('beepo2.0').put('ethAddress', ethAddress);
+      await Hive.box('beepo2.0').put('displayName', displayName);
+      await Hive.box('beepo2.0').put('username', username);
+      await Hive.box('beepo2.0').put('isSignedUp', true);
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
   } else {
-    await createUser(image, displayName, ethAddress);
+    await dbCreateUser(image, db, displayName, ethAddress, encrypteData);
   }
-
-  // await db.ensureIndex('users', keys: {'login': -1});
-
-  // var res1 = await usersCollection.find().toList();
 
   await db.close();
 }

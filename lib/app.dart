@@ -1,9 +1,11 @@
-import 'package:beepo/screens/Auth/login_screen.dart';
+import 'package:beepo/providers/account_provider.dart';
 import 'package:beepo/screens/Auth/pin_code.dart';
 import 'package:beepo/screens/auth/onboarding_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -13,16 +15,21 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late bool isSignedUp;
+  late bool isSignedUp = Hive.box('beepo2.0').get('isSignedUp');
+  // late bool isLocked = false;
   checkState() async {
-    bool? isSignedUpState = await Hive.box('beepo').get('isSignedUp');
-    setState(() {
-      if (isSignedUpState != null) {
-        isSignedUp = false;
-      } else {
-        isSignedUp = false;
+    try {
+      final accountProvider =
+          Provider.of<AccountProvider>(context, listen: false);
+      await accountProvider.initDB();
+
+      // bool? isSignedUpState = await Hive.box('beepo2.0').get('isSignedUp');
+      // bool? isLockedState = await Hive.box('beepo2.0').get('isLocked');
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
       }
-    });
+    }
   }
 
   @override
