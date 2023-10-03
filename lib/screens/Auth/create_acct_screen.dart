@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:beepo/components/beepo_filled_button.dart';
 import 'package:beepo/constants/constants.dart';
@@ -18,7 +19,7 @@ class CreateAccountScreen extends StatefulWidget {
 
 class _CreateAccountScreenState extends State<CreateAccountScreen> {
   TextEditingController displayName = TextEditingController();
-  File? selectedImage;
+  Uint8List? selectedImage;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +63,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                   child: selectedImage != null
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(100),
-                          child: Image.file(
+                          child: Image.memory(
                             selectedImage!,
                             height: 120,
                             width: 120,
@@ -124,7 +125,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
             const Spacer(),
             BeepoFilledButtons(
               text: 'Next',
-              color: Color(0xffFF9C34),
+              color: const Color(0xffFF9C34),
               onPressed: () async {
                 if (displayName.text.trim().isEmpty) {
                   showToast('Please enter a display name');

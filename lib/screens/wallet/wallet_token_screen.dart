@@ -3,13 +3,14 @@ import 'package:beepo/screens/wallet/token_screen_scan.dart';
 import 'package:beepo/screens/wallet/send_token_screen.dart';
 import 'package:beepo/screens/wallet/transfer_info.dart';
 import 'package:beepo/widgets/app_text.dart';
+import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class WalletTokenScreen extends StatefulWidget {
-  const WalletTokenScreen({
-    Key? key,
-  }) : super(key: key);
+  final Map<String, dynamic>? data;
+  const WalletTokenScreen({Key? key, this.data}) : super(key: key);
 
   @override
   State<WalletTokenScreen> createState() => _WalletTokenScreenState();
@@ -21,6 +22,7 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.data);
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -76,11 +78,12 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
                 const SizedBox(height: 75),
                 CircleAvatar(
                   radius: 28.r,
+                  backgroundImage: NetworkImage(widget.data!['logoUrl']),
                   backgroundColor: AppColors.backgroundGrey,
                 ),
                 const SizedBox(height: 8),
                 AppText(
-                  text: "35.4789 CELO",
+                  text: "${widget.data!['bal']} ${widget.data!['ticker']}",
                   fontSize: 20.sp,
                   color: AppColors.white,
                 ),
@@ -95,8 +98,7 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
                           angle: 24.5,
                           child: IconButton(
                             onPressed: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) {
                                 return const SendToken();
                               }));
                             },
@@ -120,8 +122,7 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
                       children: [
                         IconButton(
                           onPressed: () {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) {
                               return const TokenScreenScan();
                             }));
                           },
@@ -159,12 +160,15 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
               color: AppColors.secondaryColor,
             ),
             subtitle: AppText(
-              text: "wallet address",
+              text: widget.data!['address'],
               fontSize: 12.sp,
               color: AppColors.secondaryColor,
             ),
             trailing: IconButton(
-              onPressed: () {},
+              onPressed: () async {
+                await Clipboard.setData(ClipboardData(text: widget.data!['address']));
+                showToast('Address Copied To Clipboard!');
+              },
               icon: const Icon(
                 Icons.copy_outlined,
                 size: 30,
@@ -193,8 +197,7 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
                     color: isSent ? Colors.red : Colors.green,
                   ),
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
                       return const TransferInfo();
                     }));
                   },
@@ -220,9 +223,7 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
                     children: [
                       Expanded(
                         child: Text(
-                          isSent
-                              ? "To: From: 0x0G61836c8e35db159eG816868AfcA1388781856j"
-                              : "From: From: 0x0G61836c8e35db159eG816868AfcA1388781856j",
+                          isSent ? "To: From: 0x0G61836c8e35db159eG816868AfcA1388781856j" : "From: From: 0x0G61836c8e35db159eG816868AfcA1388781856j",
                           style: const TextStyle(
                             color: Color(0x7f0e014c),
                             fontSize: 11,

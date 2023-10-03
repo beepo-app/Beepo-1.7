@@ -15,7 +15,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late bool isSignedUp = Hive.box('beepo2.0').get('isSignedUp');
+  late bool? isSignedUp = Hive.box('beepo2.0').get('isSignedUp');
   // late bool isLocked = false;
   checkState() async {
     try {
@@ -48,11 +48,13 @@ class _MyAppState extends State<MyApp> {
           theme: ThemeData(
             useMaterial3: true,
           ),
-          home: isSignedUp
-              ? const PinCode(
-                  isSignedUp: true,
-                )
-              : const OnboardingScreen(),
+          home: isSignedUp == null
+              ? const OnboardingScreen()
+              : isSignedUp!
+                  ? const PinCode(
+                      isSignedUp: true,
+                    )
+                  : const OnboardingScreen(),
         );
       },
       designSize: const Size(360, 546),

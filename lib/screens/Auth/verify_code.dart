@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:beepo/components/beepo_filled_button.dart';
 import 'package:beepo/components/bottom_nav.dart';
 import 'package:beepo/providers/account_provider.dart';
@@ -17,7 +16,7 @@ import 'package:provider/provider.dart';
 import 'package:web3dart/web3dart.dart';
 
 class VerifyCode extends StatefulWidget {
-  final File image;
+  final Uint8List image;
   final String name;
   final String pin;
   const VerifyCode(
@@ -111,15 +110,16 @@ class _VerifyCodeState extends State<VerifyCode> {
                       Provider.of<XMTPProvider>(context, listen: false);
 
                   String mnemonic = walletProvider.generateMnemonic();
+
                   String padding = "000000000000";
                   Encrypted encrypteData =
                       encryptWithAES('${otp.text}$padding', mnemonic);
 
                   await walletProvider.initWalletState(mnemonic);
 
-                  EthereumAddress? ethAddress = walletProvider.address;
-                  List<int> imageBytes = await widget.image.readAsBytes();
-                  String base64Image = base64Encode(imageBytes);
+                  EthereumAddress? ethAddress = walletProvider.ethAddress;
+                  String? btcAddress = walletProvider.btcAddress;
+                  String base64Image = base64Encode(widget.image);
 
                   if (ethAddress != null && accountProvider.db != null) {
                     try {
@@ -128,17 +128,21 @@ class _VerifyCodeState extends State<VerifyCode> {
                         accountProvider.db,
                         widget.name,
                         ethAddress.toString(),
+                        btcAddress,
                         encrypteData,
                       );
 
-                      await xmtpProvider.initClient(walletProvider.privateKey!);
+                      print('creaating');
+                      print(walletProvider.ethAddress);
+                      await xmtpProvider
+                          .initClient(walletProvider.ethPrivateKey!);
+                      await accountProvider.initAccountState();
                     } catch (e) {
                       if (kDebugMode) {
                         print(e.toString());
                       }
                     }
                   }
-
                   Get.to(
                     () => const BottomNavHome(),
                   );

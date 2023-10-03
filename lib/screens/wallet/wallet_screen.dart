@@ -23,17 +23,17 @@ class _WalletScreenState extends State<WalletScreen> {
 
   final List<PopupMenuEntry<String>> items = [
     const PopupMenuItem<String>(
-      value: 'option1',
-      child: Text('Option 1'),
+      value: 'USD',
+      child: Text('USD'),
     ),
-    const PopupMenuItem<String>(
-      value: 'option2',
-      child: Text('Option 2'),
-    ),
-    const PopupMenuItem<String>(
-      value: 'option3',
-      child: Text('Option 3'),
-    ),
+    // const PopupMenuItem<String>(
+    //   value: 'option2',
+    //   child: Text('Option 2'),
+    // ),
+    // const PopupMenuItem<String>(
+    //   value: 'option3',
+    //   child: Text('Option 3'),
+    // ),
   ];
 
   @override
@@ -89,11 +89,11 @@ class _WalletScreenState extends State<WalletScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        "15,678.13",
+                        "\$15,678.13",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20.sp,
-                          letterSpacing: 3,
+                          letterSpacing: 1,
                           color: AppColors.secondaryColor,
                         ),
                       ),

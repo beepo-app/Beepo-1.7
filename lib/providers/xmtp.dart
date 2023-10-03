@@ -45,6 +45,7 @@ class XMTPProvider extends ChangeNotifier {
     try {
       EthPrivateKey credentials = EthPrivateKey.fromHex(privateKey);
 
+      print(credentials);
       var api = xmtp.Api.create(host: 'production.xmtp.network');
       var client =
           await xmtp.Client.createFromWallet(api, credentials.asSigner());
@@ -56,7 +57,7 @@ class XMTPProvider extends ChangeNotifier {
       return client;
     } catch (e) {
       if (kDebugMode) {
-        print(e);
+        print({"error xmtp 61": e});
       }
       rethrow;
     }

@@ -1,28 +1,40 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:beepo/components/beepo_filled_button.dart';
+import 'package:beepo/providers/account_provider.dart';
 import 'package:beepo/screens/wallet/phrase_confirm_screen.dart';
+import 'package:beepo/utils/functions.dart';
 import 'package:beepo/widgets/app_text.dart';
 import 'package:beepo/widgets/beepo_text_field.dart';
+import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 import '../../constants/constants.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({Key? key}) : super(key: key);
+  final Uint8List imageBytes;
+  const EditProfileScreen({Key? key, required this.imageBytes})
+      : super(key: key);
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  TextEditingController displayNameController = TextEditingController();
-
-  TextEditingController userNameController = TextEditingController();
-
-  TextEditingController bioController = TextEditingController();
+  TextEditingController displayName = TextEditingController();
+  TextEditingController userName = TextEditingController();
+  TextEditingController bio = TextEditingController();
+  Uint8List? selectedImage;
 
   @override
   Widget build(BuildContext context) {
+    final accountProvider =
+        Provider.of<AccountProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 50.h,
@@ -44,25 +56,58 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               Center(
                 child: Stack(
                   children: [
-                    CircleAvatar(
-                      radius: 60.r,
-                      backgroundImage:
-                          const AssetImage("assets/profile_img1.png"),
+                    Container(
+                      margin: const EdgeInsets.all(5),
+                      width: 131,
+                      height: 131,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Color(0xffc4c4c4),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child: selectedImage != null
+                            ? Image.memory(
+                                selectedImage!,
+                                height: 120,
+                                width: 120,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.memory(
+                                widget.imageBytes,
+                                height: 120,
+                                width: 120,
+                                fit: BoxFit.cover,
+                              ),
+                      ),
                     ),
                     Positioned(
-                      bottom: 12.h,
-                      right: 10.w,
+                      right: 10,
+                      bottom: 10,
                       child: GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          setState(() {
+                            selectedImage = null;
+                          });
+                          ImageUtil()
+                              .pickProfileImage(context: context)
+                              .then((value) async {
+                            if (value != null) {
+                              setState(() {
+                                selectedImage = value;
+                              });
+                            }
+                          });
+                        },
                         child: Container(
-                          height: 30,
-                          width: 30,
-                          decoration: BoxDecoration(
+                          width: 40,
+                          height: 40,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
                             color: AppColors.secondaryColor,
-                            borderRadius: BorderRadius.circular(100),
                           ),
                           child: const Icon(
-                            Icons.camera_alt,
+                            Icons.photo_camera_outlined,
                             color: Colors.white,
                             size: 20,
                           ),
@@ -86,7 +131,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               SizedBox(height: 10.h),
               BeepoTextField(
                 hintText: 'Enter your display name',
-                controller: displayNameController,
+                controller: displayName,
               ),
               SizedBox(height: 20.h),
               AppText(
@@ -102,7 +147,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               SizedBox(height: 10.h),
               BeepoTextField(
                 hintText: 'Enter your username',
-                controller: userNameController,
+                controller: userName,
               ),
               SizedBox(height: 20.h),
               AppText(
@@ -118,17 +163,34 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               SizedBox(height: 10.h),
               BeepoTextField(
                 hintText: 'Enter your username',
-                controller: bioController,
+                controller: bio,
               ),
               SizedBox(height: 35.h),
               Center(
                 child: BeepoFilledButtons(
                   text: "Save",
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return const PhraseConfirmationScreen();
-                    }));
+                  onPressed: () async {
+                    if (displayName.text != "" &&
+                        bio.text != "" &&
+                        userName.text != '') {
+                      if (bio.text.length > 100) {
+                        showToast('Bio has more than 100 characters');
+                        return;
+                      }
+
+                      Map userdata = await accountProvider.updateUser(
+                          base64Encode(selectedImage ?? widget.imageBytes),
+                          accountProvider.db,
+                          displayName.text,
+                          bio.text,
+                          userName.text);
+
+                      if (userdata['success']['username'] == userName.text) {
+                        Get.to(() => const PhraseConfirmationScreen());
+                      }
+                    } else {
+                      showToast('Please Enter All Fields!');
+                    }
                   },
                 ),
               )

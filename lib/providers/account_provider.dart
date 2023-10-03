@@ -34,11 +34,25 @@ class AccountProvider extends ChangeNotifier {
     }
   }
 
-  Future<String> createUser(
-      base64Image, db, displayName, ethAddress, encrypteData) async {
+  Future<Map> getUser() async {
+    try {
+      Map data = await dbGetUser(db!, username!);
+      print(data);
+      return {'success': "done"};
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+        return ({'error': e.toString()});
+      }
+    }
+    return ({'error': 'Not done'});
+  }
+
+  Future<String> createUser(base64Image, db, displayName, ethAddress,
+      btcAddress, encrypteData) async {
     try {
       await dbCreateUser(
-          base64Image, db, displayName, ethAddress, encrypteData);
+          base64Image, db, displayName, ethAddress, btcAddress, encrypteData);
 
       return "done";
     } catch (e) {
@@ -48,5 +62,24 @@ class AccountProvider extends ChangeNotifier {
       }
     }
     return ('Not done');
+  }
+
+  Future<Map> updateUser(base64Image, db, displayName, bio, newUsername) async {
+    try {
+      var data = await dbUpdateUser(
+          base64Image, db, displayName, bio, newUsername, ethAddress);
+      await initAccountState();
+      if (data['error'] == null) {
+        return {'success': data};
+      } else {
+        return {'error': data["error"]};
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+        return ({'error': e.toString()});
+      }
+    }
+    return ({'error': 'Not done'});
   }
 }

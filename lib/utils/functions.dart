@@ -43,38 +43,19 @@ String formatDate(DateTime date) {
 }
 
 class ImageUtil {
-  Future<File?> cropProfileImage(File? file) async {
+  Future<Uint8List?> cropProfileImage(File? file) async {
     if (file != null) {
       if (kDebugMode) {
         print(file.path);
       }
 
-      // try {
-      //   CroppedFile? croppedFile = await ImageCropper().cropImage(
-      //     sourcePath: file.path,
-      //     compressQuality: 50,
-      //     cropStyle: CropStyle.circle,
-      //     aspectRatio: const CropAspectRatio(
-      //       ratioX: 1,
-      //       ratioY: 1,
-      //     ),
-      //   );
-
-      List<int> imageBytes = await file.readAsBytes();
-
-      String base64Image = base64Encode(imageBytes);
-
-      Uint8List imagby = base64Decode(base64Image);
-
-      return File.fromRawPath(imagby);
-      // } catch (e) {
-      //   rethrow;
-      // }
+      Uint8List imageBytes = await file.readAsBytes();
+      return imageBytes;
     }
     return null;
   }
 
-  Future<File?> pickProfileImage({BuildContext? context}) async {
+  Future<Uint8List?> pickProfileImage({BuildContext? context}) async {
     try {
       return await showCupertinoModalPopup(
         context: context!,
@@ -92,7 +73,8 @@ class ImageUtil {
                     showToast('File too large');
                     return;
                   } else {
-                    Get.back(result: File(result.path));
+                    Uint8List res = await result.readAsBytes();
+                    Get.back(result: res);
                   }
                 } else {
                   return;
@@ -111,7 +93,8 @@ class ImageUtil {
                     showToast('File too large');
                     return;
                   } else {
-                    Get.back(result: File(result.path));
+                    Uint8List res = await result.readAsBytes();
+                    Get.back(result: res);
                   }
                 } else {
                   return;
