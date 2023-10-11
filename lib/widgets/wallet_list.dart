@@ -6,8 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-// import 'package:web3dart/web3dart.dart';
 
 class WalletList extends StatefulWidget {
   const WalletList({
@@ -34,6 +32,8 @@ class _WalletListState extends State<WalletList> {
         }
       });
       await walletProvider.getAssets();
+      var asset = walletProvider.assets;
+      print(asset);
     } catch (e) {
       if (kDebugMode) {
         print(e);
@@ -96,15 +96,15 @@ class _WalletListState extends State<WalletList> {
                     children: [
                       Row(
                         children: [
-                          const AppText(text: "\$30,396"),
+                          AppText(text: '\$${assets![index]['current_price'].toString()}'),
                           SizedBox(width: 8.w),
                           AppText(
-                            text: "+1.97",
-                            color: isColor ? AppColors.activeTextColor : AppColors.favouriteButtonRed,
+                            text: '${assets![index]['24h_price_change'].toString()}%',
+                            color: assets![index]['24h_price_change'] > 0 ? AppColors.activeTextColor : AppColors.favouriteButtonRed,
                           ),
                         ],
                       ),
-                      const AppText(text: "\$622.43"),
+                      AppText(text: "\$${assets![index]['bal_to_price'].toString()}"),
                     ],
                   ),
                 ),

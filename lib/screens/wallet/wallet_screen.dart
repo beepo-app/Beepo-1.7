@@ -1,4 +1,5 @@
 import 'package:beepo/constants/constants.dart';
+import 'package:beepo/providers/wallet_provider.dart';
 import 'package:beepo/screens/wallet/received_assets_screen.dart';
 import 'package:beepo/screens/wallet/send_assets_screen.dart';
 import 'package:beepo/widgets/app_text.dart';
@@ -6,6 +7,7 @@ import 'package:beepo/widgets/wallet_icon.dart';
 import 'package:beepo/widgets/wallet_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 import '../../Utils/styles.dart';
 
@@ -38,6 +40,8 @@ class _WalletScreenState extends State<WalletScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+
     return DefaultTabController(
       length: 2,
       child: SafeArea(
@@ -89,7 +93,7 @@ class _WalletScreenState extends State<WalletScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        "\$15,678.13",
+                        "\$${walletProvider.totalBalance}",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20.sp,
@@ -113,8 +117,7 @@ class _WalletScreenState extends State<WalletScreen> {
                             icon: Icons.send_outlined,
                             angle: 5.7,
                             onTap: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) {
                                 return const SendAssetsScreen();
                               }));
                             },
@@ -123,8 +126,7 @@ class _WalletScreenState extends State<WalletScreen> {
                             text: 'Receive',
                             icon: Icons.file_download_sharp,
                             onTap: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) {
                                 return const ReceivedAssetScreen();
                               }));
                             },

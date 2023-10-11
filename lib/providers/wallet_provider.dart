@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:beepo/networks/erc20.dart';
 import 'package:beepo/networks/networks.dart';
 import 'package:ed25519_hd_key/ed25519_hd_key.dart';
 import 'package:flutter/foundation.dart';
 import 'package:bip39/bip39.dart' as bip39;
+import 'package:get/get.dart';
 import 'package:hex/hex.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:wallet/wallet.dart' as wallet;
@@ -16,6 +19,7 @@ class WalletProvider extends ChangeNotifier {
   String? password;
   String? mnemonic;
   List? assets;
+  String? totalBalance;
 
   String generateMnemonic() {
     return bip39.generateMnemonic();
@@ -71,10 +75,13 @@ class WalletProvider extends ChangeNotifier {
 
     try {
       List data = [];
+      double totalBal = 0.0;
+
       Map<Object, Map<String, Object>> allNetworks = networks['networksInfo'];
       Map<Object, Map<String, Object>> rpcUrls = networks['rpcUrls'];
       allNetworks.forEach((key, value) async {
-        double bal = 0.0;
+        double? bal = 0.0;
+
         String address = ethAddress!.toString();
         // print(key);
         if (rpcUrls[key] != null) {
@@ -84,28 +91,40 @@ class WalletProvider extends ChangeNotifier {
           bal = await getBTCBalance(ethAddress);
         } else {
           Map<String, dynamic>? rpc = value;
-          print(rpc['address']);
+          print(rpc['rpc']['testnet']);
           bal = await getERC20Balance(value['address'], rpc['rpc']['testnet']);
-          print(bal);
         }
+
+        List? marketData = await getPrices(value['nameoncoinmarketcap']);
+        totalBal = totalBal + (bal ?? 0);
+        // // print(marketData);
         Map<String, dynamic> assetData = {
           'displayName': value['displayName'],
           'logoUrl': value['logoUrl'],
           'ticker': value['ticker'],
           'bal': bal.toString(),
-          'address': address
+          'address': address,
+          "24h_price_change": marketData != null && marketData.isNotEmpty ? marketData[1] : 0,
+          "current_price": marketData != null && marketData.isNotEmpty ? marketData[0] : 0,
         };
+        String price = ((assetData['current_price'] * double.parse(assetData['bal']))).toStringAsPrecision(2);
+
+        totalBal = totalBal + double.parse(price);
+        print(totalBal);
+        assetData['bal_to_price'] = price;
         data.add(assetData);
+        totalBalance = totalBal.toStringAsPrecision(2);
       });
       assets = data;
     } catch (e) {
-      print(e);
+      print({"error 120": e});
     }
   }
 
   Future<double> getBTCBalance(address) async {
     try {
-      var url = Uri.parse("http://184.73.59.134:3005/getbtcbalanceaddress=$address");
+      var url =
+          Uri.parse("https://api.coingecko.com/api/v3/coins/bitcoin?localization=false&community_data=false&developer_data=false&sparkline=false");
       var response = await http.get(url);
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
@@ -123,10 +142,9 @@ class WalletProvider extends ChangeNotifier {
       var ethClient = Web3Client(rpc, httpClient);
       EtherAmount balance = await ethClient.getBalance(ethAddress!);
       double bal = balance.getValueInUnit(EtherUnit.ether);
-      print(bal);
       return bal;
     } catch (e) {
-      print({"error   119": e});
+      print({"error   142": e});
       return 0.0;
     }
   }
@@ -141,7 +159,32 @@ class WalletProvider extends ChangeNotifier {
       var bal = await erc20Contract.balanceOfERC20Token(ethAddress!);
       return bal;
     } catch (e) {
-      print({"error   119": e});
+      print(rpc);
+      print({"error   158": e});
+    }
+  }
+
+  Future<List> getPrices(coinId) async {
+    try {
+      var url =
+          Uri.parse("https://api.coingecko.com/api/v3/coins/$coinId?localization=false&community_data=false&developer_data=false&sparkline=false");
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        Map res = json.decode(response.body);
+        List data = [
+          double.parse(double.parse(res['market_data']['current_price']['usd'].toString()).toStringAsFixed(2)),
+          double.parse(double.parse(res['market_data']['price_change_percentage_24h'].toString()).toStringAsFixed(2)),
+        ];
+        // print('*********************');
+        // print(coinId);
+        // print(data);
+        // print('*********************');
+        return data;
+      }
+      return [];
+    } catch (e) {
+      print({"error   getPrices": e});
+      return [];
     }
   }
 }
