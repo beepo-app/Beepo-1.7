@@ -1,10 +1,16 @@
 import 'package:beepo/components/beepo_filled_button.dart';
+import 'package:beepo/providers/account_provider.dart';
+import 'package:beepo/providers/wallet_provider.dart';
+import 'package:beepo/providers/xmtp.dart';
+import 'package:beepo/screens/Auth/create_acct_screen.dart';
 import 'package:beepo/screens/Auth/pin_code.dart';
 import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:provider/provider.dart';
+import 'package:web3dart/web3dart.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -45,7 +51,7 @@ class LoginScreen extends StatelessWidget {
               minLines: 5,
               maxLines: null,
               decoration: InputDecoration(
-                hintText: 'Enter your secret phrase',
+                hintText: 'Enter your secret phrase, seperated by a comma and space ie (` `)',
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -71,15 +77,30 @@ class LoginScreen extends StatelessWidget {
                 if (phrase.isEmpty) {
                   showToast('Please enter your secret phrase');
                 } else {
-                  // Get.to(
-                  //   fullScreenLoader('Verifying Seedphrase...'),
-                  //   fullscreenDialog: true,
-                  // );
-                  // bool result = await AuthService().loginWithSecretPhrase(phrase);
-                  // AuthService().verifyPhrase(phrase);
-                  Get.to(() => const PinCode(
-                        isSignedUp: false,
-                      ));
+//                   final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+//                   final accountProvider = Provider.of<AccountProvider>(context, listen: false);
+//                   // final xmtpProvider = Provider.of<XMTPProvider>(context, listen: false);
+
+//                   EthereumAddress address = await walletProvider.importWallet(phraseController.text);
+
+//                   Map user = await accountProvider.getUserByAddress(address);
+
+// if(user['error'] != null){
+
+// }
+//                   print(user);
+//                   print('user 87 above');
+//                   print(address);
+//                   print(walletProvider.generateMnemonic());
+//                   print(phraseController.text);
+
+//                   // Get.to(
+//                   //   fullScreenLoader('Verifying Seedphrase...'),
+//                   //   fullscreenDialog: true,
+//                   // );
+//                   // bool result = await AuthService().loginWithSecretPhrase(phrase);
+//                   // AuthService().verifyPhrase(phrase);
+                  Get.to(() => CreateAccountScreen(mnemonic: phraseController.text));
 
                   // Get.back();
                   // if (result) {

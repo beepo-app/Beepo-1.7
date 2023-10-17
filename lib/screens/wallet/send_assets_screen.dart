@@ -4,9 +4,14 @@ import 'package:beepo/widgets/app_text.dart';
 import 'package:beepo/widgets/beepo_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 class SendAssetsScreen extends StatefulWidget {
-  const SendAssetsScreen({super.key});
+  final List<dynamic> assets_;
+  const SendAssetsScreen({
+    required this.assets_,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<SendAssetsScreen> createState() => _SendAssetsScreenState();
@@ -17,13 +22,12 @@ class _SendAssetsScreenState extends State<SendAssetsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    List<dynamic> assets = widget.assets_;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return const SendToken();
-            }));
+            Get.back();
           },
           icon: const Icon(
             Icons.arrow_back,
@@ -64,7 +68,7 @@ class _SendAssetsScreenState extends State<SendAssetsScreen> {
             SizedBox(height: 15.h),
             Expanded(
               child: ListView.separated(
-                itemCount: 8,
+                itemCount: assets.length,
                 physics: const AlwaysScrollableScrollPhysics(
                   parent: BouncingScrollPhysics(),
                 ),
@@ -83,17 +87,14 @@ class _SendAssetsScreenState extends State<SendAssetsScreen> {
                     color: AppColors.white,
                     child: ListTile(
                       onTap: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return const SendToken();
-                        }));
+                        Get.to(() => SendToken(data: assets[index]));
                       },
-                      leading: Image.asset(AppImages.bCoin),
-                      title: const Row(
+                      leading: Image.network(assets[index]['logoUrl']),
+                      title: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          AppText(text: "Bitcoin"),
-                          AppText(text: "\$622.43"),
+                          AppText(text: assets[index]['displayName']),
+                          AppText(text: assets[index]['bal']),
                         ],
                       ),
                       subtitle: Row(
@@ -101,17 +102,15 @@ class _SendAssetsScreenState extends State<SendAssetsScreen> {
                         children: [
                           Row(
                             children: [
-                              const AppText(text: "\$30,396"),
+                              AppText(text: '\$${assets[index]['current_price'].toString()}'),
                               SizedBox(width: 8.w),
                               AppText(
-                                text: "+1.97",
-                                color: isColor
-                                    ? AppColors.activeTextColor
-                                    : AppColors.favouriteButtonRed,
+                                text: '${assets[index]['24h_price_change'].toString()}%',
+                                color: assets[index]['24h_price_change'] > 0 ? AppColors.activeTextColor : AppColors.favouriteButtonRed,
                               ),
                             ],
                           ),
-                          const AppText(text: "\$622.43"),
+                          AppText(text: "\$${assets[index]['bal_to_price'].toString()}"),
                         ],
                       ),
                     ),

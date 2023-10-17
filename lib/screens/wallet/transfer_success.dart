@@ -6,11 +6,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 
-class TransferSuccess extends StatelessWidget {
-  const TransferSuccess({super.key});
+class TransferSuccess extends StatefulWidget {
+  final Map? txData;
+  const TransferSuccess({
+    this.txData,
+    Key? key,
+  }) : super(key: key);
 
   @override
+  State<TransferSuccess> createState() => _TransferSuccessState();
+}
+
+class _TransferSuccessState extends State<TransferSuccess> {
+  @override
   Widget build(BuildContext context) {
+    Map asset = widget.txData!['asset'];
+    Map data = widget.txData!['data'];
+
     return Scaffold(
       backgroundColor: AppColors.backgroundGrey,
       appBar: AppBar(
@@ -40,7 +52,7 @@ class TransferSuccess extends StatelessWidget {
               fit: BoxFit.contain,
             ),
             AppText(
-              text: "184 BRISE",
+              text: "${data['amount']} ${asset['ticker']}",
               fontSize: 15.sp,
               color: const Color(0xff0d004c),
               textAlign: TextAlign.center,
@@ -49,7 +61,7 @@ class TransferSuccess extends StatelessWidget {
             const AppText(text: 'is on it\'s way to:'),
             SizedBox(height: 20.h),
             AppText(
-              text: "0x0E61830c8e35db159eF816868AfcA1388781796e",
+              text: data['address'],
               fontSize: 12.sp,
               color: const Color(0xff0d004c),
               textAlign: TextAlign.center,
@@ -59,9 +71,12 @@ class TransferSuccess extends StatelessWidget {
               text: 'Done',
               color: AppColors.secondaryColor,
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const WalletScreen();
-                }));
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (context) {
+                //     return const WalletScreen();
+                //   }),
+                // );
               },
             ),
           ],

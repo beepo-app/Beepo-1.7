@@ -1,7 +1,10 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:beepo/networks/erc20.dart';
 import 'package:beepo/networks/networks.dart';
+import 'package:beepo/widgets/toast.dart';
+import 'package:decimal/decimal.dart';
 import 'package:ed25519_hd_key/ed25519_hd_key.dart';
 import 'package:flutter/foundation.dart';
 import 'package:bip39/bip39.dart' as bip39;
@@ -10,6 +13,7 @@ import 'package:hex/hex.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:wallet/wallet.dart' as wallet;
 import 'package:http/http.dart' as http;
+import "package:ethereum_addresses/ethereum_addresses.dart";
 
 class WalletProvider extends ChangeNotifier {
   // Variable to store the private key
@@ -81,39 +85,46 @@ class WalletProvider extends ChangeNotifier {
       Map<Object, Map<String, Object>> rpcUrls = networks['rpcUrls'];
       allNetworks.forEach((key, value) async {
         double? bal = 0.0;
+        String rpcLink = '';
+        bool native = false;
 
         String address = ethAddress!.toString();
         // print(key);
         if (rpcUrls[key] != null) {
-          bal = await getNativeETHBalances(rpcUrls[key]!['testnet'], ethAddress);
+          rpcLink = rpcUrls[key]!['testnet'].toString();
+          bal = await getNativeETHBalances(rpcLink, ethAddress);
+          native = true;
         } else if (key == 'Bitcoin') {
           address = btcAddress!;
           bal = await getBTCBalance(ethAddress);
         } else {
           Map<String, dynamic>? rpc = value;
-          print(rpc['rpc']['testnet']);
-          bal = await getERC20Balance(value['address'], rpc['rpc']['testnet']);
+          rpcLink = rpc['rpc']['testnet'];
+          bal = await getERC20Balance(value['address'], rpcLink);
+          // print(bal);
         }
 
         List? marketData = await getPrices(value['nameoncoinmarketcap']);
         totalBal = totalBal + (bal ?? 0);
-        // // print(marketData);
+        //print(marketData);
         Map<String, dynamic> assetData = {
           'displayName': value['displayName'],
           'logoUrl': value['logoUrl'],
           'ticker': value['ticker'],
+          'nativeTicker': value['nativeTicker'],
           'bal': bal.toString(),
+          'rpc': rpcLink,
+          'native': native,
           'address': address,
           "24h_price_change": marketData != null && marketData.isNotEmpty ? marketData[1] : 0,
           "current_price": marketData != null && marketData.isNotEmpty ? marketData[0] : 0,
         };
-        String price = ((assetData['current_price'] * double.parse(assetData['bal']))).toStringAsPrecision(2);
+        String price = ((assetData['current_price'] * double.parse(assetData['bal']))).toString();
 
         totalBal = totalBal + double.parse(price);
-        print(totalBal);
         assetData['bal_to_price'] = price;
         data.add(assetData);
-        totalBalance = totalBal.toStringAsPrecision(2);
+        totalBalance = totalBal.toString();
       });
       assets = data;
     } catch (e) {
@@ -154,9 +165,9 @@ class WalletProvider extends ChangeNotifier {
       var httpClient = http.Client();
       var ethClient = Web3Client(rpc, httpClient);
 
-      ERC20 erc20Contract = ERC20(address: EthereumAddress.fromHex(address), client: ethClient);
+      ERC20 erc20Contract = ERC20();
 
-      var bal = await erc20Contract.balanceOfERC20Token(ethAddress!);
+      var bal = await erc20Contract.getBalance(ethAddress!, ethClient, address);
       return bal;
     } catch (e) {
       print(rpc);
@@ -185,6 +196,100 @@ class WalletProvider extends ChangeNotifier {
     } catch (e) {
       print({"error   getPrices": e});
       return [];
+    }
+  }
+
+  Future importWallet(mnemonic_) async {
+    final seed = bip39.mnemonicToSeed(mnemonic_);
+    final master = await ED25519_HD_KEY.getMasterKeyFromSeed(seed);
+    String privateKey = HEX.encode(master.key);
+    final address = EthPrivateKey.fromHex(privateKey).address;
+    return address;
+  }
+
+  Future sendERC20(
+    contractAddress,
+    toAddress,
+    rpc,
+    amount,
+  ) async {
+    try {
+      checksumEthereumAddress(toAddress);
+
+      var httpClient = http.Client();
+      var ethClient = Web3Client(rpc, httpClient);
+
+      EthPrivateKey key = EthPrivateKey.fromHex(ethPrivateKey!);
+
+      ERC20 erc20 = ERC20();
+      BigInt newAmount = BigInt.from(double.parse(amount) * 1e+18);
+
+      var response =
+          await erc20.sendERC20Token("transfer", [EthereumAddress.fromHex(toAddress), newAmount], ethClient, key, contractAddress, ethAddress);
+      return response;
+    } catch (e) {
+      print({"error (Wallet Provider)  220": e});
+      if (e.toString().contains('invalid address')) {
+        showToast("Invalid Address Entered!");
+      }
+    }
+  }
+
+  Future estimateGasPrice(
+    rpc,
+  ) async {
+    try {
+      var httpClient = http.Client();
+      var ethClient = Web3Client(rpc, httpClient);
+      var gasPrice = await ethClient.getGasPrice();
+
+      return (Decimal.parse((gasPrice.getInWei.toInt() / 1e+18).toString()));
+    } catch (e) {
+      print({"error (Wallet Provider)  220": e});
+      if (e.toString().contains('invalid address')) {
+        showToast("Invalid Address Entered!");
+      }
+    }
+  }
+
+  Future sendNativeToken(
+    toAddress,
+    rpc,
+    amount,
+  ) async {
+    try {
+      var httpClient = http.Client();
+      var ethClient = Web3Client(rpc, httpClient);
+      BigInt chainID = await ethClient.getChainId();
+
+      var gasPrice = await ethClient.getGasPrice();
+      // print(EtherAmount.inWei(gasPrice.getInWei));
+      print(toAddress);
+      print(EtherAmount.fromInt(EtherUnit.wei, (double.parse(amount) * 1e+18).toInt()));
+      print(EtherAmount.fromInt(EtherUnit.ether, (double.parse(amount)).toInt()));
+
+      var txHash = await ethClient.sendTransaction(
+        EthPrivateKey.fromHex(ethPrivateKey!),
+        Transaction(
+          to: EthereumAddress.fromHex(toAddress),
+          gasPrice: gasPrice,
+          maxGas: 100000,
+          value: EtherAmount.fromInt(EtherUnit.wei, (double.parse(amount) * 1e+18).toInt()),
+          nonce: await ethClient.getTransactionCount(ethAddress!, atBlock: const BlockNum.pending()),
+          from: ethAddress,
+        ),
+        chainId: chainID.toInt(),
+      );
+      await Future.delayed(const Duration(seconds: 5));
+      print(txHash);
+      var transactionReceipt = await ethClient.getTransactionReceipt(txHash);
+      print("Transaction receipt status: ${transactionReceipt?.status.toString()}");
+      return txHash;
+    } catch (e) {
+      print({"error (Wallet Provider)  262": e});
+      if (e.toString().contains('invalid address')) {
+        showToast("Invalid Address Entered!");
+      }
     }
   }
 }

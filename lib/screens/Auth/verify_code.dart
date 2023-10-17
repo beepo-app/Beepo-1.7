@@ -19,9 +19,8 @@ class VerifyCode extends StatefulWidget {
   final Uint8List image;
   final String name;
   final String pin;
-  const VerifyCode(
-      {key, required this.image, required this.name, required this.pin})
-      : super(key: key);
+  final String? mnemonic;
+  const VerifyCode({key, required this.image, this.mnemonic, required this.name, required this.pin}) : super(key: key);
 
   @override
   State<VerifyCode> createState() => _VerifyCodeState();
@@ -100,20 +99,16 @@ class _VerifyCodeState extends State<VerifyCode> {
             BeepoFilledButtons(
               text: 'Continue',
               onPressed: () async {
-                print(widget.pin);
+                //print(widget.pin);
                 if (widget.pin == otp.text) {
-                  final walletProvider =
-                      Provider.of<WalletProvider>(context, listen: false);
-                  final accountProvider =
-                      Provider.of<AccountProvider>(context, listen: false);
-                  final xmtpProvider =
-                      Provider.of<XMTPProvider>(context, listen: false);
+                  final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+                  final accountProvider = Provider.of<AccountProvider>(context, listen: false);
+                  final xmtpProvider = Provider.of<XMTPProvider>(context, listen: false);
 
-                  String mnemonic = walletProvider.generateMnemonic();
+                  String mnemonic = widget.mnemonic ?? walletProvider.generateMnemonic();
 
                   String padding = "000000000000";
-                  Encrypted encrypteData =
-                      encryptWithAES('${otp.text}$padding', mnemonic);
+                  Encrypted encrypteData = encryptWithAES('${otp.text}$padding', mnemonic);
 
                   await walletProvider.initWalletState(mnemonic);
 
@@ -134,8 +129,7 @@ class _VerifyCodeState extends State<VerifyCode> {
 
                       print('creaating');
                       print(walletProvider.ethAddress);
-                      await xmtpProvider
-                          .initClient(walletProvider.ethPrivateKey!);
+                      await xmtpProvider.initClient(walletProvider.ethPrivateKey!);
                       await accountProvider.initAccountState();
                     } catch (e) {
                       if (kDebugMode) {

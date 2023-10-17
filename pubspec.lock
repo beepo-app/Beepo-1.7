@@ -298,7 +298,7 @@ packages:
     source: hosted
     version: "2.3.2"
   decimal:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: decimal
       sha256: "24a261d5d5c87e86c7651c417a5dbdf8bcd7080dd592533910e8d0505a279f21"
@@ -337,6 +337,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.2"
+  ethereum_addresses:
+    dependency: "direct main"
+    description:
+      name: ethereum_addresses
+      sha256: e6ba01d44ecb9c5634367b017d6e94598fc937be8b28fc406d0e51ed6e9513dd
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
   fake_async:
     dependency: transitive
     description:

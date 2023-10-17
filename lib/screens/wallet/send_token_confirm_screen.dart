@@ -5,11 +5,27 @@ import 'package:beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class SendTokenConfirmScreen extends StatelessWidget {
-  const SendTokenConfirmScreen({super.key});
+class SendTokenConfirmScreen extends StatefulWidget {
+  final Map? asset;
+  final Map? data;
+  const SendTokenConfirmScreen({
+    this.asset,
+    this.data,
+    Key? key,
+  }) : super(key: key);
 
   @override
+  State<SendTokenConfirmScreen> createState() => _SendTokenConfirmScreenState();
+}
+
+class _SendTokenConfirmScreenState extends State<SendTokenConfirmScreen> {
+  @override
   Widget build(BuildContext context) {
+    Map data = widget.data!;
+    Map asset = widget.asset!;
+
+    print(asset);
+
     return Scaffold(
       backgroundColor: AppColors.backgroundGrey,
       appBar: AppBar(
@@ -53,7 +69,7 @@ class SendTokenConfirmScreen extends StatelessWidget {
             ),
             SizedBox(height: 10.h),
             AppText(
-              text: "1 BNB",
+              text: "${data['amount']} ${asset["ticker"]}",
               fontSize: 19.sp,
               fontWeight: FontWeight.w700,
               color: const Color(0xff0e014c),
@@ -67,14 +83,14 @@ class SendTokenConfirmScreen extends StatelessWidget {
             SizedBox(height: 10.h),
             Center(
               child: AppText(
-                text: "0x0E61830c8e35db159eF816868AfcA1388781796e",
+                text: data['address'],
                 fontSize: 12.sp,
                 color: const Color(0xff0e014c),
               ),
             ),
             SizedBox(height: 50.h),
             AppText(
-              text: "Gas Fee: 0.0098 SOL",
+              text: "Gas Fee: ${data['gasFee']} ${asset["nativeTicker"]}",
               fontSize: 14.sp,
               color: const Color(0xff0e014c),
             ),
@@ -83,8 +99,22 @@ class SendTokenConfirmScreen extends StatelessWidget {
               text: "Approve",
               color: const Color(0xff0e014c),
               onPressed: () {
+                //  print(asset);
+                //   if (asset['native'] != null && asset['native'] == true) {
+                //     final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+                //     // print(address.text);
+                //     print(amount);
+
+                //     String res = await walletProvider.sendNativeToken(address.text, asset['rpc'], amount.text);
+                //     print(res);
+                //   } else {
+                //     final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+                //     String res = await walletProvider.sendERC20(asset['address'], address.text, asset['rpc'], amount.text);
+                //     print(res);
+                //   }
+
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const PinCode();
+                  return PinCode(txData: {'asset': asset, 'data': data});
                 }));
               },
             ),

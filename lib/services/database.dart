@@ -4,9 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mongo_dart/mongo_dart.dart';
+import 'package:web3dart/web3dart.dart';
 
-dbCreateUser(String image, Db db, String displayName, String ethAddress,
-    btcAddress, encrypteData) async {
+dbCreateUser(String image, Db db, String displayName, String ethAddress, btcAddress, encrypteData) async {
   await db.open();
   var usersCollection = db.collection('users');
 
@@ -18,16 +18,10 @@ dbCreateUser(String image, Db db, String displayName, String ethAddress,
 
   if (val == null) {
     try {
-      await usersCollection.insertOne({
-        'username': username,
-        'displayName': displayName,
-        'ethAddress': ethAddress,
-        'btcAddress': btcAddress,
-        'image': image
-      });
+      await usersCollection
+          .insertOne({'username': username, 'displayName': displayName, 'ethAddress': ethAddress, 'btcAddress': btcAddress, 'image': image});
 
-      await Hive.box('beepo2.0')
-          .put('encryptedSeedPhrase', (encrypteData.base64));
+      await Hive.box('beepo2.0').put('encryptedSeedPhrase', (encrypteData.base64));
       await Hive.box('beepo2.0').put('base64Image', image);
       await Hive.box('beepo2.0').put('ethAddress', ethAddress);
       await Hive.box('beepo2.0').put('btcAddress', btcAddress);
@@ -40,33 +34,28 @@ dbCreateUser(String image, Db db, String displayName, String ethAddress,
       }
     }
   } else {
-    await dbCreateUser(
-        image, db, displayName, ethAddress, btcAddress, encrypteData);
+    await dbCreateUser(image, db, displayName, ethAddress, btcAddress, encrypteData);
   }
 
   await db.close();
 }
 
-Future<Map<String, dynamic>> dbUpdateUser(
-    image, Db db, displayName, bio, newUsername, ethAddress) async {
+Future<Map<String, dynamic>> dbUpdateUser(image, Db db, displayName, bio, newUsername, ethAddress) async {
   await db.open();
   var usersCollection = db.collection('users');
 
-  var oldData =
-      await usersCollection.findOne(where.eq("username", newUsername));
+  var oldData = await usersCollection.findOne(where.eq("username", newUsername));
 
   if (oldData == null) {
     try {
-      Map<String, dynamic>? newData =
-          await usersCollection.findOne(where.eq("ethAddress", ethAddress));
+      Map<String, dynamic>? newData = await usersCollection.findOne(where.eq("ethAddress", ethAddress));
       if (newData != null) {
         newData['username'] = newUsername;
         newData['displayName'] = displayName;
         newData['bio'] = bio;
         newData['image'] = image;
 
-        await usersCollection.replaceOne(
-            where.eq("ethAddress", ethAddress), newData);
+        await usersCollection.replaceOne(where.eq("ethAddress", ethAddress), newData);
 
         await Hive.box('beepo2.0').put('base64Image', image);
         await Hive.box('beepo2.0').put('displayName', displayName);
@@ -93,6 +82,21 @@ Future<Map> dbGetUser(Db db, String username) async {
   var usersCollection = db.collection('users');
 
   Map? val = await usersCollection.findOne(where.eq("username", username));
+
+  if (val == null) {
+    await db.close();
+    return {'error': "User Not Found"};
+  } else {
+    await db.close();
+    return val;
+  }
+}
+
+Future<Map> dbGetUserByAddres(Db db, EthereumAddress ethAddress) async {
+  await db.open();
+  var usersCollection = db.collection('users');
+
+  Map? val = await usersCollection.findOne(where.eq("ethAddress", ethAddress));
 
   if (val == null) {
     await db.close();

@@ -1,5 +1,6 @@
 import 'package:beepo/components/beepo_filled_button.dart';
 import 'package:beepo/components/outline_button.dart';
+import 'package:beepo/screens/Auth/login_screen.dart';
 import 'package:beepo/screens/auth/create_acct_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -35,7 +36,7 @@ class SignUp extends StatelessWidget {
               SizedBox(height: 33.h),
               BeepoFilledButtons(
                 text: 'Import Wallet',
-                onPressed: () {},
+                onPressed: () => Get.to(() => const LoginScreen()),
               ),
               SizedBox(height: 33.h),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [

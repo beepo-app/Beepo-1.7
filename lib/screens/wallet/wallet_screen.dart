@@ -5,6 +5,7 @@ import 'package:beepo/screens/wallet/send_assets_screen.dart';
 import 'package:beepo/widgets/app_text.dart';
 import 'package:beepo/widgets/wallet_icon.dart';
 import 'package:beepo/widgets/wallet_list.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +23,7 @@ class _WalletScreenState extends State<WalletScreen> {
   List<Map> currencies = [];
   String selectedCurrency = 'usd';
   String selectedCurrencySymbol = '\$';
+  List<dynamic>? assets;
 
   final List<PopupMenuEntry<String>> items = [
     const PopupMenuItem<String>(
@@ -37,6 +39,36 @@ class _WalletScreenState extends State<WalletScreen> {
     //   child: Text('Option 3'),
     // ),
   ];
+
+  getAssests() async {
+    try {
+      final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+      List<dynamic>? assets_ = walletProvider.assets;
+      setState(() {
+        if (assets_ != null) {
+          assets = assets_;
+        }
+      });
+      // await walletProvider.getAssets();
+      // String data = await walletProvider.sendERC20('0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee', '0x24cF602b1d378C510686926250d0E76230a8fB4a',
+      //     'https://data-seed-prebsc-1-s1.binance.org:8545/', 12);
+      // // print('data &&&&&&&&&&&&&&&&');
+      // print(data);
+      // // print('data @@@@@@@@@@@');
+      // var asset = walletProvider.assets;
+      // print(asset);
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    getAssests();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +150,7 @@ class _WalletScreenState extends State<WalletScreen> {
                             angle: 5.7,
                             onTap: () {
                               Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                return const SendAssetsScreen();
+                                return SendAssetsScreen(assets_: assets!);
                               }));
                             },
                           ),
@@ -127,7 +159,7 @@ class _WalletScreenState extends State<WalletScreen> {
                             icon: Icons.file_download_sharp,
                             onTap: () {
                               Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                return const ReceivedAssetScreen();
+                                return ReceivedAssetScreen(assets_: assets!);
                               }));
                             },
                           ),
@@ -171,9 +203,9 @@ class _WalletScreenState extends State<WalletScreen> {
                 Expanded(
                   child: TabBarView(
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.all(15.0),
-                        child: WalletList(),
+                      Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: assets == null ? const Center(child: CircularProgressIndicator()) : WalletList(assets_: assets!),
                       ),
                       Container(),
                     ],

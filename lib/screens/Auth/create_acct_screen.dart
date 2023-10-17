@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:beepo/components/beepo_filled_button.dart';
@@ -11,7 +10,8 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
 class CreateAccountScreen extends StatefulWidget {
-  const CreateAccountScreen({Key? key}) : super(key: key);
+  final String? mnemonic;
+  const CreateAccountScreen({Key? key, this.mnemonic}) : super(key: key);
 
   @override
   State<CreateAccountScreen> createState() => _CreateAccountScreenState();
@@ -80,9 +80,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                   bottom: 10,
                   child: GestureDetector(
                     onTap: () {
-                      ImageUtil()
-                          .pickProfileImage(context: context)
-                          .then((value) {
+                      ImageUtil().pickProfileImage(context: context).then((value) {
                         if (value != null) {
                           setState(() {
                             selectedImage = value;
@@ -137,6 +135,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                 } else {
                   Get.to(
                     () => PinCode(
+                      mnemonic: widget.mnemonic,
                       image: selectedImage,
                       name: displayName.text.trim(),
                       isSignedUp: false,

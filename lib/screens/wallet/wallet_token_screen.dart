@@ -7,6 +7,7 @@ import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 class WalletTokenScreen extends StatefulWidget {
   final Map<String, dynamic>? data;
@@ -30,7 +31,9 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Get.back();
+          },
           icon: const Icon(
             Icons.arrow_back_rounded,
             size: 30,
@@ -42,22 +45,18 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
-                const Text(
-                  '\$54.00',
-                  style: TextStyle(
+                Text(
+                  '\$${widget.data!['bal_to_price'].toString()}',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(width: 5),
-                Text(
-                  "1.87",
-                  style: TextStyle(
-                    color: isPositive ? Colors.green : Colors.red,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
+                AppText(
+                  text: '${widget.data!['24h_price_change'].toString()}%',
+                  color: widget.data!['24h_price_change'] > 0 ? AppColors.activeTextColor : AppColors.favouriteButtonRed,
                 ),
               ],
             ),
@@ -99,7 +98,7 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
                           child: IconButton(
                             onPressed: () {
                               Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                return const SendToken();
+                                return SendToken(data: widget.data!);
                               }));
                             },
                             icon: const Icon(

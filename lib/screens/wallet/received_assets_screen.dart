@@ -7,8 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ReceivedAssetScreen extends StatefulWidget {
-  const ReceivedAssetScreen({super.key});
-
+  final List<dynamic> assets_;
+  const ReceivedAssetScreen({
+    required this.assets_,
+    Key? key,
+  }) : super(key: key);
   @override
   State<ReceivedAssetScreen> createState() => _ReceivedAssetScreenState();
 }
@@ -18,6 +21,8 @@ class _ReceivedAssetScreenState extends State<ReceivedAssetScreen> {
 
   @override
   Widget build(BuildContext context) {
+    List<dynamic> assets = widget.assets_;
+    print(assets);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -63,7 +68,7 @@ class _ReceivedAssetScreenState extends State<ReceivedAssetScreen> {
             SizedBox(height: 15.h),
             Expanded(
               child: ListView.separated(
-                itemCount: 8,
+                itemCount: assets.length,
                 physics: const AlwaysScrollableScrollPhysics(
                   parent: BouncingScrollPhysics(),
                 ),
@@ -82,12 +87,11 @@ class _ReceivedAssetScreenState extends State<ReceivedAssetScreen> {
                     color: AppColors.white,
                     child: ListTile(
                       onTap: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) {
                           return const TokenScreenScan();
                         }));
                       },
-                      leading: Image.asset(AppImages.bCoin),
+                      leading: Image.network(assets[index]['logoUrl']),
                       title: const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -104,9 +108,7 @@ class _ReceivedAssetScreenState extends State<ReceivedAssetScreen> {
                               SizedBox(width: 8.w),
                               AppText(
                                 text: "+1.97",
-                                color: isColor
-                                    ? AppColors.activeTextColor
-                                    : AppColors.favouriteButtonRed,
+                                color: isColor ? AppColors.activeTextColor : AppColors.favouriteButtonRed,
                               ),
                             ],
                           ),

@@ -3,6 +3,7 @@ import 'package:beepo/screens/wallet/received_assets_screen.dart';
 import 'package:beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 class TokenScreenScan extends StatelessWidget {
   const TokenScreenScan({super.key});
@@ -22,9 +23,12 @@ class TokenScreenScan extends StatelessWidget {
         centerTitle: true,
         leading: IconButton(
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return const ReceivedAssetScreen();
-            }));
+            Get.back();
+            // Navigator.push(context, MaterialPageRoute(builder: (context) {
+            //   return const ReceivedAssetScreen(assets_: [
+            //     {'assets': 'ooo'}
+            //   ]);
+            // }));
           },
           icon: const Icon(
             Icons.arrow_back,

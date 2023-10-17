@@ -1,14 +1,22 @@
 import 'package:beepo/components/beepo_filled_button.dart';
 import 'package:beepo/constants/constants.dart';
+import 'package:beepo/providers/wallet_provider.dart';
 import 'package:beepo/screens/wallet/send_token_confirm_screen.dart';
 import 'package:beepo/widgets/app_text.dart';
+import 'package:beepo/widgets/toast.dart';
+import 'package:decimal/decimal.dart';
+import 'package:ethereum_addresses/ethereum_addresses.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 import '../../Utils/styles.dart';
 
 class SendToken extends StatefulWidget {
+  final Map? data;
   const SendToken({
+    this.data,
     Key? key,
   }) : super(key: key);
 
@@ -21,6 +29,8 @@ class _SendTokenState extends State<SendToken> {
   final TextEditingController address = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    Map asset = widget.data!;
+
     final border = OutlineInputBorder(
       borderRadius: BorderRadius.all(Radius.circular(15.r)),
       borderSide: const BorderSide(width: 1, color: Colors.grey),
@@ -38,7 +48,9 @@ class _SendTokenState extends State<SendToken> {
           color: AppColors.white,
         ),
         leading: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Get.back();
+          },
           icon: const Icon(
             Icons.arrow_back,
             color: AppColors.white,
@@ -71,12 +83,19 @@ class _SendTokenState extends State<SendToken> {
                 ),
                 decoration: InputDecoration(
                   suffixIcon: Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.w),
-                    child: AppText(
-                      text: "BRISE",
-                      fontSize: 16.sp,
-                      color: AppColors.textGrey,
+                    padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.w),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width / 6,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          AppText(
+                            text: asset['ticker'],
+                            fontSize: 16.sp,
+                            color: AppColors.textGrey,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   isDense: true,
@@ -185,11 +204,31 @@ class _SendTokenState extends State<SendToken> {
               ),
               SizedBox(height: MediaQuery.of(context).size.height / 10),
               BeepoFilledButtons(
-                text: 'complete',
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return const SendTokenConfirmScreen();
-                  }));
+                text: 'Completed',
+                onPressed: () async {
+                  if ((amount.text) == '' || address.text == "") {
+                    showToast("Enter All Fields!");
+                    return;
+                  }
+
+                  try {
+                    checksumEthereumAddress(address.text);
+                  } catch (e) {
+                    showToast("Invalid Address Entered!");
+                    return;
+                  }
+                  final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+                  Decimal res = await walletProvider.estimateGasPrice(asset['rpc']);
+
+                  var amountToSend = res + Decimal.parse(amount.text);
+
+                  if (amountToSend > Decimal.parse(asset['bal']) || double.parse(asset['bal']) == 0) {
+                    showToast("Insufficient Funds!");
+                    return;
+                  }
+                  Get.to(
+                    () => SendTokenConfirmScreen(asset: asset, data: {'amount': amount.text, 'gasFee': res, "address": address.text}),
+                  );
                 },
               ),
             ],
