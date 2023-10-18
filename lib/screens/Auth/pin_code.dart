@@ -6,7 +6,6 @@ import 'package:beepo/providers/auth_provider.dart';
 import 'package:beepo/providers/wallet_provider.dart';
 import 'package:beepo/providers/xmtp.dart';
 import 'package:beepo/screens/Auth/verify_code.dart';
-import 'package:beepo/screens/wallet/transfer_success.dart';
 import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +41,6 @@ class _PinCodeState extends State<PinCode> {
   TextEditingController otp = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    Map? txData = widget.txData;
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -131,30 +129,13 @@ class _PinCodeState extends State<PinCode> {
                       );
                     }
                   } else {
-                    final walletProvider = Provider.of<WalletProvider>(context, listen: false);
-                    if (txData != null) {
-                      print(txData);
-                      Map asset = txData['asset'];
-                      Map data = txData['data'];
-
-                      if (asset['native'] != null && asset['native'] == true) {
-                        String res = await walletProvider.sendNativeToken(data['address'], asset['rpc'], data['amount']);
-                        print(res);
-                      } else {
-                        final walletProvider = Provider.of<WalletProvider>(context, listen: false);
-                        String res = await walletProvider.sendERC20(asset['address'], data['address'], asset['rpc'], data['amount']);
-                        print(res);
-                      }
-                      // return;
-                      Get.to(() => TransferSuccess(txData: txData));
-                    }
-
                     String response = await login(otp.text);
                     if (response.contains("Incorrect Pin Entered")) {
                       showToast("Incorrect Pin Entered");
                       return;
                     }
 
+                    final walletProvider = Provider.of<WalletProvider>(context, listen: false);
                     final accountProvider = Provider.of<AccountProvider>(context, listen: false);
                     final xmtpProvider = Provider.of<XMTPProvider>(context, listen: false);
 

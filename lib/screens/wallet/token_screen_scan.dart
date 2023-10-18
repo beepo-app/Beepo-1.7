@@ -1,12 +1,15 @@
 import 'package:beepo/constants/constants.dart';
-import 'package:beepo/screens/wallet/received_assets_screen.dart';
 import 'package:beepo/widgets/app_text.dart';
+import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class TokenScreenScan extends StatelessWidget {
-  const TokenScreenScan({super.key});
+  final Map<String, dynamic>? data;
+  const TokenScreenScan({Key? key, this.data}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -40,13 +43,13 @@ class TokenScreenScan extends StatelessWidget {
         child: Column(
           children: [
             SizedBox(height: 15.h),
-            Image.asset(
-              'assets/Celo.png',
+            Image.network(
+              data!['logoUrl'],
               height: 80.h,
               width: 80.w,
             ),
             AppText(
-              text: "BRISE",
+              text: data!['ticker'],
               fontSize: 20.sp,
               fontWeight: FontWeight.bold,
               letterSpacing: 2,
@@ -55,24 +58,37 @@ class TokenScreenScan extends StatelessWidget {
             SizedBox(
               height: 200.h,
               width: 250.w,
-              child: Image.asset("assets/scan.png"),
+              child: QrImageView(
+                data: data!['address'],
+                version: QrVersions.auto,
+                size: 250.0,
+              ),
             ),
             SizedBox(height: 10.h),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "0x0E61830c8e35db159eF8",
-                  style: TextStyle(
-                    fontSize: 14.sp,
+            GestureDetector(
+              onTap: () async {
+                await Clipboard.setData(ClipboardData(text: data!['address']));
+                showToast('Address Copied To Clipboard!');
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    data!['address'],
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: AppColors.secondaryColor,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 7,
+                  ),
+                  const Icon(
+                    Icons.copy_outlined,
                     color: AppColors.secondaryColor,
                   ),
-                ),
-                const Icon(
-                  Icons.folder,
-                  color: AppColors.secondaryColor,
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),

@@ -1,13 +1,23 @@
 import 'package:beepo/constants/constants.dart';
+import 'package:beepo/providers/auth_provider.dart';
+import 'package:beepo/providers/wallet_provider.dart';
 import 'package:beepo/screens/wallet/transfer_success.dart';
 import 'package:beepo/utils/styles.dart';
 import 'package:beepo/widgets/app_text.dart';
+import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:provider/provider.dart';
 
 class SendTokenPinScreen extends StatefulWidget {
-  const SendTokenPinScreen({super.key});
+  final Map? txData;
+
+  const SendTokenPinScreen({
+    Key? key,
+    this.txData,
+  }) : super(key: key);
 
   @override
   State<SendTokenPinScreen> createState() => _SendTokenPinScreenState();
@@ -18,6 +28,8 @@ class _SendTokenPinScreenState extends State<SendTokenPinScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+    Map? txData = widget.txData;
     return Scaffold(
       backgroundColor: AppColors.backgroundGrey,
       appBar: AppBar(
@@ -61,7 +73,7 @@ class _SendTokenPinScreenState extends State<SendTokenPinScreen> {
             ),
             SizedBox(height: 10.h),
             AppText(
-              text: "1 BNB",
+              text: "${txData!['data']['amount']} ${txData['asset']['ticker']}",
               fontSize: 19.sp,
               fontWeight: FontWeight.w700,
               color: const Color(0xff0e014c),
@@ -75,7 +87,7 @@ class _SendTokenPinScreenState extends State<SendTokenPinScreen> {
             SizedBox(height: 10.h),
             Center(
               child: AppText(
-                text: "0x0E61830c8e35db159eF816868AfcA1388781796e",
+                text: "${txData!['data']['address']}",
                 fontSize: 12.sp,
                 color: const Color(0xff0e014c),
               ),
@@ -107,14 +119,31 @@ class _SendTokenPinScreenState extends State<SendTokenPinScreen> {
                 animationDuration: const Duration(milliseconds: 300),
                 enableActiveFill: true,
                 controller: otp,
-                onChanged: (val) {
+                onChanged: (val) async {
                   if (otp.text.length == 4) {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return const TransferSuccess();
-                    }));
+                    String response = await login(otp.text);
+                    if (response.contains("Incorrect Pin Entered")) {
+                      showToast("Incorrect Pin Entered");
+                      return;
+                    }
+
+                    if (txData != null) {
+                      Map asset = txData['asset'];
+                      Map data = txData['data'];
+
+                      if (asset['native'] != null && asset['native'] == true) {
+                        walletProvider.sendNativeToken(data['address'], asset['rpc'], data['amount']);
+                      } else {
+                        walletProvider.sendERC20(asset['contractAddress'], data['address'], asset['rpc'], data['amount']);
+                      }
+                      await walletProvider.getAssets();
+                      Get.to(() => TransferSuccess(txData: txData));
+                    }
+
+                    // Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    //   return const TransferSuccess();
+                    // }));
                   }
-                  ;
                 },
               ),
             ),

@@ -1,6 +1,6 @@
 import 'package:beepo/components/beepo_filled_button.dart';
 import 'package:beepo/constants/constants.dart';
-import 'package:beepo/screens/Auth/pin_code.dart';
+import 'package:beepo/screens/wallet/send_token_pin_screen.dart';
 import 'package:beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,7 +24,7 @@ class _SendTokenConfirmScreenState extends State<SendTokenConfirmScreen> {
     Map data = widget.data!;
     Map asset = widget.asset!;
 
-    print(asset);
+    //print(asset);
 
     return Scaffold(
       backgroundColor: AppColors.backgroundGrey,
@@ -99,22 +99,8 @@ class _SendTokenConfirmScreenState extends State<SendTokenConfirmScreen> {
               text: "Approve",
               color: const Color(0xff0e014c),
               onPressed: () {
-                //  print(asset);
-                //   if (asset['native'] != null && asset['native'] == true) {
-                //     final walletProvider = Provider.of<WalletProvider>(context, listen: false);
-                //     // print(address.text);
-                //     print(amount);
-
-                //     String res = await walletProvider.sendNativeToken(address.text, asset['rpc'], amount.text);
-                //     print(res);
-                //   } else {
-                //     final walletProvider = Provider.of<WalletProvider>(context, listen: false);
-                //     String res = await walletProvider.sendERC20(asset['address'], address.text, asset['rpc'], amount.text);
-                //     print(res);
-                //   }
-
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return PinCode(txData: {'asset': asset, 'data': data});
+                  return SendTokenPinScreen(txData: {'asset': asset, 'data': data});
                 }));
               },
             ),

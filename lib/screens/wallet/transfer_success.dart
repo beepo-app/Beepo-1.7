@@ -1,10 +1,13 @@
 import 'package:beepo/components/beepo_filled_button.dart';
+import 'package:beepo/components/bottom_nav.dart';
 import 'package:beepo/constants/constants.dart';
+import 'package:beepo/providers/wallet_provider.dart';
 import 'package:beepo/screens/wallet/wallet_screen.dart';
 import 'package:beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 
 class TransferSuccess extends StatefulWidget {
   final Map? txData;
@@ -22,6 +25,8 @@ class _TransferSuccessState extends State<TransferSuccess> {
   Widget build(BuildContext context) {
     Map asset = widget.txData!['asset'];
     Map data = widget.txData!['data'];
+    final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+    walletProvider.getAssets();
 
     return Scaffold(
       backgroundColor: AppColors.backgroundGrey,
@@ -71,12 +76,12 @@ class _TransferSuccessState extends State<TransferSuccess> {
               text: 'Done',
               color: AppColors.secondaryColor,
               onPressed: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (context) {
-                //     return const WalletScreen();
-                //   }),
-                // );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) {
+                    return const BottomNavHome();
+                  }),
+                );
               },
             ),
           ],

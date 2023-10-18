@@ -49,14 +49,6 @@ class _WalletScreenState extends State<WalletScreen> {
           assets = assets_;
         }
       });
-      // await walletProvider.getAssets();
-      // String data = await walletProvider.sendERC20('0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee', '0x24cF602b1d378C510686926250d0E76230a8fB4a',
-      //     'https://data-seed-prebsc-1-s1.binance.org:8545/', 12);
-      // // print('data &&&&&&&&&&&&&&&&');
-      // print(data);
-      // // print('data @@@@@@@@@@@');
-      // var asset = walletProvider.assets;
-      // print(asset);
     } catch (e) {
       if (kDebugMode) {
         print(e);

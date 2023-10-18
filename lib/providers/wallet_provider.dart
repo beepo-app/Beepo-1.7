@@ -8,7 +8,6 @@ import 'package:decimal/decimal.dart';
 import 'package:ed25519_hd_key/ed25519_hd_key.dart';
 import 'package:flutter/foundation.dart';
 import 'package:bip39/bip39.dart' as bip39;
-import 'package:get/get.dart';
 import 'package:hex/hex.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:wallet/wallet.dart' as wallet;
@@ -101,7 +100,7 @@ class WalletProvider extends ChangeNotifier {
           Map<String, dynamic>? rpc = value;
           rpcLink = rpc['rpc']['testnet'];
           bal = await getERC20Balance(value['address'], rpcLink);
-          // print(bal);
+          print(bal);
         }
 
         List? marketData = await getPrices(value['nameoncoinmarketcap']);
@@ -112,19 +111,21 @@ class WalletProvider extends ChangeNotifier {
           'logoUrl': value['logoUrl'],
           'ticker': value['ticker'],
           'nativeTicker': value['nativeTicker'],
-          'bal': bal.toString(),
+          'bal': bal == null ? '0' : bal.toStringAsFixed(2),
+          'chainID': value['chainId'],
           'rpc': rpcLink,
           'native': native,
           'address': address,
+          'contractAddress': value['address'],
           "24h_price_change": marketData != null && marketData.isNotEmpty ? marketData[1] : 0,
           "current_price": marketData != null && marketData.isNotEmpty ? marketData[0] : 0,
         };
-        String price = ((assetData['current_price'] * double.parse(assetData['bal']))).toString();
+        String price = ((assetData['current_price'] * double.parse(assetData['bal']))).toStringAsFixed(2);
 
         totalBal = totalBal + double.parse(price);
         assetData['bal_to_price'] = price;
         data.add(assetData);
-        totalBalance = totalBal.toString();
+        totalBalance = totalBal.toStringAsFixed(2);
       });
       assets = data;
     } catch (e) {
@@ -172,6 +173,21 @@ class WalletProvider extends ChangeNotifier {
     } catch (e) {
       print(rpc);
       print({"error   158": e});
+    }
+  }
+
+  Future<Map> getTxs(chainID, type) async {
+    try {
+      var url = Uri.parse("https://get-transactions.vercel.app/api/getTxs?address=$ethAddress&chainID=$chainID&type=$type");
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        Map res = json.decode(response.body);
+        return res;
+      }
+      return {};
+    } catch (e) {
+      print({"error   getPrices": e});
+      return {};
     }
   }
 
@@ -263,10 +279,6 @@ class WalletProvider extends ChangeNotifier {
       BigInt chainID = await ethClient.getChainId();
 
       var gasPrice = await ethClient.getGasPrice();
-      // print(EtherAmount.inWei(gasPrice.getInWei));
-      print(toAddress);
-      print(EtherAmount.fromInt(EtherUnit.wei, (double.parse(amount) * 1e+18).toInt()));
-      print(EtherAmount.fromInt(EtherUnit.ether, (double.parse(amount)).toInt()));
 
       var txHash = await ethClient.sendTransaction(
         EthPrivateKey.fromHex(ethPrivateKey!),

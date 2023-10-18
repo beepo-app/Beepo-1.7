@@ -22,7 +22,6 @@ class _ReceivedAssetScreenState extends State<ReceivedAssetScreen> {
   @override
   Widget build(BuildContext context) {
     List<dynamic> assets = widget.assets_;
-    print(assets);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -88,15 +87,15 @@ class _ReceivedAssetScreenState extends State<ReceivedAssetScreen> {
                     child: ListTile(
                       onTap: () {
                         Navigator.push(context, MaterialPageRoute(builder: (context) {
-                          return const TokenScreenScan();
+                          return TokenScreenScan(data: assets[index]);
                         }));
                       },
                       leading: Image.network(assets[index]['logoUrl']),
-                      title: const Row(
+                      title: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          AppText(text: "Bitcoin"),
-                          AppText(text: "\$622.43"),
+                          AppText(text: assets[index]['displayName']),
+                          AppText(text: assets[index]['bal']),
                         ],
                       ),
                       subtitle: Row(
@@ -104,15 +103,15 @@ class _ReceivedAssetScreenState extends State<ReceivedAssetScreen> {
                         children: [
                           Row(
                             children: [
-                              const AppText(text: "\$30,396"),
+                              AppText(text: '\$${assets[index]['current_price'].toString()}'),
                               SizedBox(width: 8.w),
                               AppText(
-                                text: "+1.97",
-                                color: isColor ? AppColors.activeTextColor : AppColors.favouriteButtonRed,
+                                text: '${assets[index]['24h_price_change'].toString()}%',
+                                color: assets[index]['24h_price_change'] > 0 ? AppColors.activeTextColor : AppColors.favouriteButtonRed,
                               ),
                             ],
                           ),
-                          const AppText(text: "\$622.43"),
+                          AppText(text: "\$${assets[index]['bal_to_price'].toString()}"),
                         ],
                       ),
                     ),

@@ -25,8 +25,18 @@ class SendToken extends StatefulWidget {
 }
 
 class _SendTokenState extends State<SendToken> {
-  final TextEditingController amount = TextEditingController();
+  late final TextEditingController amount;
   final TextEditingController address = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    amount = TextEditingController()
+      ..addListener(() {
+        setState(() {});
+      });
+  }
+
   @override
   Widget build(BuildContext context) {
     Map asset = widget.data!;
@@ -84,7 +94,7 @@ class _SendTokenState extends State<SendToken> {
                 decoration: InputDecoration(
                   suffixIcon: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.w),
-                    child: Container(
+                    child: SizedBox(
                       width: MediaQuery.of(context).size.width / 6,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -111,7 +121,22 @@ class _SendTokenState extends State<SendToken> {
                   ),
                 ),
               ),
-              SizedBox(height: 18.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.only(top: 3),
+                    child: Text(
+                      "\$${Decimal.tryParse(amount.text) == null ? int.tryParse(amount.text) == null ? 0 : int.tryParse(amount.text)! * int.parse(asset['current_price']) : Decimal.tryParse(amount.text)! * Decimal.parse(asset['current_price'].toString())}",
+                      style: const TextStyle(
+                        color: Color(0xe50d004c),
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 15.h),
               const Align(
                 alignment: Alignment.bottomLeft,
                 child: Text(
@@ -204,7 +229,7 @@ class _SendTokenState extends State<SendToken> {
               ),
               SizedBox(height: MediaQuery.of(context).size.height / 10),
               BeepoFilledButtons(
-                text: 'Completed',
+                text: 'Complete',
                 onPressed: () async {
                   if ((amount.text) == '' || address.text == "") {
                     showToast("Enter All Fields!");
@@ -226,6 +251,7 @@ class _SendTokenState extends State<SendToken> {
                     showToast("Insufficient Funds!");
                     return;
                   }
+
                   Get.to(
                     () => SendTokenConfirmScreen(asset: asset, data: {'amount': amount.text, 'gasFee': res, "address": address.text}),
                   );

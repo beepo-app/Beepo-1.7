@@ -25,10 +25,10 @@ var networkInfo = {
   // },
 
   'networksInfo': {
-    1: {
+    11155111: {
       'name': 'Ethereum Mainnet',
       'displayName': 'Ethereum',
-      'chainId': 1,
+      'chainId': 11155111,
       'ticker': 'ETH',
       "nativeTicker": "ETH",
       "native": true,
@@ -57,10 +57,43 @@ var networkInfo = {
       'logoUrl': 'https://res.cloudinary.com/dwruvre6o/image/upload/v1697100571/usdt_jiebah.png',
       'nameoncoinmarketcap': 'tether',
     },
+    'MTK': {
+      'name': 'My Token ETH',
+      'displayName': 'MTK',
+      'chainId': 11155111,
+      "address": '0x7a8609Ae329C2fA2AD62cEe6a35dA7515Bd87D38',
+      'ticker': 'MTK',
+      'nativeTicker': 'ETH',
+      "rpc": {
+        'https': 'https://eth-rpc.gateway.pokt.network',
+        'testnet': 'https://eth-sepolia.g.alchemy.com/v2/HDQnQBbyr2HtgKSym1OqrbGED_H7Ev2N',
+        //'testnet': 'https://goerli.infura.io/v3/5fd05c9976d44bb7a6e849317e9ad9c0',
+        'wss': '',
+      },
+      'description': 'The first EVM based blockchain network',
+      'derivationPath': "m/44'/60'/0'/0",
+      'isTestnet': false,
+      'logoUrl': 'https://res.cloudinary.com/dwruvre6o/image/upload/v1697100571/usdt_jiebah.png',
+      'nameoncoinmarketcap': 'tether',
+    },
+    // 'BMTK': {
+    //   'name': 'Mu token BSC',
+    //   'displayName': 'MTK',
+    //   "address": '0x7a8609Ae329C2fA2AD62cEe6a35dA7515Bd87D38',
+    //   'ticker': 'MTK',
+    //   'nativeTicker': 'BNB',
+    //    "rpc": {'https': 'https://bsc-dataseed.binance.org/', 'testnet': 'https://data-seed-prebsc-1-s1.binance.org:8545/', 'wss': ""},
+    //   'chainId': 97,
+    //   'description': 'The first EVM based blockchain network',
+    //   'derivationPath': "m/44'/60'/0'/0",
+    //   'isTestnet': false,
+    //   'logoUrl': 'https://res.cloudinary.com/dwruvre6o/image/upload/v1697100571/usdt_jiebah.png',
+    //   'nameoncoinmarketcap': 'tether',
+    // },
     56: {
       'name': 'Binance Smartchain Mainnet',
       'displayName': 'Binance Smartchain',
-      'chainId': 56,
+      'chainId': 97,
       "address": '0x55d398326f99059fF775485246999027B3197955',
       'ticker': 'BNB',
       'nativeTicker': 'BNB',
@@ -75,7 +108,7 @@ var networkInfo = {
       'name': 'Binance Smartchain Mainnet',
       'displayName': 'Binance USD',
       "rpc": {'https': 'https://bsc-dataseed.binance.org/', 'testnet': 'https://data-seed-prebsc-1-s1.binance.org:8545/', 'wss': ""},
-      'chainId': 56,
+      'chainId': 97,
       "address": '0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee',
       'ticker': 'BUSD',
       'description': 'The centralized  EVM based smart blockchain network with low transaction fees',
@@ -95,7 +128,7 @@ var networkInfo = {
         'testnet': 'https://data-seed-prebsc-1-s1.binance.org:8545/',
         'wss': ""
       },
-      'chainId': 56,
+      'chainId': 97,
       "address": '0x337610d27c682E347C9cD60BD4b3b107C9d34dDd',
       //"address": '0x55d398326f99059fF775485246999027B3197955',
       'ticker': 'BUSDT',
@@ -196,9 +229,9 @@ var networkInfo = {
   },
 
   'rpcUrls': {
-    1: {
+    11155111: {
       'https': 'https://eth-rpc.gateway.pokt.network',
-      'testnet': 'https://rpc.sepolia.org',
+      'testnet': 'https://eth-sepolia.g.alchemy.com/v2/HDQnQBbyr2HtgKSym1OqrbGED_H7Ev2N',
       'wss': '',
     },
     5: {
