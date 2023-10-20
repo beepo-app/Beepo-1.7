@@ -215,8 +215,8 @@ class TransferInfo extends StatelessWidget {
                 color: AppColors.secondaryColor,
               ),
               onPressed: () async {
-                final Uri url = Uri.parse('https://flutter.dev');
-                if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+                final Uri url = Uri.parse(data!['tx']['url']);
+                if (!await launchUrl(url)) {
                   throw Exception('Could not launch $url');
                 }
               },

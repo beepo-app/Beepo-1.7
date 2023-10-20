@@ -49,6 +49,7 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.data);
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(

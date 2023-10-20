@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:beepo/networks/erc20.dart';
@@ -9,6 +10,10 @@ import 'package:ed25519_hd_key/ed25519_hd_key.dart';
 import 'package:flutter/foundation.dart';
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:hex/hex.dart';
+import 'package:web3auth_flutter/enums.dart';
+import 'package:web3auth_flutter/input.dart';
+import 'package:web3auth_flutter/output.dart';
+import 'package:web3auth_flutter/web3auth_flutter.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:wallet/wallet.dart' as wallet;
 import 'package:http/http.dart' as http;
@@ -17,12 +22,14 @@ import "package:ethereum_addresses/ethereum_addresses.dart";
 class WalletProvider extends ChangeNotifier {
   // Variable to store the private key
   String? ethPrivateKey;
+  // String? mpcEthPrivateKey;
   EthereumAddress? ethAddress;
   String? btcAddress;
   String? password;
   String? mnemonic;
   List? assets;
   String? totalBalance;
+  Web3AuthResponse? mpcResponse;
 
   String generateMnemonic() {
     return bip39.generateMnemonic();
@@ -33,6 +40,18 @@ class WalletProvider extends ChangeNotifier {
       mnemonic = mnemonic_;
       await generateBTCWallet(mnemonic_);
       await generateETHWallet(mnemonic_);
+      await getAssets();
+      return "Done";
+    } catch (e) {
+      return (e.toString());
+    }
+  }
+
+  Future<String> initMPCWalletState(data) async {
+    try {
+      final address = EthPrivateKey.fromHex(data['privKey']).address;
+      ethPrivateKey = data['privKey'];
+      ethAddress = address;
       await getAssets();
       return "Done";
     } catch (e) {
@@ -100,7 +119,7 @@ class WalletProvider extends ChangeNotifier {
           Map<String, dynamic>? rpc = value;
           rpcLink = rpc['rpc']['testnet'];
           bal = await getERC20Balance(value['address'], rpcLink);
-          print(bal);
+          // print(bal);
         }
 
         List? marketData = await getPrices(value['nameoncoinmarketcap']);
@@ -128,6 +147,7 @@ class WalletProvider extends ChangeNotifier {
         totalBalance = totalBal.toStringAsFixed(2);
       });
       assets = data;
+      return 'Done Fetching!';
     } catch (e) {
       print({"error 120": e});
     }
@@ -303,5 +323,42 @@ class WalletProvider extends ChangeNotifier {
         showToast("Invalid Address Entered!");
       }
     }
+  }
+
+  Future<void> initPlatformState() async {
+    Uri redirectUrl;
+    if (Platform.isAndroid) {
+      redirectUrl = Uri.parse('beepo2.0https://beepo2.0/auth');
+    } else {
+      throw UnKnownException('Unknown platform');
+    }
+
+    await Web3AuthFlutter.init(
+      Web3AuthOptions(
+        clientId: "BGaNpqXhzeQ8oKLtXECjffo6ynnBA-APd63zn9fTn9FsPmAqC1FzGdWoI4Yjumz73b9zqqYst3G_o9_iUo1KnLs",
+        network: Network.testnet,
+        redirectUrl: redirectUrl,
+      ),
+    );
+  }
+
+  Future<void> web3AuthLogin() async {
+    Uri redirectUrl;
+    if (Platform.isAndroid) {
+      redirectUrl = Uri.parse('beepo2.0https://beepo2.0/auth');
+    } else {
+      throw UnKnownException('Unknown platform');
+    }
+
+    await Web3AuthFlutter.init(
+      Web3AuthOptions(
+        clientId: "BGaNpqXhzeQ8oKLtXECjffo6ynnBA-APd63zn9fTn9FsPmAqC1FzGdWoI4Yjumz73b9zqqYst3G_o9_iUo1KnLs",
+        network: Network.testnet,
+        redirectUrl: redirectUrl,
+      ),
+    );
+
+    final Web3AuthResponse response = await Web3AuthFlutter.login(LoginParams(loginProvider: Provider.google));
+    mpcResponse = response;
   }
 }

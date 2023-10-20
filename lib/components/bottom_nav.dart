@@ -26,7 +26,7 @@ class _BottomNavHomeState extends State<BottomNavHome> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        return true;
+        return false;
       },
       child: Scaffold(
         body: body[index],

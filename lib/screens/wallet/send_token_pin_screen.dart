@@ -87,7 +87,7 @@ class _SendTokenPinScreenState extends State<SendTokenPinScreen> {
             SizedBox(height: 10.h),
             Center(
               child: AppText(
-                text: "${txData!['data']['address']}",
+                text: "${txData['data']['address']}",
                 fontSize: 12.sp,
                 color: const Color(0xff0e014c),
               ),
@@ -127,18 +127,19 @@ class _SendTokenPinScreenState extends State<SendTokenPinScreen> {
                       return;
                     }
 
-                    if (txData != null) {
-                      Map asset = txData['asset'];
-                      Map data = txData['data'];
+                    Map asset = txData['asset'];
+                    Map data = txData['data'];
 
-                      if (asset['native'] != null && asset['native'] == true) {
-                        walletProvider.sendNativeToken(data['address'], asset['rpc'], data['amount']);
-                      } else {
-                        walletProvider.sendERC20(asset['contractAddress'], data['address'], asset['rpc'], data['amount']);
-                      }
-                      await walletProvider.getAssets();
-                      Get.to(() => TransferSuccess(txData: txData));
+                    if (asset['native'] != null && asset['native'] == true) {
+                      await walletProvider.sendNativeToken(data['address'], asset['rpc'], data['amount']);
+                    } else {
+                      await walletProvider.sendERC20(asset['contractAddress'], data['address'], asset['rpc'], data['amount']);
                     }
+                    var res = await walletProvider.getAssets();
+                    print(res);
+                    print('res');
+                    // return;
+                    Get.to(() => TransferSuccess(txData: txData));
 
                     // Navigator.push(context, MaterialPageRoute(builder: (context) {
                     //   return const TransferSuccess();

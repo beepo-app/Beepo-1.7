@@ -43,6 +43,7 @@ class _WalletScreenState extends State<WalletScreen> {
   getAssests() async {
     try {
       final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+      // var res = await walletProvider.getAssets();
       List<dynamic>? assets_ = walletProvider.assets;
       setState(() {
         if (assets_ != null) {
@@ -64,30 +65,30 @@ class _WalletScreenState extends State<WalletScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+    final walletProvider = Provider.of<WalletProvider>(context, listen: true);
+    // assets = walletProvider.assets;
+    // getAssests();
 
     return DefaultTabController(
       length: 2,
       child: SafeArea(
         child: Scaffold(
           appBar: AppBar(
-            leading: IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: const Icon(
-                Icons.add,
-                color: AppColors.white,
-              ),
-            ),
+            automaticallyImplyLeading: false,
             elevation: 0,
             toolbarHeight: 20.h,
-            backgroundColor: AppColors.secondaryColor,
+            backgroundColor: AppColors.white,
             actions: [
               PopupMenuButton<String>(
                 itemBuilder: (context) {
                   return items;
                 },
+                color: AppColors.white,
+                icon: const Icon(
+                  Icons.more_vert,
+                  color: AppColors.secondaryColor,
+                ),
+                // icon: Icon,
                 onSelected: (value) {
                   // Handle menu item selection here
                   print('Selected: $value');

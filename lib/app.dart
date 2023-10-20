@@ -1,4 +1,6 @@
 import 'package:beepo/providers/account_provider.dart';
+import 'package:beepo/providers/wallet_provider.dart';
+import 'package:beepo/screens/Auth/lock_screen.dart';
 import 'package:beepo/screens/Auth/pin_code.dart';
 import 'package:beepo/screens/auth/onboarding_screen.dart';
 import 'package:flutter/foundation.dart';
@@ -19,9 +21,10 @@ class _MyAppState extends State<MyApp> {
   // late bool isLocked = false;
   checkState() async {
     try {
-      final accountProvider =
-          Provider.of<AccountProvider>(context, listen: false);
+      final accountProvider = Provider.of<AccountProvider>(context, listen: false);
+      final walletProvider = Provider.of<WalletProvider>(context, listen: false);
       await accountProvider.initDB();
+      await walletProvider.initPlatformState();
 
       // bool? isSignedUpState = await Hive.box('beepo2.0').get('isSignedUp');
       // bool? isLockedState = await Hive.box('beepo2.0').get('isLocked');
@@ -51,9 +54,7 @@ class _MyAppState extends State<MyApp> {
           home: isSignedUp == null
               ? const OnboardingScreen()
               : isSignedUp!
-                  ? const PinCode(
-                      isSignedUp: true,
-                    )
+                  ? const LockScreen()
                   : const OnboardingScreen(),
         );
       },

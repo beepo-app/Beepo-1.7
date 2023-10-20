@@ -1,6 +1,16 @@
+import 'dart:convert';
+
+import 'package:beepo/components/bottom_nav.dart';
+import 'package:beepo/providers/account_provider.dart';
+import 'package:beepo/providers/auth_provider.dart';
+import 'package:beepo/providers/wallet_provider.dart';
+import 'package:beepo/providers/xmtp.dart';
+import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:provider/provider.dart';
+import 'package:web3auth_flutter/output.dart';
 
 import '../../Utils/styles.dart';
 
@@ -16,6 +26,10 @@ class _LockScreenState extends State<LockScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+    final accountProvider = Provider.of<AccountProvider>(context, listen: false);
+    final xmtpProvider = Provider.of<XMTPProvider>(context, listen: false);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Padding(
@@ -65,7 +79,34 @@ class _LockScreenState extends State<LockScreen> {
                 enableActiveFill: true,
                 controller: otp,
                 onCompleted: (v) {},
-                onChanged: (String value) {},
+                onChanged: (String value) async {
+                  if (value.length == 4) {
+                    String response = await login(value);
+                    if (response.contains("Incorrect Pin Entered")) {
+                      showToast("Incorrect Pin Entered");
+                      return;
+                    }
+                    Map data = jsonDecode(response);
+
+                    if (data['privKey'] != null) {
+                      await walletProvider.initMPCWalletState(data);
+                      await xmtpProvider.initClientFromKey();
+                      await accountProvider.initAccountState();
+
+                      Get.to(
+                        () => const BottomNavHome(),
+                      );
+                      return;
+                    }
+                    await walletProvider.initWalletState(response);
+                    await xmtpProvider.initClientFromKey();
+                    await accountProvider.initAccountState();
+
+                    Get.to(
+                      () => const BottomNavHome(),
+                    );
+                  }
+                },
               ),
             ),
             const SizedBox(height: 40, width: double.infinity),

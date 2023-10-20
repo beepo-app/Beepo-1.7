@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
+import 'package:web3auth_flutter/output.dart';
 import 'package:web3dart/web3dart.dart';
 
 class VerifyCode extends StatefulWidget {
@@ -109,6 +110,41 @@ class _VerifyCodeState extends State<VerifyCode> {
 
                   String padding = "000000000000";
                   Encrypted encrypteData = encryptWithAES('${otp.text}$padding', mnemonic);
+                  var mpcRes = walletProvider.mpcResponse;
+
+                  if (mpcRes != null) {
+                    encrypteData = encryptWithAES('${otp.text}$padding', jsonEncode(mpcRes));
+
+                    await walletProvider.initMPCWalletState(mpcRes);
+
+                    EthereumAddress? ethAddress = walletProvider.ethAddress;
+                    String? btcAddress = walletProvider.btcAddress;
+                    String base64Image = base64Encode(widget.image);
+
+                    if (ethAddress != null && accountProvider.db != null) {
+                      try {
+                        await accountProvider.createUser(
+                          base64Image,
+                          accountProvider.db,
+                          widget.name,
+                          ethAddress.toString(),
+                          btcAddress,
+                          encrypteData,
+                        );
+
+                        await xmtpProvider.initClient(walletProvider.ethPrivateKey!);
+                        await accountProvider.initAccountState();
+                      } catch (e) {
+                        if (kDebugMode) {
+                          print(e.toString());
+                        }
+                      }
+                    }
+                    Get.to(
+                      () => const BottomNavHome(),
+                    );
+                    return;
+                  }
 
                   await walletProvider.initWalletState(mnemonic);
 
@@ -127,8 +163,6 @@ class _VerifyCodeState extends State<VerifyCode> {
                         encrypteData,
                       );
 
-                      print('creaating');
-                      print(walletProvider.ethAddress);
                       await xmtpProvider.initClient(walletProvider.ethPrivateKey!);
                       await accountProvider.initAccountState();
                     } catch (e) {
