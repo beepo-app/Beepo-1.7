@@ -59,15 +59,17 @@ class _WalletScreenState extends State<WalletScreen> {
 
   @override
   void initState() {
-    getAssests();
+    // getAssests();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final walletProvider = Provider.of<WalletProvider>(context, listen: true);
-    // assets = walletProvider.assets;
+    final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+    assets = walletProvider.assets;
     // getAssests();
+
+    print(assets);
 
     return DefaultTabController(
       length: 2,

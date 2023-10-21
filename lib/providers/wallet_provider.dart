@@ -20,9 +20,7 @@ import 'package:http/http.dart' as http;
 import "package:ethereum_addresses/ethereum_addresses.dart";
 
 class WalletProvider extends ChangeNotifier {
-  // Variable to store the private key
   String? ethPrivateKey;
-  // String? mpcEthPrivateKey;
   EthereumAddress? ethAddress;
   String? btcAddress;
   String? password;
@@ -262,9 +260,9 @@ class WalletProvider extends ChangeNotifier {
 
       var response =
           await erc20.sendERC20Token("transfer", [EthereumAddress.fromHex(toAddress), newAmount], ethClient, key, contractAddress, ethAddress);
+      await getAssets();
       return response;
     } catch (e) {
-      print({"error (Wallet Provider)  220": e});
       if (e.toString().contains('invalid address')) {
         showToast("Invalid Address Entered!");
       }
@@ -313,12 +311,11 @@ class WalletProvider extends ChangeNotifier {
         chainId: chainID.toInt(),
       );
       await Future.delayed(const Duration(seconds: 5));
-      print(txHash);
+
       var transactionReceipt = await ethClient.getTransactionReceipt(txHash);
-      print("Transaction receipt status: ${transactionReceipt?.status.toString()}");
-      return txHash;
+      await getAssets();
+      return transactionReceipt;
     } catch (e) {
-      print({"error (Wallet Provider)  262": e});
       if (e.toString().contains('invalid address')) {
         showToast("Invalid Address Entered!");
       }
@@ -343,21 +340,6 @@ class WalletProvider extends ChangeNotifier {
   }
 
   Future<void> web3AuthLogin() async {
-    Uri redirectUrl;
-    if (Platform.isAndroid) {
-      redirectUrl = Uri.parse('beepo2.0https://beepo2.0/auth');
-    } else {
-      throw UnKnownException('Unknown platform');
-    }
-
-    await Web3AuthFlutter.init(
-      Web3AuthOptions(
-        clientId: "BGaNpqXhzeQ8oKLtXECjffo6ynnBA-APd63zn9fTn9FsPmAqC1FzGdWoI4Yjumz73b9zqqYst3G_o9_iUo1KnLs",
-        network: Network.testnet,
-        redirectUrl: redirectUrl,
-      ),
-    );
-
     final Web3AuthResponse response = await Web3AuthFlutter.login(LoginParams(loginProvider: Provider.google));
     mpcResponse = response;
   }

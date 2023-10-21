@@ -6,6 +6,7 @@ import 'package:beepo/providers/wallet_provider.dart';
 import 'package:beepo/providers/xmtp.dart';
 import 'package:beepo/services/encryption.dart';
 import 'package:beepo/utils/styles.dart';
+import 'package:beepo/widgets/toast.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,6 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
-import 'package:web3auth_flutter/output.dart';
 import 'package:web3dart/web3dart.dart';
 
 class VerifyCode extends StatefulWidget {
@@ -115,7 +115,8 @@ class _VerifyCodeState extends State<VerifyCode> {
                   if (mpcRes != null) {
                     encrypteData = encryptWithAES('${otp.text}$padding', jsonEncode(mpcRes));
 
-                    await walletProvider.initMPCWalletState(mpcRes);
+                    // print(mpcRes.privKey);
+                    await walletProvider.initMPCWalletState((mpcRes).toJson());
 
                     EthereumAddress? ethAddress = walletProvider.ethAddress;
                     String? btcAddress = walletProvider.btcAddress;
@@ -134,15 +135,18 @@ class _VerifyCodeState extends State<VerifyCode> {
 
                         await xmtpProvider.initClient(walletProvider.ethPrivateKey!);
                         await accountProvider.initAccountState();
+
+                        Get.to(
+                          () => const BottomNavHome(),
+                        );
+                        return;
                       } catch (e) {
                         if (kDebugMode) {
                           print(e.toString());
                         }
                       }
                     }
-                    Get.to(
-                      () => const BottomNavHome(),
-                    );
+                    showToast("An Error Occured Please Try Again Later!");
                     return;
                   }
 
@@ -165,15 +169,18 @@ class _VerifyCodeState extends State<VerifyCode> {
 
                       await xmtpProvider.initClient(walletProvider.ethPrivateKey!);
                       await accountProvider.initAccountState();
+
+                      Get.to(
+                        () => const BottomNavHome(),
+                      );
                     } catch (e) {
                       if (kDebugMode) {
                         print(e.toString());
                       }
                     }
                   }
-                  Get.to(
-                    () => const BottomNavHome(),
-                  );
+                  showToast("An Error Occured Please Try Again Later!");
+                  return;
                 }
               },
             ),

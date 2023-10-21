@@ -1,7 +1,6 @@
 import 'package:beepo/providers/account_provider.dart';
 import 'package:beepo/providers/wallet_provider.dart';
 import 'package:beepo/screens/Auth/lock_screen.dart';
-import 'package:beepo/screens/Auth/pin_code.dart';
 import 'package:beepo/screens/auth/onboarding_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

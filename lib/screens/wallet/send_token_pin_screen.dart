@@ -4,6 +4,7 @@ import 'package:beepo/providers/wallet_provider.dart';
 import 'package:beepo/screens/wallet/transfer_success.dart';
 import 'package:beepo/utils/styles.dart';
 import 'package:beepo/widgets/app_text.dart';
+import 'package:beepo/widgets/commons.dart';
 import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -126,6 +127,7 @@ class _SendTokenPinScreenState extends State<SendTokenPinScreen> {
                       showToast("Incorrect Pin Entered");
                       return;
                     }
+                    loadingDialog('Sending ${txData['data']['amount']} ${txData['asset']['ticker']}');
 
                     Map asset = txData['asset'];
                     Map data = txData['data'];
@@ -135,15 +137,8 @@ class _SendTokenPinScreenState extends State<SendTokenPinScreen> {
                     } else {
                       await walletProvider.sendERC20(asset['contractAddress'], data['address'], asset['rpc'], data['amount']);
                     }
-                    var res = await walletProvider.getAssets();
-                    print(res);
-                    print('res');
-                    // return;
-                    Get.to(() => TransferSuccess(txData: txData));
 
-                    // Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    //   return const TransferSuccess();
-                    // }));
+                    Get.to(() => TransferSuccess(txData: txData));
                   }
                 },
               ),

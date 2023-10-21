@@ -3,11 +3,11 @@ import 'package:beepo/components/outline_button.dart';
 import 'package:beepo/providers/wallet_provider.dart';
 import 'package:beepo/screens/Auth/login_screen.dart';
 import 'package:beepo/screens/auth/create_acct_screen.dart';
+import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-import 'package:web3dart/web3dart.dart';
 
 class SignUp extends StatelessWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -74,7 +74,11 @@ class SignUp extends StatelessWidget {
                 text: 'Continue with Google',
                 onPressed: () async {
                   await walletProvider.web3AuthLogin();
-                  Get.to(() => const CreateAccountScreen());
+                  if (walletProvider.mpcResponse != null) {
+                    Get.to(() => const CreateAccountScreen());
+                    return;
+                  }
+                  showToast("Incorrect Pin Entered");
                 },
               ),
               // SizedBox(height: 80.h),

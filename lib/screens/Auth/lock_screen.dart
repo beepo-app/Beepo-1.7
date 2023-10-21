@@ -5,12 +5,12 @@ import 'package:beepo/providers/account_provider.dart';
 import 'package:beepo/providers/auth_provider.dart';
 import 'package:beepo/providers/wallet_provider.dart';
 import 'package:beepo/providers/xmtp.dart';
+import 'package:beepo/widgets/commons.dart';
 import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
-import 'package:web3auth_flutter/output.dart';
 
 import '../../Utils/styles.dart';
 
@@ -86,6 +86,7 @@ class _LockScreenState extends State<LockScreen> {
                       showToast("Incorrect Pin Entered");
                       return;
                     }
+                    loadingDialog("Logging In!");
                     Map data = jsonDecode(response);
 
                     if (data['privKey'] != null) {
@@ -98,6 +99,7 @@ class _LockScreenState extends State<LockScreen> {
                       );
                       return;
                     }
+
                     await walletProvider.initWalletState(response);
                     await xmtpProvider.initClientFromKey();
                     await accountProvider.initAccountState();
