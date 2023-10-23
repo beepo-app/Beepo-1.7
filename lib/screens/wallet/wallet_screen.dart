@@ -69,8 +69,6 @@ class _WalletScreenState extends State<WalletScreen> {
     assets = walletProvider.assets;
     // getAssests();
 
-    print(assets);
-
     return DefaultTabController(
       length: 2,
       child: SafeArea(

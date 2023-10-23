@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:convert';
+
 import 'package:beepo/components/bottom_nav.dart';
 import 'package:beepo/providers/account_provider.dart';
 import 'package:beepo/providers/auth_provider.dart';
@@ -21,14 +23,14 @@ import '../../components/beepo_filled_button.dart';
 class PinCode extends StatefulWidget {
   final Uint8List? image;
   final String? name;
-  final Map? txData;
+  final Map? data;
   final String? mnemonic;
   final bool isSignedUp;
   const PinCode({
     Key? key,
     this.image,
     this.name,
-    this.txData,
+    this.data,
     this.mnemonic,
     this.isSignedUp = true,
   }) : super(key: key);
@@ -125,6 +127,16 @@ class _PinCodeState extends State<PinCode> {
                           name: widget.name!,
                           image: widget.image!,
                           pin: otp.text,
+                        ),
+                      );
+                    }
+                    if (widget.data != null) {
+                      Get.to(
+                        () => VerifyCode(
+                          image: base64Decode(widget.data!['response']['image']),
+                          pin: otp.text,
+                          data: widget.data,
+                          name: widget.data!['response']['image'],
                         ),
                       );
                     }

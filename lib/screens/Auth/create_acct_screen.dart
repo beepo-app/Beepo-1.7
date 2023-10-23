@@ -130,7 +130,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                   return;
                 }
                 if (selectedImage == null) {
-                  showToast('Please sekect a display image');
+                  showToast('Please select a display image');
                   return;
                 } else {
                   Get.to(

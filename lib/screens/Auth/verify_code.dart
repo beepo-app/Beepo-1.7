@@ -11,17 +11,20 @@ import 'package:encrypt/encrypt.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
 import 'package:web3dart/web3dart.dart';
 
 class VerifyCode extends StatefulWidget {
+  final Map? data;
   final Uint8List image;
   final String name;
+  final String? type;
   final String pin;
   final String? mnemonic;
-  const VerifyCode({key, required this.image, this.mnemonic, required this.name, required this.pin}) : super(key: key);
+  const VerifyCode({key, required this.image, this.mnemonic, this.data, this.type, required this.name, required this.pin}) : super(key: key);
 
   @override
   State<VerifyCode> createState() => _VerifyCodeState();
@@ -124,14 +127,24 @@ class _VerifyCodeState extends State<VerifyCode> {
 
                     if (ethAddress != null && accountProvider.db != null) {
                       try {
-                        await accountProvider.createUser(
-                          base64Image,
-                          accountProvider.db,
-                          widget.name,
-                          ethAddress.toString(),
-                          btcAddress,
-                          encrypteData,
-                        );
+                        if (widget.data != null) {
+                          await Hive.box('beepo2.0').put('encryptedSeedPhrase', (encrypteData.base64));
+                          await Hive.box('beepo2.0').put('base64Image', base64Image);
+                          await Hive.box('beepo2.0').put('ethAddress', ethAddress.toString());
+                          await Hive.box('beepo2.0').put('btcAddress', btcAddress);
+                          await Hive.box('beepo2.0').put('displayName', widget.data!['response']['displayName']);
+                          await Hive.box('beepo2.0').put('username', widget.data!['response']['username']);
+                          await Hive.box('beepo2.0').put('isSignedUp', true);
+                        } else {
+                          await accountProvider.createUser(
+                            base64Image,
+                            accountProvider.db,
+                            widget.name,
+                            ethAddress.toString(),
+                            btcAddress,
+                            encrypteData,
+                          );
+                        }
 
                         await xmtpProvider.initClient(walletProvider.ethPrivateKey!);
                         await accountProvider.initAccountState();

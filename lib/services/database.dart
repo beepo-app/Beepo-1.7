@@ -95,14 +95,19 @@ Future<Map> dbGetUser(Db db, String username) async {
 Future<Map> dbGetUserByAddres(Db db, EthereumAddress ethAddress) async {
   await db.open();
   var usersCollection = db.collection('users');
+  try {
+    Map? val = await usersCollection.findOne(where.eq("ethAddress", ethAddress.toString()));
 
-  Map? val = await usersCollection.findOne(where.eq("ethAddress", ethAddress));
+    print(val);
 
-  if (val == null) {
-    await db.close();
-    return {'error': "User Not Found"};
-  } else {
-    await db.close();
-    return val;
+    if (val == null) {
+      await db.close();
+      return {'error': "User Not Found"};
+    } else {
+      await db.close();
+      return val;
+    }
+  } catch (e) {
+    return {'error acctProv': e};
   }
 }

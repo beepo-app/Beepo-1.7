@@ -51,8 +51,7 @@ class AccountProvider extends ChangeNotifier {
   Future<Map> getUserByAddress(EthereumAddress address) async {
     try {
       Map data = await dbGetUserByAddres(db!, address);
-      print(data);
-      return {'success': "done"};
+      return data;
     } catch (e) {
       if (kDebugMode) {
         print(e);

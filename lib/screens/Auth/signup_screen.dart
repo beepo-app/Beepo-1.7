@@ -1,8 +1,11 @@
 import 'package:beepo/components/beepo_filled_button.dart';
 import 'package:beepo/components/outline_button.dart';
+import 'package:beepo/providers/account_provider.dart';
 import 'package:beepo/providers/wallet_provider.dart';
 import 'package:beepo/screens/Auth/login_screen.dart';
+import 'package:beepo/screens/Auth/pin_code.dart';
 import 'package:beepo/screens/auth/create_acct_screen.dart';
+import 'package:beepo/widgets/commons.dart';
 import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,6 +18,7 @@ class SignUp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+    final accountProvider = Provider.of<AccountProvider>(context, listen: false);
 
     return Scaffold(
       body: Align(
@@ -73,12 +77,32 @@ class SignUp extends StatelessWidget {
               OutlnButton(
                 text: 'Continue with Google',
                 onPressed: () async {
-                  await walletProvider.web3AuthLogin();
-                  if (walletProvider.mpcResponse != null) {
-                    Get.to(() => const CreateAccountScreen());
+                  Map? res = await walletProvider.web3AuthLogin();
+
+                  if (res != null) {
+                    loadingDialog("Checking Info!");
+
+                    await walletProvider.initMPCWalletState(res);
+                    if (walletProvider.ethAddress != null) {
+                      var newRes = await accountProvider.getUserByAddress(walletProvider.ethAddress!);
+
+                      if (newRes['error'] != null) {
+                        Get.back();
+                        Get.to(() => const CreateAccountScreen());
+                        return;
+                      }
+                      Get.back();
+                      Get.to(
+                        () => PinCode(
+                          data: {'response': newRes, 'mpc': res},
+                          isSignedUp: false,
+                        ),
+                      );
+                      return;
+                    }
                     return;
                   }
-                  showToast("Incorrect Pin Entered");
+                  showToast("An error Occured, Please Try Again!");
                 },
               ),
               // SizedBox(height: 80.h),

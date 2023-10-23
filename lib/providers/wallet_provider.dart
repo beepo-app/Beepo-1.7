@@ -339,8 +339,9 @@ class WalletProvider extends ChangeNotifier {
     );
   }
 
-  Future<void> web3AuthLogin() async {
+  Future<Map> web3AuthLogin() async {
     final Web3AuthResponse response = await Web3AuthFlutter.login(LoginParams(loginProvider: Provider.google));
     mpcResponse = response;
+    return response.toJson();
   }
 }
