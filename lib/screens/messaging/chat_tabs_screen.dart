@@ -1,9 +1,15 @@
 import 'package:beepo/constants/constants.dart';
 import 'package:beepo/screens/messaging/calls/calls_tab.dart';
 import 'package:beepo/screens/messaging/chats/chat_tab.dart';
+import 'package:beepo/screens/messaging/chats/search_users_screen.dart';
 import 'package:beepo/screens/moments/moments_tab.dart';
+import 'package:beepo/widgets/filled_buttons.dart';
+import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:hawk_fab_menu/hawk_fab_menu.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../moments/add_story.dart';
 import '../moments/moments_screen.dart';
@@ -15,8 +21,7 @@ class ChatTabsScreen extends StatefulWidget {
   State<ChatTabsScreen> createState() => _ChatTabsScreenState();
 }
 
-class _ChatTabsScreenState extends State<ChatTabsScreen>
-    with TickerProviderStateMixin {
+class _ChatTabsScreenState extends State<ChatTabsScreen> with TickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -31,40 +36,75 @@ class _ChatTabsScreenState extends State<ChatTabsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   bottom:
-      // ),
-      // NestedScrollView(
-      //   physics: const NeverScrollableScrollPhysics(),
-      //   headerSliverBuilder: (context, innerBoxIsScrolled) {
-      //     return [
-      //       SliverAppBar(
-      //         bottom: MyTabBar(
-      //           controller: _tabController,
-      //         ),
-      //       ),
-      //       // SliverToBoxAdapter(
-      //       //   child: MyTabBar(
-      //       //     controller: _tabController,
-      //       //   ),
-      //       // ),
-      //     ];
-      //   },
-      body: Column(
-        children: [
-          // SizedBox(height: 30.h),
-          MyTabBar(controller: _tabController),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                const ChatTab(),
-                const MomentsTab(),
-                CallTab(),
-              ],
-            ),
+      body: HawkFabMenu(
+        icon: AnimatedIcons.menu_close,
+        fabColor: const Color(0xe50d004c),
+        items: [
+          HawkFabMenuItem(
+            label: 'New Chat',
+            ontap: () {
+              Get.dialog(
+                Dialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(25),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        FilledButtons(
+                          text: 'Search For User',
+                          onPressed: () => Get.to(() => const SearchScreen()),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+            icon: const Icon(Icons.add),
+            color: const Color(0xe50d004c),
+            labelColor: Colors.white,
+            labelBackgroundColor: const Color(0xe50d004c),
+          ),
+          HawkFabMenuItem(
+            label: 'Join Public Chat',
+            ontap: () {
+              showToast('Comming Soon!');
+            },
+            icon: const Icon(Iconsax.people),
+            color: const Color(0xe50d004c),
+            labelColor: Colors.white,
+            labelBackgroundColor: const Color(0xe50d004c),
+          ),
+          HawkFabMenuItem(
+            label: 'Share',
+            ontap: () {
+              showToast('Comming Soon!');
+            },
+            icon: const Icon(Icons.share),
+            color: const Color(0xe50d004c),
+            labelColor: Colors.white,
+            labelBackgroundColor: const Color(0xe50d004c),
           ),
         ],
+        body: Column(
+          children: [
+            // SizedBox(height: 30.h),
+            MyTabBar(controller: _tabController),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  const ChatTab(),
+                  const MomentsTab(),
+                  CallTab(),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -109,7 +149,7 @@ class _MyTabBarState extends State<MyTabBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(top: 20.h),
+      padding: EdgeInsets.only(top: 28.h),
       color: AppColors.secondaryColor,
       child: Column(
         children: [
@@ -153,31 +193,33 @@ class _MyTabBarState extends State<MyTabBar> {
           if ([0, 1].contains(pageIndex)) ...[
             SizedBox(height: 5.h),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(width: 20),
                 InkWell(
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
                       return const AddStory();
                     }));
                   },
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Container(
-                        height: 70,
-                        width: 70,
+                        margin: const EdgeInsets.only(top: 10),
+                        height: 60,
+                        width: 60,
                         decoration: const BoxDecoration(
                           color: Color(0xFFC4C4C4),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
                           Icons.add,
-                          size: 35,
+                          size: 45,
                           color: Colors.black,
                         ),
                       ),
-                      SizedBox(height: 8.9.h),
+                      SizedBox(height: 6.5.h),
                       Text(
                         "Update Moment",
                         style: TextStyle(
@@ -203,17 +245,16 @@ class _MyTabBarState extends State<MyTabBar> {
                         return Column(
                           children: [
                             Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10.w),
+                              padding: EdgeInsets.symmetric(horizontal: 4.w),
                               child: InkWell(
                                 onTap: () {
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) {
                                     return const MomentsScreens();
                                   }));
                                 },
                                 child: Container(
-                                  height: 70,
-                                  width: 70,
+                                  height: 60,
+                                  width: 60,
                                   decoration: BoxDecoration(
                                     color: const Color(0xFFC4C4C4),
                                     shape: BoxShape.circle,

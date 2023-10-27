@@ -14,9 +14,12 @@ class AccountProvider extends ChangeNotifier {
     try {
       db = await Db.create('mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
       await db!.open();
+      notifyListeners();
+      print(db!.isConnected);
+      print('DB init');
       return "DB init";
     } catch (e) {
-      return (e.toString());
+      return ('Act Prov19  ${e.toString()}');
     }
   }
 
@@ -50,12 +53,13 @@ class AccountProvider extends ChangeNotifier {
 
   Future<Map> getUserByAddress(EthereumAddress address) async {
     try {
+      db ??= await Db.create('mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
       Map data = await dbGetUserByAddres(db!, address);
       return data;
     } catch (e) {
       if (kDebugMode) {
         print(e);
-        return ({'error': e.toString()});
+        return ({'error 63': e.toString()});
       }
     }
     return ({'error': 'Not done'});

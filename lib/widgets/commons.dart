@@ -11,7 +11,7 @@ dynamic loadingDialog(String label) {
       child: Center(
         child: Container(
           width: 170,
-          height: 180,
+          height: 200,
           padding: const EdgeInsets.all(30),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
@@ -21,11 +21,7 @@ dynamic loadingDialog(String label) {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 20),
-              const CircularProgressIndicator(
-                  // valueColor: AlwaysStoppedAnimation(primaryColor),
-                  ),
-              const SizedBox(height: 20),
+              Lottie.asset('assets/lottie/loading.json'),
               Text(
                 label,
                 textAlign: TextAlign.center,

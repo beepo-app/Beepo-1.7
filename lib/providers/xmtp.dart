@@ -6,7 +6,12 @@ import 'package:web3dart/credentials.dart';
 import 'dart:developer' as dev;
 
 class XMTPProvider extends ChangeNotifier {
+  XMTPProvider() {
+    getClient('null');
+  }
+
   final String _conversationId = 'chat';
+  String? ethPrivateKey;
   final Box _box = Hive.box('beepo2.0');
 
   late xmtp.Client client;
@@ -20,35 +25,31 @@ class XMTPProvider extends ChangeNotifier {
   bool get isLoadingConversations => _isLoadingConversations;
 
   //get client and notify listeners
-  Future<xmtp.Client> getClient(privateKey) async {
+  Future<xmtp.Client> getClient(String? privateKey) async {
     var key = _box.get('xmpt_key');
-    bool isLoggedIn = _box.get('isLoggedIn', defaultValue: false);
+    bool isSignedUp = _box.get('isSignedUp', defaultValue: false);
+    print(isSignedUp);
 
-    if (isLoggedIn) {
+    if (isSignedUp) {
       if (key != null) {
         client = await initClientFromKey();
         notifyListeners();
-        // return client;
-        print('from key client');
       } else {
-        client = await initClient(privateKey);
+        client = await initClient(privateKey!);
         notifyListeners();
-        // return client;
-        print('new client');
       }
     }
+    await listConversations();
     return client;
   }
 
-  //get privatekey
   Future<xmtp.Client> initClient(String privateKey) async {
     try {
       EthPrivateKey credentials = EthPrivateKey.fromHex(privateKey);
 
       print(credentials);
       var api = xmtp.Api.create(host: 'production.xmtp.network');
-      var client =
-          await xmtp.Client.createFromWallet(api, credentials.asSigner());
+      var client = await xmtp.Client.createFromWallet(api, credentials.asSigner());
 
       Uint8List key = client.keys.writeToBuffer();
 
@@ -63,16 +64,15 @@ class XMTPProvider extends ChangeNotifier {
     }
   }
 
-  //init client from key
   Future<xmtp.Client> initClientFromKey() async {
     Uint8List key = Hive.box('beepo2.0').get('xmpt_key');
 
+    print('object');
     var privateKey = xmtp.PrivateKeyBundle.fromBuffer(key);
 
     var api = xmtp.Api.create(host: 'production.xmtp.network');
-    var client = await xmtp.Client.createFromKeys(api, privateKey);
-
-    print(client.address);
+    client = await xmtp.Client.createFromKeys(api, privateKey);
+    // await listConversations();
     return client;
   }
 
@@ -93,23 +93,22 @@ class XMTPProvider extends ChangeNotifier {
     }
   }
 
-  // Method to fetch conversations
-  Future<void> fetchConversations(privateKey) async {
+  Future<void> fetchConversations() async {
     _isLoadingConversations = true;
     notifyListeners();
-
-    _conversations = await listConversations(privateKey);
-
+    _conversations = await listConversations();
     _isLoadingConversations = false;
     notifyListeners();
   }
 
   //list conversations
-  Future<List<xmtp.Conversation>> listConversations(privateKey) async {
+  Future<List<xmtp.Conversation>> listConversations() async {
     try {
-      client = await getClient(privateKey);
-      var convos = await client.listConversations();
-      return convos;
+      // client = await getClient(privateKey);
+      _conversations = await client.listConversations();
+      notifyListeners();
+      // print(convos);
+      return _conversations;
     } catch (e) {
       print(e);
       return [];
@@ -117,8 +116,7 @@ class XMTPProvider extends ChangeNotifier {
   }
 
   //list messages
-  Future<List<xmtp.DecodedMessage>> listMessages(
-      {xmtp.Conversation? convo}) async {
+  Future<List<xmtp.DecodedMessage>> listMessages({xmtp.Conversation? convo}) async {
     try {
       var msgs = await client.listMessages(convo!);
       return msgs;
@@ -129,8 +127,7 @@ class XMTPProvider extends ChangeNotifier {
   }
 
   //create new conversation
-  Future<xmtp.Conversation> newConversation(String address,
-      {Map<String, String>? metadata}) async {
+  Future<xmtp.Conversation> newConversation(String address, {Map<String, String>? metadata}) async {
     try {
       var convo = await client.newConversation(
         address,
@@ -155,8 +152,7 @@ class XMTPProvider extends ChangeNotifier {
     }
   }
 
-  Future<List<xmtp.DecodedMessage>> mostRecentMessage(
-      {List<xmtp.Conversation>? convo}) async {
+  Future<List<xmtp.DecodedMessage>> mostRecentMessage({List<xmtp.Conversation>? convo}) async {
     try {
       var msg = await client.listBatchMessages(convo!, limit: 1);
 

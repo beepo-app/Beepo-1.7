@@ -87,11 +87,11 @@ class _LockScreenState extends State<LockScreen> {
                       return;
                     }
                     loadingDialog("Logging In!");
-                    Map data = jsonDecode(response);
 
-                    if (data['privKey'] != null) {
+                    if (response.contains('privKey')) {
+                      Map data = jsonDecode(response);
                       await walletProvider.initMPCWalletState(data);
-                      await xmtpProvider.initClientFromKey();
+                      await xmtpProvider.getClient(walletProvider.ethPrivateKey);
                       await accountProvider.initAccountState();
 
                       Get.to(

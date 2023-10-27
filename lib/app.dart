@@ -17,16 +17,12 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late bool? isSignedUp = Hive.box('beepo2.0').get('isSignedUp');
-  // late bool isLocked = false;
   checkState() async {
     try {
       final accountProvider = Provider.of<AccountProvider>(context, listen: false);
       final walletProvider = Provider.of<WalletProvider>(context, listen: false);
       await accountProvider.initDB();
       await walletProvider.initPlatformState();
-
-      // bool? isSignedUpState = await Hive.box('beepo2.0').get('isSignedUp');
-      // bool? isLockedState = await Hive.box('beepo2.0').get('isLocked');
     } catch (e) {
       if (kDebugMode) {
         print(e);
