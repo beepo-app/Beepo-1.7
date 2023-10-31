@@ -9,6 +9,7 @@ import 'package:beepo/widgets/commons.dart';
 import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
@@ -75,6 +76,7 @@ class SignUp extends StatelessWidget {
               ]),
               SizedBox(height: 10.h),
               OutlnButton(
+                icon: SvgPicture.asset('assets/google.svg'),
                 text: 'Continue with Google',
                 onPressed: () async {
                   Map? res = await walletProvider.web3AuthLogin();

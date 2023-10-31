@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart';
 import 'package:hive/hive.dart';
 import 'package:xmtp/xmtp.dart' as xmtp;
 import 'package:web3dart/credentials.dart';
@@ -78,7 +81,8 @@ class XMTPProvider extends ChangeNotifier {
 
   //list conversations stream
   Stream<xmtp.DecodedMessage> streamMessages({xmtp.Conversation? convo}) {
-    return client.streamMessages(convo!);
+    var mes = client.streamMessages(convo!);
+    return mes;
   }
 
   //send message
@@ -127,18 +131,23 @@ class XMTPProvider extends ChangeNotifier {
   }
 
   //create new conversation
-  Future<xmtp.Conversation> newConversation(String address, {Map<String, String>? metadata}) async {
+  Future<xmtp.Conversation> newConversation(String address) async {
     try {
       var convo = await client.newConversation(
-        address,
+        address.trim(),
         conversationId: _conversationId,
-        metadata: metadata!,
       );
       notifyListeners();
       return convo;
     } catch (e) {
-      showToast('User is not on XMTP network');
       dev.log(e.toString());
+      if (e.toString().contains('Invalid argument (address)')) {
+        showToast('Invalid Address Entered');
+      } else if (e.toString().contains('is not on the XMTP network')) {
+        showToast('Address is not on XMTP network');
+      } else if (e.toString().contains('Address has invalid case-characters')) {
+        showToast('Address has invalid case-characters');
+      }
       rethrow;
     }
   }
@@ -146,6 +155,7 @@ class XMTPProvider extends ChangeNotifier {
   //check if can chat
   Future<bool> checkAddress(String address) async {
     try {
+      print(client.address);
       return await client.canMessage(address);
     } catch (e) {
       return false;
@@ -158,7 +168,31 @@ class XMTPProvider extends ChangeNotifier {
 
       return msg;
     } catch (e) {
-      print(e);
+      print('${e.toString()} xmtp 168');
+      rethrow;
+    }
+  }
+
+  Future<void> saveListMessagesToStorage(xmtp.Conversation convo) async {
+    try {
+      var msg = await client.listMessages(convo, limit: 1);
+
+      msg.map(
+        (e) => {},
+      );
+      var msgJson = {
+        "content": msg[0].content,
+        "sentAt": msg[0].sentAt,
+        "id": msg[0].id,
+        "sender": msg[0].sender,
+        "topic": msg[0].topic,
+        "re": msg[0].contentType
+      };
+// "topic":msg[0].,
+
+      print(jsonDecode(msgJson.toString()));
+    } catch (e) {
+      print('${e.toString()} xmtp 180');
       rethrow;
     }
   }

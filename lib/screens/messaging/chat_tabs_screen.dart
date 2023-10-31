@@ -43,25 +43,7 @@ class _ChatTabsScreenState extends State<ChatTabsScreen> with TickerProviderStat
           HawkFabMenuItem(
             label: 'New Chat',
             ontap: () {
-              Get.dialog(
-                Dialog(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(25),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        FilledButtons(
-                          text: 'Search For User',
-                          onPressed: () => Get.to(() => const SearchScreen()),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
+              Get.to(() => const SearchScreen());
             },
             icon: const Icon(Icons.add),
             color: const Color(0xe50d004c),

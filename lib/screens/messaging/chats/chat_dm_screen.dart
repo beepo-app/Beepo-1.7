@@ -44,7 +44,7 @@ class _ChatDmScreenState extends State<ChatDmScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Map user = widget.user!.data!;
+    Map user = widget.user != null ? widget.user!.data! : {'error': "User Not Found"};
     Conversation convo = widget.conversation!;
 
     bool noBeepoAcct = user['error'] == 'User Not Found';
@@ -112,7 +112,7 @@ class _ChatDmScreenState extends State<ChatDmScreen> {
                   SizedBox(width: 10.w),
                   noBeepoAcct
                       ? Text(
-                          '${senderAddress.substring(0, 3)}...${senderAddress.substring(senderAddress.length - 7, senderAddress.length - 1)}',
+                          '${senderAddress.substring(0, 3)}...${senderAddress.substring(senderAddress.length - 7, senderAddress.length)}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(fontSize: 14, color: AppColors.white, fontWeight: FontWeight.w500),

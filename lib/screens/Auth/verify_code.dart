@@ -169,6 +169,8 @@ class _VerifyCodeState extends State<VerifyCode> {
                   String? btcAddress = walletProvider.btcAddress;
                   String base64Image = base64Encode(widget.image);
 
+                  print(mpcRes);
+                  print(mnemonic);
                   if (ethAddress != null && accountProvider.db != null) {
                     try {
                       await accountProvider.createUser(

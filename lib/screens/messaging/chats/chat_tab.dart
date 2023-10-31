@@ -113,23 +113,27 @@ class _ChatTabState extends State<ChatTab> {
                         child: CircularProgressIndicator(),
                       );
                     }
+
                     List<DecodedMessage>? messages = snapshot.data;
 
-                    convos.sort((a, b) {
-                      // Compare the message time of conversations 'a' and 'b'
-                      DateTime? timeA = messages!.firstWhere((element) => element.topic == a.topic).sentAt;
-                      DateTime? timeB = messages.firstWhere((element) => element.topic == b.topic).sentAt;
+                    // convos.sort((a, b) {
+                    //   // Compare the message time of conversations 'a' and 'b'
+                    //   DateTime? timeA = messages!.firstWhere((element) => element.topic == a.topic).sentAt;
+                    //   DateTime? timeB = messages.firstWhere((element) => element.topic == b.topic).sentAt;
 
-                      if (timeB != null) {
-                        return timeB.compareTo(timeA); // Sort in descending order
-                      } else if (timeA != null) {
-                        return -1; // 'a' has a message, 'b' doesn't have
-                      } else if (timeB != null) {
-                        return 1; // 'b' has a message, 'a' doesn't have
-                      } else {
-                        return 0; // Both 'a' and 'b' don't have messages
-                      }
-                    });
+                    //   if (timeB != null) {
+                    //     return timeB.compareTo(timeA); // Sort in descending order
+                    //   } else if (timeA != null) {
+                    //     return -1; // 'a' has a message, 'b' doesn't have
+                    //   } else if (timeB != null) {
+                    //     return 1; // 'b' has a message, 'a' doesn't have
+                    //   } else {
+                    //     return 0; // Both 'a' and 'b' don't have messages
+                    //   }
+                    // });
+
+                    // print(messages![0].sentAt);
+                    // return CircularProgressIndicator();
 
                     return ListView.builder(
                       itemCount: convos.length,
@@ -140,7 +144,12 @@ class _ChatTabState extends State<ChatTab> {
                         final convo = convos[index];
 
                         DecodedMessage? message = messages!.firstWhereOrNull((element) => element.topic == convo.topic);
-                        return ChatListItem(convo: convo, message: message!);
+                        print(message);
+                        // return CircularProgressIndicator();
+                        if (message != null) {
+                          return ChatListItem(convo: convo, message: message);
+                        }
+                        return const SizedBox();
                       },
                     );
                   },
@@ -226,9 +235,7 @@ class ChatListItem extends StatelessWidget {
                   ),
                 ),
           title: Text(
-            noBeepoAcct
-                ? '${senderAddress.substring(0, 3)}...${senderAddress.substring(senderAddress.length - 7, senderAddress.length - 1)}'
-                : 'Ajem',
+            noBeepoAcct ? '${senderAddress.substring(0, 3)}...${senderAddress.substring(senderAddress.length - 7, senderAddress.length)}' : 'Ajem',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
