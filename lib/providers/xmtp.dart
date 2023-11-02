@@ -1,8 +1,10 @@
 import 'dart:convert';
 
+import 'package:beepo/providers/account_provider.dart';
 import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
+import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:xmtp/xmtp.dart' as xmtp;
 import 'package:web3dart/credentials.dart';
@@ -27,6 +29,10 @@ class XMTPProvider extends ChangeNotifier {
   // Getter for isLoadingConversations
   bool get isLoadingConversations => _isLoadingConversations;
 
+  getMessages() {
+    return _box.get('messages');
+  }
+
   //get client and notify listeners
   Future<xmtp.Client> getClient(String? privateKey) async {
     var key = _box.get('xmpt_key');
@@ -50,7 +56,6 @@ class XMTPProvider extends ChangeNotifier {
     try {
       EthPrivateKey credentials = EthPrivateKey.fromHex(privateKey);
 
-      print(credentials);
       var api = xmtp.Api.create(host: 'production.xmtp.network');
       var client = await xmtp.Client.createFromWallet(api, credentials.asSigner());
 
@@ -162,9 +167,29 @@ class XMTPProvider extends ChangeNotifier {
     }
   }
 
-  Future<List<xmtp.DecodedMessage>> mostRecentMessage({List<xmtp.Conversation>? convo}) async {
+  Future<List<xmtp.DecodedMessage>> mostRecentMessage({List<xmtp.Conversation>? convos}) async {
     try {
-      var msg = await client.listBatchMessages(convo!, limit: 1);
+      var msg = await client.listBatchMessages(convos!, limit: 1);
+
+      var list = [];
+      var d = Future.wait(msg.map(
+        (e) async => jsonEncode({
+          "convo": jsonEncode(convos.firstWhereOrNull((convo) => convo.topic == e.topic)),
+          "encoded": e.encoded,
+          "content": e.content,
+          "sentAt": e.sentAt,
+          "id": e.id,
+          "sender": e.sender,
+          "topic": e.topic,
+          "contentType": e.contentType,
+          "beepoAcct": await AccountProvider().getUserByAddress(e.sender)
+        }),
+      ));
+
+      print('list');
+      print(await d);
+      print('list');
+      await Hive.box('beepo2.0').put('messages', (await d));
 
       return msg;
     } catch (e) {
@@ -177,6 +202,8 @@ class XMTPProvider extends ChangeNotifier {
     try {
       var msg = await client.listMessages(convo, limit: 1);
 
+      await Hive.box('beepo2.0').put('encryptedSeedPhrase', (msg));
+
       msg.map(
         (e) => {},
       );
@@ -186,7 +213,7 @@ class XMTPProvider extends ChangeNotifier {
         "id": msg[0].id,
         "sender": msg[0].sender,
         "topic": msg[0].topic,
-        "re": msg[0].contentType
+        "contentType": msg[0].contentType
       };
 // "topic":msg[0].,
 

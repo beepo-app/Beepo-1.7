@@ -3,8 +3,9 @@ import 'package:beepo/components/beepo_filled_button.dart';
 import 'package:beepo/components/bottom_nav.dart';
 import 'package:beepo/providers/account_provider.dart';
 import 'package:beepo/providers/wallet_provider.dart';
-import 'package:beepo/providers/xmtp.dart';
+
 import 'package:beepo/services/encryption.dart';
+import 'package:beepo/session/foreground_session.dart';
 import 'package:beepo/utils/styles.dart';
 import 'package:beepo/widgets/toast.dart';
 import 'package:encrypt/encrypt.dart';
@@ -107,7 +108,6 @@ class _VerifyCodeState extends State<VerifyCode> {
                 if (widget.pin == otp.text) {
                   final walletProvider = Provider.of<WalletProvider>(context, listen: false);
                   final accountProvider = Provider.of<AccountProvider>(context, listen: false);
-                  final xmtpProvider = Provider.of<XMTPProvider>(context, listen: false);
 
                   String mnemonic = widget.mnemonic ?? walletProvider.generateMnemonic();
 
@@ -146,7 +146,9 @@ class _VerifyCodeState extends State<VerifyCode> {
                           );
                         }
 
-                        await xmtpProvider.initClient(walletProvider.ethPrivateKey!);
+                        if (session.initialized == false) {
+                          await session.authorize(walletProvider.ethPrivateKey!);
+                        }
                         await accountProvider.initAccountState();
 
                         Get.to(
@@ -169,8 +171,8 @@ class _VerifyCodeState extends State<VerifyCode> {
                   String? btcAddress = walletProvider.btcAddress;
                   String base64Image = base64Encode(widget.image);
 
-                  print(mpcRes);
-                  print(mnemonic);
+                  // print(mpcRes);
+                  // print(mnemonic);
                   if (ethAddress != null && accountProvider.db != null) {
                     try {
                       await accountProvider.createUser(
@@ -182,7 +184,9 @@ class _VerifyCodeState extends State<VerifyCode> {
                         encrypteData,
                       );
 
-                      await xmtpProvider.initClient(walletProvider.ethPrivateKey!);
+                      if (session.initialized == false) {
+                        await session.authorize(walletProvider.ethPrivateKey!);
+                      }
                       await accountProvider.initAccountState();
 
                       Get.to(

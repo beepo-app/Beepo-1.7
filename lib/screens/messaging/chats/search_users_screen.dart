@@ -193,8 +193,8 @@ class _SearchScreenState extends State<SearchScreen> {
                   isFound
                       ? GestureDetector(
                           onTap: () async {
-                            var con = await xmtpProvider.newConversation(_textFieldController.text);
-                            Get.to(() => ChatDmScreen(conversation: con));
+                            // var con = await xmtpProvider.newConversation(_textFieldController.text);
+                            // Get.to(() => ChatDmScreen());
                           },
                           child: Container(
                             padding: const EdgeInsets.all(15),

@@ -1,5 +1,6 @@
 import 'package:beepo/constants/constants.dart';
 import 'package:beepo/providers/wallet_provider.dart';
+import 'package:beepo/providers/xmtp.dart';
 import 'package:beepo/screens/wallet/received_assets_screen.dart';
 import 'package:beepo/screens/wallet/send_assets_screen.dart';
 import 'package:beepo/widgets/app_text.dart';
@@ -68,6 +69,8 @@ class _WalletScreenState extends State<WalletScreen> {
     final walletProvider = Provider.of<WalletProvider>(context, listen: false);
     assets = walletProvider.assets;
     // getAssests();
+
+    // print(.length);
 
     return DefaultTabController(
       length: 2,

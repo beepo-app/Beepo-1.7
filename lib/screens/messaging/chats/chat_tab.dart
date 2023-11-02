@@ -1,25 +1,26 @@
 import 'dart:math';
 
+import 'package:beepo/components/address_avatar.dart';
+import 'package:beepo/components/address_chip.dart';
 import 'package:beepo/constants/constants.dart';
 import 'package:beepo/providers/account_provider.dart';
 import 'package:beepo/providers/wallet_provider.dart';
 import 'package:beepo/providers/xmtp.dart';
 import 'package:beepo/screens/messaging/chats/chat_dm_screen.dart';
+import 'package:beepo/session/foreground_session.dart';
+import 'package:beepo/utils/hooks.dart';
 import 'package:beepo/widgets/commons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/get_navigation.dart';
-import 'package:get/get_utils/get_utils.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:web3dart/web3dart.dart';
 import 'package:xmtp/xmtp.dart';
 
 class ChatTab extends StatefulWidget {
-  const ChatTab({Key? key}) : super(key: key);
+  const ChatTab({super.key});
 
   @override
   State<ChatTab> createState() => _ChatTabState();
@@ -30,28 +31,16 @@ class _ChatTabState extends State<ChatTab> {
 
   @override
   void initState() {
-    final walletProvider = Provider.of<WalletProvider>(context, listen: false);
-    final xmtpProvider = Provider.of<XMTPProvider>(context, listen: false);
-
-    getMessages() async {
-      await xmtpProvider.getClient('null');
-      // print(xmtpProvider.client.address);
-      // return;
-      // var con = await xmtpProvider.listConversations();
-      // conversation = xmtpProvider.conversations;
-      // print(conversation);
-      // print(await xmtpProvider.listMessages(convo: conversation![0]));
-    }
-
-    getMessages();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final xmtpProvider = Provider.of<XMTPProvider>(context, listen: false);
-    conversation = xmtpProvider.conversations;
-    // print(conversation);
+    // var me = useMe();
+    // var conversations = useConversationList();
+    // var refresher = useConversationsRefresher();
+
+    // debugPrint('conversations ${conversations.data?.length ?? 0}');
 
     return Scaffold(
       body: Column(
@@ -92,71 +81,80 @@ class _ChatTabState extends State<ChatTab> {
           ),
           Padding(
             padding: EdgeInsets.only(left: 10.w, right: 10.w),
-            child: Consumer<XMTPProvider>(
-              builder: (BuildContext context, XMTPProvider provider, _) {
-                if (provider.isLoadingConversations) {
-                  return Center(
-                    child: loadingDialog('Loading Messages!'),
-                  );
-                }
+            child: Chat(),
+          ),
+          // Padding(
+          //   padding: EdgeInsets.only(left: 10.w, right: 10.w),
+          //   child: Consumer<XMTPProvider>(
+          //     builder: (BuildContext context, XMTPProvider provider, _) {
+          //       if (provider.isLoadingConversations) {
+          //         return Center(
+          //           child: loadingDialog('Loading Messages!'),
+          //         );
+          //       }
 
-                final convos = provider.conversations;
-                if (convos.isEmpty) {
-                  return const Center(child: Text('No conversations yet'));
-                }
+          //       final convos = provider.conversations;
+          //       // XMTPProvider().mostRecentMessage(convos: convos);
+          //       print(convos);
+          //       if (convos.isEmpty) {
+          //         return const Center(child: Text('No conversations yet'));
+          //       }
 
-                return FutureBuilder<List<DecodedMessage>>(
-                  future: context.watch<XMTPProvider>().mostRecentMessage(convo: convos),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
+          //       // print(convos);
+          //       // return CircularProgressIndicator();
 
-                    List<DecodedMessage>? messages = snapshot.data;
+          //       return FutureBuilder<List<DecodedMessage>>(
+          //         future: context.watch<XMTPProvider>().mostRecentMessage(convos: convos),
+          //         builder: (context, snapshot) {
+          //           if (!snapshot.hasData) {
+          //             return const Center(
+          //               child: CircularProgressIndicator(),
+          //             );
+          //           }
 
-                    // convos.sort((a, b) {
-                    //   // Compare the message time of conversations 'a' and 'b'
-                    //   DateTime? timeA = messages!.firstWhere((element) => element.topic == a.topic).sentAt;
-                    //   DateTime? timeB = messages.firstWhere((element) => element.topic == b.topic).sentAt;
+          //           List<DecodedMessage>? messages = snapshot.data;
 
-                    //   if (timeB != null) {
-                    //     return timeB.compareTo(timeA); // Sort in descending order
-                    //   } else if (timeA != null) {
-                    //     return -1; // 'a' has a message, 'b' doesn't have
-                    //   } else if (timeB != null) {
-                    //     return 1; // 'b' has a message, 'a' doesn't have
-                    //   } else {
-                    //     return 0; // Both 'a' and 'b' don't have messages
-                    //   }
-                    // });
+          //           // convos.sort((a, b) {
+          //           //   // Compare the message time of conversations 'a' and 'b'
+          //           //   DateTime? timeA = messages!.firstWhere((element) => element.topic == a.topic).sentAt;
+          //           //   DateTime? timeB = messages.firstWhere((element) => element.topic == b.topic).sentAt;
 
-                    // print(messages![0].sentAt);
-                    // return CircularProgressIndicator();
+          //           //   if (timeB != null) {
+          //           //     return timeB.compareTo(timeA); // Sort in descending order
+          //           //   } else if (timeA != null) {
+          //           //     return -1; // 'a' has a message, 'b' doesn't have
+          //           //   } else if (timeB != null) {
+          //           //     return 1; // 'b' has a message, 'a' doesn't have
+          //           //   } else {
+          //           //     return 0; // Both 'a' and 'b' don't have messages
+          //           //   }
+          //           // });
 
-                    return ListView.builder(
-                      itemCount: convos.length,
-                      shrinkWrap: true,
-                      padding: EdgeInsets.zero,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        final convo = convos[index];
+          //           // print(messages![0].sentAt);
+          //           // return CircularProgressIndicator();
 
-                        DecodedMessage? message = messages!.firstWhereOrNull((element) => element.topic == convo.topic);
-                        print(message);
-                        // return CircularProgressIndicator();
-                        if (message != null) {
-                          return ChatListItem(convo: convo, message: message);
-                        }
-                        return const SizedBox();
-                      },
-                    );
-                  },
-                );
-              },
-            ),
-          )
+          //           return ListView.builder(
+          //             itemCount: convos.length,
+          //             shrinkWrap: true,
+          //             padding: EdgeInsets.zero,
+          //             physics: const NeverScrollableScrollPhysics(),
+          //             itemBuilder: (context, index) {
+          //               final convo = convos[index];
+
+          //               DecodedMessage? message = messages!.firstWhereOrNull((element) => element.topic == convo.topic);
+          //               print(message);
+          //               return CircularProgressIndicator();
+          //               if (message != null) {
+          //                 return ChatListItem(convo: convo, message: message);
+          //               }
+          //               return const SizedBox();
+          //             },
+          //           );
+          //         },
+          //       );
+          //     },
+          //   ),
+          // )
         ],
       ),
     );
@@ -164,116 +162,224 @@ class _ChatTabState extends State<ChatTab> {
 }
 
 class ChatListItem extends StatelessWidget {
-  const ChatListItem({
-    Key? key,
-    required this.convo,
-    required this.message,
-  }) : super(key: key);
+  final String topic;
 
-  final Conversation convo;
-  final DecodedMessage message;
+  ChatListItem({Key? key, required this.topic}) : super(key: Key(topic));
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Map>(
-      future: AccountProvider().getUserByAddress(EthereumAddress.fromHex(convo.peer.hexEip55)),
-      builder: (ctx, user) {
-        if (!user.hasData && !user.hasError) {
-          return Shimmer.fromColors(
-            baseColor: Colors.grey.shade300,
-            highlightColor: Colors.grey.shade100,
-            child: ListTile(
-              leading: const CircleAvatar(),
-              title: Container(
-                height: 10,
-                width: 100,
-                color: Colors.white,
+    var me = useMe();
+    var conversation = useConversation(topic);
+    var lastMessage = useLastMessage(topic);
+    var unreadCount = useNewMessageCount(topic).data ?? 0;
+    var content = (lastMessage.data?.content ?? "") as String;
+    var meSentLast = (lastMessage.data?.sender == me);
+    var senderAddress = conversation.data?.peer.toString();
+    var lastSentAt = lastMessage.data?.sentAt ?? DateTime.now();
+
+    bool noBeepoAcct = true;
+    final random_ = Random();
+
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: noBeepoAcct
+          ? CircleAvatar(
+              backgroundColor: Colors.primaries[random_.nextInt(Colors.primaries.length)][random_.nextInt(9) * 100],
+              child: Text(
+                senderAddress!.substring(0, 2),
+                style: const TextStyle(color: Colors.white),
               ),
-              subtitle: Container(
-                height: 10,
-                width: 100,
-                color: Colors.white,
-              ),
-              contentPadding: EdgeInsets.zero,
-            ),
-          );
-        }
-
-        bool noBeepoAcct = user.data!['error'] == 'User Not Found';
-        String senderAddress = convo.peer.hexEip55;
-
-        final random_ = Random();
-
-        return ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: noBeepoAcct
-              ? CircleAvatar(
-                  backgroundColor: Colors.primaries[random_.nextInt(Colors.primaries.length)][random_.nextInt(9) * 100],
-                  child: Text(
-                    convo.peer.hexEip55.substring(0, 2),
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                )
-              : SizedBox(
+            )
+          : SizedBox(
+              height: 40,
+              width: 40,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(25),
+                child: CachedNetworkImage(
+                  imageUrl: 'https://res.cloudinary.com/dwruvre6o/image/upload/v1697100571/usdt_jiebah.png',
                   height: 40,
                   width: 40,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(25),
-                    child: CachedNetworkImage(
-                      imageUrl: 'https://res.cloudinary.com/dwruvre6o/image/upload/v1697100571/usdt_jiebah.png',
-                      height: 40,
-                      width: 40,
-                      placeholder: (context, url) => const Center(
-                          child: CircularProgressIndicator(
-                        color: AppColors.secondaryColor,
-                      )),
-                      errorWidget: (context, url, error) => const Icon(
-                        Icons.person,
-                        color: AppColors.secondaryColor,
-                      ),
-                    ),
+                  placeholder: (context, url) => const Center(
+                      child: CircularProgressIndicator(
+                    color: AppColors.secondaryColor,
+                  )),
+                  errorWidget: (context, url, error) => const Icon(
+                    Icons.person,
+                    color: AppColors.secondaryColor,
                   ),
                 ),
-          title: Text(
-            noBeepoAcct ? '${senderAddress.substring(0, 3)}...${senderAddress.substring(senderAddress.length - 7, senderAddress.length)}' : 'Ajem',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-          ),
-          subtitle: message == null
-              ? SizedBox()
-              : Row(
-                  children: [
-                    Expanded(
-                        child: Text(
-                      message.content.toString(),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    )),
-                    const SizedBox(width: 8),
-                    Text(
-                      DateFormat("jm").format(message.sentAt),
-                      style: const TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
+              ),
+            ),
+      title: Text(
+        noBeepoAcct ? '${senderAddress.substring(0, 3)}...${senderAddress.substring(senderAddress.length - 7, senderAddress.length)}' : 'Ajem',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+      ),
+      subtitle: content == null
+          ? SizedBox()
+          : Row(
+              children: [
+                Expanded(
+                    child: Text(
+                  content.toString(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                )),
+                const SizedBox(width: 8),
+                Text(
+                  DateFormat("jm").format(lastSentAt),
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Colors.grey,
+                  ),
                 ),
-          onTap: () {
-            if (noBeepoAcct) {
-              Get.to(
-                () => ChatDmScreen(conversation: convo, user: user),
-              );
-            } else {
-              Get.to(
-                () => ChatDmScreen(
-                  conversation: convo,
+              ],
+            ),
+      onTap: () {
+        if (noBeepoAcct) {
+          // Get.to(
+          //   () => ChatDmScreen(conversation: conversation),
+          // );
+        } else {
+          // Get.to(
+          //   () => ChatDmScreen(
+          //     conversation: convo,
+          //   ),
+          // );
+        }
+      },
+    );
+
+    // return ListView.builder(
+    //   itemCount: messages.length,
+    //   itemBuilder: (ctx, index) {
+    //     bool noBeepoAcct = messages[index]['beepoAcct']['error'] == 'User Not Found';
+    //     String senderAddress = messages[index]['sender'];
+
+    //     print(messages[index]);
+
+    //     final random_ = Random();
+
+    //   },
+    // );
+  }
+}
+
+class Chat extends HookWidget {
+  const Chat({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    var conversations = useConversationList();
+
+    var refresher = useConversationsRefresher();
+    debugPrint('conversations ${conversations.data?.length ?? 0}');
+
+    return RefreshIndicator(
+      onRefresh: refresher,
+      child: ListView.builder(
+        shrinkWrap: true,
+        padding: EdgeInsets.zero,
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) {
+          return conversations.hasData ? ConversationListItem(topic: conversations.data![index].topic) : Container();
+        },
+        itemCount: conversations.hasData ? conversations.data!.length : 0,
+      ),
+    );
+  }
+}
+
+class ConversationListItem extends HookWidget {
+  final String topic;
+
+  ConversationListItem({Key? key, required this.topic}) : super(key: Key(topic));
+
+  @override
+  Widget build(BuildContext context) {
+    var me = useMe();
+    var conversation = useConversation(topic);
+    var lastMessage = useLastMessage(topic);
+    var unreadCount = useNewMessageCount(topic).data ?? 0;
+    var content = (lastMessage.data?.content ?? "") as String;
+    var meSentLast = (lastMessage.data?.sender == me);
+    var lastSentAt = lastMessage.data?.sentAt ?? DateTime.now();
+    var senderAddress = conversation.data?.peer.toString();
+
+    bool noBeepoAcct = true;
+    final random_ = Random();
+
+    print(unreadCount);
+    print(conversation);
+
+    // return CircularProgressIndicator();
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: noBeepoAcct
+          ? CircleAvatar(
+              backgroundColor: Colors.primaries[random_.nextInt(Colors.primaries.length)][random_.nextInt(9) * 100],
+              child: Text(
+                senderAddress?.substring(0, 2) ?? '',
+                style: const TextStyle(color: Colors.white),
+              ),
+            )
+          : SizedBox(
+              height: 40,
+              width: 40,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(25),
+                child: CachedNetworkImage(
+                  imageUrl: 'https://res.cloudinary.com/dwruvre6o/image/upload/v1697100571/usdt_jiebah.png',
+                  height: 40,
+                  width: 40,
+                  placeholder: (context, url) => const Center(
+                      child: CircularProgressIndicator(
+                    color: AppColors.secondaryColor,
+                  )),
+                  errorWidget: (context, url, error) => const Icon(
+                    Icons.person,
+                    color: AppColors.secondaryColor,
+                  ),
                 ),
-              );
-            }
-          },
-        );
+              ),
+            ),
+      title: Text(
+        noBeepoAcct ? '${senderAddress?.substring(0, 3)}...${senderAddress?.substring(senderAddress.length - 7, senderAddress.length)}' : 'Ajem',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+      ),
+      subtitle: content == null
+          ? SizedBox()
+          : Row(
+              children: [
+                Expanded(
+                    child: Text(
+                  content.toString(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                )),
+                const SizedBox(width: 8),
+                Text(
+                  DateFormat("jm").format(lastSentAt),
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+      onTap: () {
+        if (noBeepoAcct) {
+          Get.to(
+            () => ChatDmScreen(topic: topic),
+          );
+        } else {
+          Get.to(
+            () => ChatDmScreen(topic: topic),
+          );
+        }
       },
     );
   }

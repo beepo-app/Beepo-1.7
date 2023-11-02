@@ -79,9 +79,11 @@ class SignUp extends StatelessWidget {
                 icon: SvgPicture.asset('assets/google.svg'),
                 text: 'Continue with Google',
                 onPressed: () async {
+                  await walletProvider.initPlatformState();
                   Map? res = await walletProvider.web3AuthLogin();
 
-                  if (res != null) {
+                  print(res);
+                  if (res != null && res['error'] == null) {
                     loadingDialog("Checking Info!");
 
                     await walletProvider.initMPCWalletState(res);

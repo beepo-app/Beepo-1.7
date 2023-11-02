@@ -46,8 +46,8 @@ var networkInfo = {
       'ticker': 'USDT',
       'nativeTicker': 'ETH',
       "rpc": {
-        'https': 'https://eth-rpc.gateway.pokt.network',
-        'testnet': 'https://eth-rpc.gateway.pokt.network',
+        'https': 'https://eth-pokt.nodies.app',
+        'testnet': 'https://eth-pokt.nodies.app',
         //'testnet': 'https://goerli.infura.io/v3/5fd05c9976d44bb7a6e849317e9ad9c0',
         'wss': '',
       },
@@ -65,7 +65,7 @@ var networkInfo = {
       'ticker': 'MTK',
       'nativeTicker': 'ETH',
       "rpc": {
-        'https': 'https://eth-rpc.gateway.pokt.network',
+        'https': 'https://eth-pokt.nodies.app',
         'testnet': 'https://eth-sepolia.g.alchemy.com/v2/HDQnQBbyr2HtgKSym1OqrbGED_H7Ev2N',
         //'testnet': 'https://goerli.infura.io/v3/5fd05c9976d44bb7a6e849317e9ad9c0',
         'wss': '',
@@ -230,7 +230,7 @@ var networkInfo = {
 
   'rpcUrls': {
     11155111: {
-      'https': 'https://eth-rpc.gateway.pokt.network',
+      'https': 'https://eth-pokt.nodies.app',
       'testnet': 'https://eth-sepolia.g.alchemy.com/v2/HDQnQBbyr2HtgKSym1OqrbGED_H7Ev2N',
       'wss': '',
     },

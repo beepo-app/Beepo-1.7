@@ -323,9 +323,9 @@ class WalletProvider extends ChangeNotifier {
   }
 
   Future<void> initPlatformState() async {
-    Uri redirectUrl;
+    Uri redirectUrls;
     if (Platform.isAndroid) {
-      redirectUrl = Uri.parse('beepo2.0https://beepo2.0/auth');
+      redirectUrls = Uri.parse('beepo2.0https://beepo2.0/auth');
     } else {
       throw UnKnownException('Unknown platform');
     }
@@ -334,14 +334,19 @@ class WalletProvider extends ChangeNotifier {
       Web3AuthOptions(
         clientId: "BGaNpqXhzeQ8oKLtXECjffo6ynnBA-APd63zn9fTn9FsPmAqC1FzGdWoI4Yjumz73b9zqqYst3G_o9_iUo1KnLs",
         network: Network.testnet,
-        redirectUrl: redirectUrl,
+        redirectUrl: redirectUrls,
       ),
     );
   }
 
   Future<Map> web3AuthLogin() async {
-    final Web3AuthResponse response = await Web3AuthFlutter.login(LoginParams(loginProvider: Provider.google));
-    mpcResponse = response;
-    return response.toJson();
+    try {
+      final Web3AuthResponse response =
+          await Web3AuthFlutter.login(LoginParams(loginProvider: Provider.google, extraLoginOptions: ExtraLoginOptions(login_hint: 'Beepo')));
+      mpcResponse = response;
+      return response.toJson();
+    } catch (e) {
+      return {'error': e};
+    }
   }
 }

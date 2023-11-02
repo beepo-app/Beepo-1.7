@@ -5,6 +5,7 @@ import 'package:beepo/providers/account_provider.dart';
 import 'package:beepo/providers/auth_provider.dart';
 import 'package:beepo/providers/wallet_provider.dart';
 import 'package:beepo/providers/xmtp.dart';
+import 'package:beepo/session/foreground_session.dart';
 import 'package:beepo/widgets/commons.dart';
 import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +29,7 @@ class _LockScreenState extends State<LockScreen> {
   Widget build(BuildContext context) {
     final walletProvider = Provider.of<WalletProvider>(context, listen: false);
     final accountProvider = Provider.of<AccountProvider>(context, listen: false);
-    final xmtpProvider = Provider.of<XMTPProvider>(context, listen: false);
+    // final xmtpProvider = Provider.of<XMTPProvider>(context, listen: false);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -91,8 +92,10 @@ class _LockScreenState extends State<LockScreen> {
                     if (response.contains('privKey')) {
                       Map data = jsonDecode(response);
                       await walletProvider.initMPCWalletState(data);
-                      await xmtpProvider.getClient(walletProvider.ethPrivateKey);
                       await accountProvider.initAccountState();
+                      if (session.initialized == false) {
+                        await session.authorize(walletProvider.ethPrivateKey!);
+                      }
 
                       Get.to(
                         () => const BottomNavHome(),
@@ -101,7 +104,8 @@ class _LockScreenState extends State<LockScreen> {
                     }
 
                     await walletProvider.initWalletState(response);
-                    await xmtpProvider.initClientFromKey();
+                    await session.authorize(walletProvider.ethPrivateKey!);
+                    // await xmtpProvider.initClientFromKey();
                     await accountProvider.initAccountState();
 
                     Get.to(

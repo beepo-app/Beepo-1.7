@@ -83,10 +83,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                               color: Color(0xffFF9C34),
                             ),
                             onPressed: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return const ChatDmScreen();
-                              }));
+                              // Navigator.push(context,
+                              //     MaterialPageRoute(builder: (context) {
+                              //   // return const ChatDmScreen();
+                              // }));
                             },
                           ),
                           SizedBox(height: 2.h),
@@ -113,8 +113,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     content: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 20),
+                                      padding: const EdgeInsets.symmetric(vertical: 20),
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
@@ -139,8 +138,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                             onPressed: () {
                                               Navigator.push(
                                                 context,
-                                                MaterialPageRoute(
-                                                    builder: (context) {
+                                                MaterialPageRoute(builder: (context) {
                                                   return const ChatTab();
                                                 }),
                                               );
@@ -179,8 +177,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   children: [
                     Center(
                       child: AppText(
-                        text:
-                            "Hi there, am a blockchain developer \nbut i sell shoes, WAGMI😍 Buy my Shoes",
+                        text: "Hi there, am a blockchain developer \nbut i sell shoes, WAGMI😍 Buy my Shoes",
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w400,
                         textAlign: TextAlign.center,
