@@ -109,8 +109,7 @@ Future<Map> dbGetAllUsers(Db db) async {
           'btcAddress': e['btcAddress'],
           'image': e['image'],
         });
-    print(data);
-    await Hive.box('beepo2.0').put('allUsers', data);
+    await Hive.box('beepo2.0').put('allUsers', data.toList());
     return {'success': "done", "data": val};
   }
 }

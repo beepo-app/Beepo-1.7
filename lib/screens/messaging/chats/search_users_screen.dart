@@ -38,8 +38,10 @@ class _SearchScreenState extends State<SearchScreen> {
   String? username;
   Timer? searchOnStoppedTyping;
   Map? userData;
+  List? userDataArray;
 
   final random_ = Random();
+  var users = Hive.box('beepo2.0').get('allUsers');
 
   final TextEditingController _textFieldController = TextEditingController();
 
@@ -47,32 +49,27 @@ class _SearchScreenState extends State<SearchScreen> {
     setState(() {
       isFound = false;
     });
-    const duration = Duration(milliseconds: 1200); // set the duration that you want call search() after that.
+    const duration = Duration(milliseconds: 1200);
     if (searchOnStoppedTyping != null) {
-      setState(() => searchOnStoppedTyping!.cancel()); // clear timer
+      setState(() => searchOnStoppedTyping!.cancel());
     }
     setState(() => searchOnStoppedTyping = Timer(duration, () => search(value)));
   }
 
   search(value) async {
     if (selectedItem == 'Usernames') {
-      if (value.length > 1) {
-        var users = await Hive.box('beepo2.0').get('allUsers');
+      if (value.length > 0) {
+        List datas = users.where((e) => e['username'].toString().toLowerCase().startsWith(value.toString().toLowerCase())).toList();
 
-        print(users.toList());
+        if (datas.isNotEmpty) {
+          setState(() {
+            searching = false;
+            isFound = true;
 
-        // final accountProvider = Provider.of<AccountProvider>(context, listen: false);
-        // var data = await accountProvider.getUserByUsernme(value);
-        // if (data['status'] == 'success') {
-        //   setState(() {
-        //     searching = false;
-        //     isFound = true;
-        //     address = data['data'][0]['ethAddress'].toString();
-        //     userData = data;
-        //     username = data['data'][0]['username'];
-        //   });
-        //   return;
-        // }
+            userDataArray = datas;
+          });
+          return;
+        }
       }
     } else {
       if (value.length == 42) {
@@ -226,13 +223,13 @@ class _SearchScreenState extends State<SearchScreen> {
                   searching
                       ? const CircularProgressIndicator()
                       : isFound
-                          ? userData!.length > 1
+                          ? selectedItem == "Usernames" && userDataArray!.length > 1
                               ? ListView.builder(
                                   shrinkWrap: true,
                                   padding: EdgeInsets.zero,
-                                  itemCount: userData!.length,
+                                  itemCount: userDataArray!.length,
                                   itemBuilder: (context, index) {
-                                    Future<Map> newConvo() async => await session.newConversation(userData!['data'][index]['ethAddress']);
+                                    Future<Map> newConvo() async => await session.newConversation(userDataArray![index]['ethAddress']);
 
                                     return GestureDetector(
                                       onTap: () async {
@@ -259,7 +256,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                             ClipRRect(
                                               borderRadius: BorderRadius.circular(100),
                                               child: Image.memory(
-                                                base64Decode(userData!['data'][index]['image']),
+                                                base64Decode(userDataArray![index]['image']),
                                                 height: 45,
                                                 width: 45,
                                                 fit: BoxFit.cover,
@@ -269,7 +266,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                               width: 10,
                                             ),
                                             Text(
-                                              userData!['data'][index]['username'],
+                                              userDataArray![index]['username'],
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
                                               style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
@@ -281,10 +278,23 @@ class _SearchScreenState extends State<SearchScreen> {
                                   })
                               : GestureDetector(
                                   onTap: () async {
-                                    Get.to(() => ChatDmScreen(
+                                    Future<Map> newConvo() async => await session.newConversation(userDataArray![0]['ethAddress']);
+
+                                    Map data = await newConvo();
+                                    if (data['error'] == null) {
+                                      var topic = data['data']['topic'];
+                                      var address = data['data']['address'];
+
+                                      Get.to(
+                                        () => ChatDmScreen(
                                           topic: topic!,
                                           senderAddress: address,
-                                        ));
+                                        ),
+                                      );
+                                      return;
+                                    } else {
+                                      showToast(data['error']);
+                                    }
                                   },
                                   child: Container(
                                     padding: const EdgeInsets.all(15),
@@ -294,14 +304,14 @@ class _SearchScreenState extends State<SearchScreen> {
                                             ? ClipRRect(
                                                 borderRadius: BorderRadius.circular(100),
                                                 child: Image.memory(
-                                                  base64Decode(userData!['data'][0]['image']),
+                                                  base64Decode(userDataArray![0]['image']),
                                                   height: 45,
                                                   width: 45,
                                                   fit: BoxFit.cover,
                                                 ),
                                               )
                                             : CircleAvatar(
-                                                backgroundColor: ColorUtils.stringToColor(address!),
+                                                backgroundColor: ColorUtils.stringToColor(userDataArray![0]['ethAddress']),
                                                 child: Text(
                                                   _textFieldController.text.substring(0, 2),
                                                   style: const TextStyle(color: Colors.white),
@@ -311,11 +321,24 @@ class _SearchScreenState extends State<SearchScreen> {
                                           width: 10,
                                         ),
                                         selectedItem == 'Usernames'
-                                            ? Text(
-                                                username!,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                                            ? Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    userDataArray![0]['displayName'],
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                  ),
+                                                  Text(
+                                                    '@${userDataArray![0]['username']}',
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: const TextStyle(
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                ],
                                               )
                                             : Text(
                                                 '${_textFieldController.text.substring(0, 3)}...${_textFieldController.text.substring(_textFieldController.text.length - 7, _textFieldController.text.length)}',

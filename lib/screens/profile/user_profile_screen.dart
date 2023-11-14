@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:beepo/components/beepo_filled_button.dart';
 import 'package:beepo/constants/constants.dart';
 import 'package:beepo/screens/messaging/chats/chat_dm_screen.dart';
@@ -9,7 +11,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:iconsax/iconsax.dart';
 
 class UserProfileScreen extends StatefulWidget {
-  const UserProfileScreen({super.key});
+  final Map? user;
+  const UserProfileScreen({super.key, this.user});
 
   @override
   State<UserProfileScreen> createState() => _UserProfileScreenState();
@@ -20,6 +23,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var user = widget.user;
+
     return Scaffold(
       backgroundColor: AppColors.backgroundGrey,
       appBar: AppBar(
@@ -52,29 +57,36 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               color: const Color(0xff0e014c),
               child: Column(
                 children: [
-                  CircleAvatar(
-                    backgroundColor: AppColors.white,
-                    radius: 40.r,
-                    backgroundImage: const AssetImage("assets/profile.png"),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: Image.memory(
+                      base64Decode(user!['image']),
+                      height: 100,
+                      width: 100,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                   SizedBox(height: 8.h),
                   AppText(
-                    text: "Sylvia Chirah",
+                    text: user['displayName'],
                     fontSize: 20.sp,
                     color: AppColors.white,
                     fontWeight: FontWeight.w700,
                   ),
                   SizedBox(height: 2.h),
                   AppText(
-                    text: "Sylvia Chirah",
+                    text: "@${user['username']}",
                     fontSize: 10.sp,
                     color: AppColors.white,
                     fontWeight: FontWeight.w200,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           IconButton(
                             icon: const Icon(
@@ -177,7 +189,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   children: [
                     Center(
                       child: AppText(
-                        text: "Hi there, am a blockchain developer \nbut i sell shoes, WAGMI😍 Buy my Shoes",
+                        text: user['bio'] ?? 'No Bio Available',
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w400,
                         textAlign: TextAlign.center,

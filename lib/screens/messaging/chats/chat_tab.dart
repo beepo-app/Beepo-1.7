@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:beepo/constants/constants.dart';
@@ -74,78 +75,6 @@ class _ChatTabState extends State<ChatTab> {
               child: const Chat(),
             ),
           ),
-          // Padding(
-          //   padding: EdgeInsets.only(left: 10.w, right: 10.w),
-          //   child: Consumer<XMTPProvider>(
-          //     builder: (BuildContext context, XMTPProvider provider, _) {
-          //       if (provider.isLoadingConversations) {
-          //         return Center(
-          //           child: loadingDialog('Loading Messages!'),
-          //         );
-          //       }
-
-          //       final convos = provider.conversations;
-          //       // XMTPProvider().mostRecentMessage(convos: convos);
-          //       print(convos);
-          //       if (convos.isEmpty) {
-          //         return const Center(child: Text('No conversations yet'));
-          //       }
-
-          //       // print(convos);
-          //       // return CircularProgressIndicator();
-
-          //       return FutureBuilder<List<DecodedMessage>>(
-          //         future: context.watch<XMTPProvider>().mostRecentMessage(convos: convos),
-          //         builder: (context, snapshot) {
-          //           if (!snapshot.hasData) {
-          //             return const Center(
-          //               child: CircularProgressIndicator(),
-          //             );
-          //           }
-
-          //           List<DecodedMessage>? messages = snapshot.data;
-
-          //           // convos.sort((a, b) {
-          //           //   // Compare the message time of conversations 'a' and 'b'
-          //           //   DateTime? timeA = messages!.firstWhere((element) => element.topic == a.topic).sentAt;
-          //           //   DateTime? timeB = messages.firstWhere((element) => element.topic == b.topic).sentAt;
-
-          //           //   if (timeB != null) {
-          //           //     return timeB.compareTo(timeA); // Sort in descending order
-          //           //   } else if (timeA != null) {
-          //           //     return -1; // 'a' has a message, 'b' doesn't have
-          //           //   } else if (timeB != null) {
-          //           //     return 1; // 'b' has a message, 'a' doesn't have
-          //           //   } else {
-          //           //     return 0; // Both 'a' and 'b' don't have messages
-          //           //   }
-          //           // });
-
-          //           // print(messages![0].sentAt);
-          //           // return CircularProgressIndicator();
-
-          //           return ListView.builder(
-          //             itemCount: convos.length,
-          //             shrinkWrap: true,
-          //             padding: EdgeInsets.zero,
-          //             physics: const NeverScrollableScrollPhysics(),
-          //             itemBuilder: (context, index) {
-          //               final convo = convos[index];
-
-          //               DecodedMessage? message = messages!.firstWhereOrNull((element) => element.topic == convo.topic);
-          //               print(message);
-          //               return CircularProgressIndicator();
-          //               if (message != null) {
-          //                 return ChatListItem(convo: convo, message: message);
-          //               }
-          //               return const SizedBox();
-          //             },
-          //           );
-          //         },
-          //       );
-          //     },
-          //   ),
-          // )
         ],
       ),
     );
@@ -241,19 +170,6 @@ class ChatListItem extends StatelessWidget {
         }
       },
     );
-
-    // return ListView.builder(
-    //   itemCount: messages.length,
-    //   itemBuilder: (ctx, index) {
-    //     bool noBeepoAcct = messages[index]['beepoAcct']['error'] == 'User Not Found';
-    //     String senderAddress = messages[index]['sender'];
-
-    //     print(messages[index]);
-
-    //     final random_ = Random();
-
-    //   },
-    // );
   }
 }
 
@@ -263,6 +179,7 @@ class Chat extends HookWidget {
   @override
   Widget build(BuildContext context) {
     var conversations = useConversationList();
+    var users = useUsers();
 
     var refresher = useConversationsRefresher();
     debugPrint('conversations ${conversations.data?.length ?? 0}');
@@ -281,18 +198,19 @@ class Chat extends HookWidget {
     }
 
     List<xmtp.Conversation> data = conversations.data!;
-    var msg = data.map((d) {
+
+    List<Map> msg = data.map((d) {
       var lastMessage = useLastMessage(d.topic);
-      return lastMessage;
+      return {'lastMessage': lastMessage, 'address': d.peer.toString()};
     }).toList();
 
     msg.sort(
       (a, b) {
-        //   // Compare the message time of conversations 'a' and 'b'
-        DateTime? timeA = a.hasData ? a.data!.sentAt : null;
-        DateTime? timeB = b.hasData ? b.data!.sentAt : null;
+        DateTime? timeA = a['lastMessage'].hasData ? a['lastMessage'].data!.sentAt : null;
+        DateTime? timeB = b['lastMessage'].hasData ? b['lastMessage'].data!.sentAt : null;
+        // DateTime? timeBb = b.hasData ? b.data!.sentAt : null;
         if (timeB != null && timeA != null) {
-          return timeB.compareTo(timeA); // Sort in descending order
+          return timeB.compareTo(timeA);
         }
         return -1;
       },
@@ -304,8 +222,8 @@ class Chat extends HookWidget {
         shrinkWrap: true,
         padding: EdgeInsets.zero,
         itemBuilder: (context, index) {
-          if (!msg[index].hasData || msg[index].data == null) {
-            if (msg[index].connectionState == ConnectionState.waiting) {
+          if (!msg[index]['lastMessage'].hasData || msg[index]['lastMessage'].data == null) {
+            if (msg[index]['lastMessage'].connectionState == ConnectionState.waiting) {
               return Shimmer.fromColors(
                 baseColor: Colors.grey.shade300,
                 highlightColor: Colors.grey.shade100,
@@ -332,7 +250,13 @@ class Chat extends HookWidget {
             );
           }
 
-          return ConversationListItem(topic: msg[index].data!.topic, lastMessage: msg[index].data);
+          Map? d = users?.toList().firstWhereOrNull((element) => element['ethAddress'] == msg[index]['address']);
+
+          return ConversationListItem(
+            topic: msg[index]['lastMessage'].data!.topic,
+            lastMessage: msg[index]['lastMessage'].data,
+            userData: d,
+          );
         },
         itemCount: msg.length,
       ),
@@ -342,9 +266,10 @@ class Chat extends HookWidget {
 
 class ConversationListItem extends HookWidget {
   final String topic;
+  final Map? userData;
   final xmtp.DecodedMessage? lastMessage;
 
-  ConversationListItem({Key? key, required this.topic, this.lastMessage}) : super(key: Key(topic));
+  ConversationListItem({Key? key, required this.topic, this.userData, this.lastMessage}) : super(key: Key(topic));
 
   @override
   Widget build(BuildContext context) {
@@ -355,7 +280,7 @@ class ConversationListItem extends HookWidget {
     var lastSentAt = lastMessage?.sentAt ?? DateTime.now();
     var senderAddress = conversation.data?.peer.toString();
 
-    bool noBeepoAcct = true;
+    bool noBeepoAcct = userData == null;
 
     if (conversation.connectionState == ConnectionState.waiting) return Container();
 
@@ -392,7 +317,7 @@ class ConversationListItem extends HookWidget {
               decoration: BoxDecoration(color: ColorUtils.stringToColor(senderAddress!), borderRadius: BorderRadius.circular(100)),
               child: Center(
                 child: Text(
-                  senderAddress?.substring(0, 2) ?? '',
+                  senderAddress.substring(0, 2),
                   style: const TextStyle(color: Colors.white),
                 ),
               ),
@@ -401,19 +326,12 @@ class ConversationListItem extends HookWidget {
               height: 50,
               width: 50,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(25),
-                child: CachedNetworkImage(
-                  imageUrl: 'https://res.cloudinary.com/dwruvre6o/image/upload/v1697100571/usdt_jiebah.png',
-                  height: 50,
-                  width: 50,
-                  placeholder: (context, url) => const Center(
-                      child: CircularProgressIndicator(
-                    color: AppColors.secondaryColor,
-                  )),
-                  errorWidget: (context, url, error) => const Icon(
-                    Icons.person,
-                    color: AppColors.secondaryColor,
-                  ),
+                borderRadius: BorderRadius.circular(100),
+                child: Image.memory(
+                  base64Decode(userData!['image']),
+                  height: 45,
+                  width: 45,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
@@ -421,7 +339,9 @@ class ConversationListItem extends HookWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            noBeepoAcct ? '${senderAddress?.substring(0, 3)}...${senderAddress?.substring(senderAddress.length - 7, senderAddress.length)}' : 'Ajem',
+            noBeepoAcct
+                ? '${senderAddress?.substring(0, 3)}...${senderAddress?.substring(senderAddress.length - 7, senderAddress.length)}'
+                : userData!['displayName'],
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
@@ -444,40 +364,36 @@ class ConversationListItem extends HookWidget {
               : const SizedBox(),
         ],
       ),
-      subtitle: content == null
-          ? const SizedBox()
-          : Row(
-              children: [
-                Expanded(
-                    child: Text(
-                  content.toString(),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                )),
-                const SizedBox(width: 8),
-                Column(
-                  children: [
-                    Text(
-                      ' ${isToday ? DateFormat("jm").format(lastSentAt) : days < 1 ? 'Yesterday' : DateFormat("yMd").format(lastSentAt)}',
-                      style: const TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
+      subtitle: Row(
+        children: [
+          Expanded(
+              child: Text(
+            content.toString(),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          )),
+          const SizedBox(width: 8),
+          Column(
+            children: [
+              Text(
+                ' ${isToday ? DateFormat("jm").format(lastSentAt) : days < 1 ? 'Yesterday' : DateFormat("yMd").format(lastSentAt)}',
+                style: const TextStyle(
+                  fontSize: 10,
+                  color: Colors.grey,
                 ),
-              ],
-            ),
+              ),
+            ],
+          ),
+        ],
+      ),
       onTap: () {
-        if (noBeepoAcct) {
-          Get.to(
-            () => ChatDmScreen(topic: topic, senderAddress: senderAddress),
-          );
-        } else {
-          Get.to(
-            () => ChatDmScreen(topic: topic),
-          );
-        }
+        Get.to(
+          () => ChatDmScreen(
+            topic: topic,
+            userData: userData,
+            senderAddress: userData?['ethAdress'] ?? senderAddress,
+          ),
+        );
       },
     );
   }

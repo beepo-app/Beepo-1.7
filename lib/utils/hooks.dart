@@ -1,6 +1,7 @@
 import 'package:async/async.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart' as fh;
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:xmtp/xmtp.dart' as xmtp;
 import '../session/foreground_session.dart';
@@ -12,6 +13,7 @@ import '../session/foreground_session.dart';
 
 /// The configured user's address.
 EthereumAddress? useMe() => session.me;
+List? useUsers() => Hive.box('beepo2.0').get('allUsers');
 
 /// The list of all conversations.
 ///

@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 class SignUp extends StatelessWidget {
@@ -79,6 +80,8 @@ class SignUp extends StatelessWidget {
                 icon: SvgPicture.asset('assets/google.svg'),
                 text: 'Continue with Google',
                 onPressed: () async {
+                  List users = await Hive.box('beepo2.0').get('allUsers');
+
                   await walletProvider.initPlatformState();
                   Map? res = await walletProvider.web3AuthLogin();
 
@@ -88,7 +91,7 @@ class SignUp extends StatelessWidget {
 
                     await walletProvider.initMPCWalletState(res);
                     if (walletProvider.ethAddress != null) {
-                      var newRes = await accountProvider.getUserByAddress(walletProvider.ethAddress!);
+                      var newRes = users.firstWhereOrNull((e) => e['ethAddress'] == walletProvider.ethAddress.toString());
 
                       if (newRes['error'] != null) {
                         Get.back();

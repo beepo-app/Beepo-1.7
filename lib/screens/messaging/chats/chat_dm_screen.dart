@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:beepo/components/bottom_nav.dart';
 import 'package:beepo/constants/constants.dart';
 import 'package:beepo/screens/profile/user_profile_screen.dart';
@@ -10,6 +12,8 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:intl/intl.dart';
 import 'package:string_to_color/string_to_color.dart';
 import 'dart:ui' as ui;
@@ -17,7 +21,8 @@ import 'dart:ui' as ui;
 class ChatDmScreen extends StatefulHookWidget {
   final String topic;
   final String? senderAddress;
-  ChatDmScreen({Key? key, this.senderAddress, required this.topic}) : super(key: Key(topic));
+  final Map? userData;
+  ChatDmScreen({Key? key, this.senderAddress, this.userData, required this.topic}) : super(key: Key(topic));
 
   @override
   State<ChatDmScreen> createState() => _ChatDmScreenState();
@@ -91,6 +96,7 @@ class _ChatDmScreenState extends State<ChatDmScreen> {
     // var read = useMarkAsOpened(topic);
 
     // print(read);
+    var userData = widget.userData;
 
     input.addListener(() => canSend.value = input.text.isNotEmpty);
     submitHandler() async {
@@ -98,9 +104,7 @@ class _ChatDmScreenState extends State<ChatDmScreen> {
       await sender(topic, input.text).then((_) => input.clear()).whenComplete(() => sending.value = false);
     }
 
-    bool noBeepoAcct = true;
-
-    // print(messages.data.toString());
+    bool noBeepoAcct = userData == null;
 
     if (!messages.hasData || messages.data == null) {
       if (messages.connectionState == ConnectionState.waiting) {
@@ -138,9 +142,9 @@ class _ChatDmScreenState extends State<ChatDmScreen> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const UserProfileScreen();
-                }));
+                if (userData != null) {
+                  Get.to(() => UserProfileScreen(user: userData));
+                }
               },
               child: Row(
                 children: [
@@ -153,22 +157,15 @@ class _ChatDmScreenState extends State<ChatDmScreen> {
                           ),
                         )
                       : SizedBox(
-                          height: 40,
-                          width: 40,
+                          height: 50,
+                          width: 50,
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(25),
-                            child: CachedNetworkImage(
-                              imageUrl: 'https://res.cloudinary.com/dwruvre6o/image/upload/v1697100571/usdt_jiebah.png',
-                              height: 40,
-                              width: 40,
-                              placeholder: (context, url) => const Center(
-                                  child: CircularProgressIndicator(
-                                color: AppColors.secondaryColor,
-                              )),
-                              errorWidget: (context, url, error) => const Icon(
-                                Icons.person,
-                                color: AppColors.secondaryColor,
-                              ),
+                            borderRadius: BorderRadius.circular(100),
+                            child: Image.memory(
+                              base64Decode(userData['image']),
+                              height: 45,
+                              width: 45,
+                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
@@ -184,7 +181,7 @@ class _ChatDmScreenState extends State<ChatDmScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Sylvia Chirah",
+                              userData['displayName'],
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 fontSize: 13.sp,
@@ -192,7 +189,7 @@ class _ChatDmScreenState extends State<ChatDmScreen> {
                               ),
                             ),
                             Text(
-                              "@sylvia",
+                              "@${userData['username']}",
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 fontSize: 8.sp,

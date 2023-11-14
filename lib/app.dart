@@ -27,7 +27,6 @@ class _MyAppState extends State<MyApp> {
       final walletProvider = Provider.of<WalletProvider>(context, listen: false);
       await accountProvider.initDB();
       await walletProvider.initPlatformState();
-      await accountProvider.getUserByUsernme('aje');
       await accountProvider.getAllUsers();
     } catch (e) {
       if (kDebugMode) {
