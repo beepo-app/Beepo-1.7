@@ -344,6 +344,7 @@ class WalletProvider extends ChangeNotifier {
       final Web3AuthResponse response =
           await Web3AuthFlutter.login(LoginParams(loginProvider: Provider.google, extraLoginOptions: ExtraLoginOptions(login_hint: 'Beepo')));
       mpcResponse = response;
+      print(response);
       return response.toJson();
     } catch (e) {
       return {'error': e};

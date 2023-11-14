@@ -463,7 +463,7 @@ packages:
     source: hosted
     version: "0.20.3"
   flutter_launcher_icons:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: flutter_launcher_icons
       sha256: "526faf84284b86a4cb36d20a5e45147747b7563d921373d4ee0559c54fcdbcea"
@@ -776,6 +776,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.2.1+1"
+  in_date_utils:
+    dependency: "direct main"
+    description:
+      name: in_date_utils
+      sha256: "15ffddce52abd2072d3b7456413028d313de02f0628fef89212b1e214c97a57c"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.2.0+2"
   intl:
     dependency: "direct main"
     description:
@@ -1341,6 +1349,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.2.0"
+  string_to_color:
+    dependency: "direct main"
+    description:
+      name: string_to_color
+      sha256: cb33e3fd98c3005ac088bd2f3eac5fef9fac5a36ca7364766087cdbd9ca6f1a7
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.0"
   synchronized:
     dependency: transitive
     description:

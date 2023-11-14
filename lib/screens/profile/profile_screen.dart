@@ -17,7 +17,7 @@ import 'package:provider/provider.dart';
 //import '../../Utils/styles.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -26,8 +26,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
-    final accountProvider =
-        Provider.of<AccountProvider>(context, listen: false);
+    final accountProvider = Provider.of<AccountProvider>(context, listen: false);
     String img = Hive.box('beepo2.0').get('base64Image');
     Uint8List imageBytes = base64Decode(img);
 
@@ -76,8 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   SizedBox(width: 8.w),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return EditProfileScreen(imageBytes: imageBytes);
                       }));
                     },

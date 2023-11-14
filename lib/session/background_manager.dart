@@ -36,6 +36,7 @@ class BackgroundManager {
   StreamSubscription<xmtp.Conversation>? _conversationStream;
   StreamSubscription<xmtp.DecodedMessage>? _messageStream;
   final Set<String> _messageStreamTopics = {};
+  bool backfill = false;
 
   /// Manages recovery attempts for remote streams that fail.
   final Recovery _recovery = Recovery();
@@ -104,6 +105,12 @@ class BackgroundManager {
     return 'msg';
   }
 
+  Future<List<xmtp.DecodedMessage>> recentMessages() async {
+    var convos = await _db.selectConversations().get();
+    var msg = await _client.listBatchMessages(convos, limit: 1);
+    return msg;
+  }
+
   /// Refreshes the messages in the conversation identified by [topic].
   ///
   /// This will notify all database listeners to the [topic].
@@ -137,17 +144,8 @@ class BackgroundManager {
   ///
   /// Note: updates are broadcast to listeners who [watchConversations] on the DB.
   Future<int> refreshConversations({DateTime? since}) async {
-    print('refreshing');
-    _nudgeToBackfillEmptyHistories();
-    // print(since);
-    if (since == null) {
-      print('oky');
-      var c = await _db.selectLastConversation().getSingleOrNull();
-      print('oky');
-      since = c?.createdAt;
-    }
-    print(since);
     var conversations = await _client.listConversations(start: since);
+    // _refreshMessages(conversations);
     await _db.saveConversations(conversations);
     _nudgeToBackfillEmptyHistories();
     return conversations.length;
@@ -160,6 +158,7 @@ class BackgroundManager {
   void _nudgeToBackfillEmptyHistories() async {
     final clock = Stopwatch()..start();
     var conversations = await _db.selectEmptyConversations().get();
+    backfill = false;
     debugPrint('backfill started: (count ${conversations.length})');
     // Split the conversations into batches so we load them in parallel.
     var batches = partition(conversations, 3);
@@ -173,6 +172,7 @@ class BackgroundManager {
       }));
     }
     debugPrint('backfill finished: (count ${conversations.length}) ${clock.elapsedMilliseconds} ms');
+    backfill = true;
   }
 
   Future<void> _restartConversationStream() async {

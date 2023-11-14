@@ -146,6 +146,8 @@ class _VerifyCodeState extends State<VerifyCode> {
                           );
                         }
 
+                        // print(session.backfill());
+
                         if (session.initialized == false) {
                           await session.authorize(walletProvider.ethPrivateKey!);
                         }

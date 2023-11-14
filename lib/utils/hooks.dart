@@ -24,6 +24,13 @@ AsyncSnapshot<List<xmtp.Conversation>> useConversationList() => _useLookupStream
       () => session.watchConversations(),
     );
 
+// AsyncSnapshot<List<xmtp.DecodedMessage>> useRecentMessages() => _useLookupStream(
+//       () => session.recentMessages(),
+//       () => session.watchListMessages(),
+//     );
+
+// AsyncSnapshot<List<xmtp.DecodedMessage>> useRecentMessages() => session.recentMessages();
+
 /// The details of a single conversation.
 AsyncSnapshot<xmtp.Conversation?> useConversation(String topic) => fh.useFuture(fh.useMemoized(() => session.findConversation(topic), [topic]));
 

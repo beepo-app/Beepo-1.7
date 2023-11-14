@@ -15,7 +15,6 @@ class AccountProvider extends ChangeNotifier {
       db = await Db.create('mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
       await db!.open();
       notifyListeners();
-      print(db!.isConnected);
       print('DB init');
       return "DB init";
     } catch (e) {
@@ -37,11 +36,49 @@ class AccountProvider extends ChangeNotifier {
     }
   }
 
+  Future<Map> getAllUsers() async {
+    try {
+      Map data = await dbGetAllUsers(db!);
+      print(data);
+      return {'success': "done"};
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+        return ({'error': e.toString()});
+      }
+    }
+    return ({'error': 'Not done'});
+  }
+
   Future<Map> getUser() async {
     try {
+      db ??= await Db.create('mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
       Map data = await dbGetUser(db!, username!);
       print(data);
       return {'success': "done"};
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+        return ({'error': e.toString()});
+      }
+    }
+    return ({'error': 'Not done'});
+  }
+
+  Future<Map> getUserByUsernme(username) async {
+    try {
+      db ??= await Db.create('mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
+
+      if (!db!.isConnected || db!.state != State.opening || db!.state != State.open) {
+        await db!.open();
+      }
+
+      Map data = await dbGetUserByUsernme(db!, username);
+
+      if (data['error'] != null) {
+        return {'status': "error", "data": data};
+      }
+      return data;
     } catch (e) {
       if (kDebugMode) {
         print(e);

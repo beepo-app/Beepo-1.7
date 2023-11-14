@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -18,8 +17,15 @@ dbCreateUser(String image, Db db, String displayName, String ethAddress, btcAddr
 
   if (val == null) {
     try {
-      await usersCollection
-          .insertOne({'username': username, 'displayName': displayName, 'ethAddress': ethAddress, 'btcAddress': btcAddress, 'image': image});
+      await usersCollection.insertOne(
+        {
+          'username': username,
+          'displayName': displayName,
+          'ethAddress': ethAddress,
+          'btcAddress': btcAddress,
+          'image': image,
+        },
+      );
 
       await Hive.box('beepo2.0').put('encryptedSeedPhrase', (encrypteData.base64));
       await Hive.box('beepo2.0').put('base64Image', image);
@@ -77,6 +83,38 @@ Future<Map<String, dynamic>> dbUpdateUser(image, Db db, displayName, bio, newUse
   return ({'error': "An error occured!"});
 }
 
+Future<Map> dbGetAllUsers(Db db) async {
+  await db.open();
+  var usersCollection = db.collection('users');
+
+  print('fetching data');
+  print('isConnected');
+  print(db.isConnected);
+  print('isConnected');
+
+  List<Map>? val = await usersCollection.find().toList();
+
+  print(val);
+
+  print(val.toString());
+  if (val == null) {
+    await db.close();
+    throw ("User Not Found");
+  } else {
+    await db.close();
+    Iterable<Map<dynamic, dynamic>> data = val.map((e) => {
+          'username': e['username'],
+          'displayName': e['displayName'],
+          'ethAddress': e['ethAddress'],
+          'btcAddress': e['btcAddress'],
+          'image': e['image'],
+        });
+    print(data);
+    await Hive.box('beepo2.0').put('allUsers', data);
+    return {'success': "done", "data": val};
+  }
+}
+
 Future<Map> dbGetUser(Db db, String username) async {
   await db.open();
   var usersCollection = db.collection('users');
@@ -85,10 +123,39 @@ Future<Map> dbGetUser(Db db, String username) async {
 
   if (val == null) {
     await db.close();
-    return {'error': "User Not Found"};
+    throw ("User Not Found");
   } else {
     await db.close();
-    return val;
+    return {'success': "done", "data": val};
+  }
+}
+
+Future<Map> dbGetUserByUsernme(Db db, String username) async {
+  var usersCollection = db.collection('users');
+
+  var agg = [
+    {
+      '\$search': {
+        'index': 'dynamicUsernameSearch',
+        'autocomplete': {
+          'path': 'username',
+          'query': username,
+          'fuzzy': {'maxEdits': 2, 'prefixLength': 1, 'maxExpansions': 256}
+        },
+        'highlight': {'path': 'username'}
+      }
+    },
+  ];
+
+  print('fetchin user by ame');
+  var val = await usersCollection.aggregateToStream(agg).toList();
+
+  if (val == null || val.isEmpty) {
+    await db.close();
+    throw ("User Not Found");
+  } else {
+    await db.close();
+    return {'status': 'success', "data": val};
   }
 }
 

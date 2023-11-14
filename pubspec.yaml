@@ -58,7 +58,7 @@ dependencies:
   intl: ^0.18.1
   encrypt: ^5.0.3
   aes_crypt_null_safe: ^2.0.2
-  mongo_dart: ^0.9.3 
+  mongo_dart: ^0.9.0
   wallet: any
   flutter_hooks:
   ethereum_addresses: ^1.0.2
@@ -80,29 +80,35 @@ dependencies:
   flutter_app_badger: ^1.5.0
   blockies_ethereum: ^0.0.2
   sqlite3_flutter_libs: ^0.5.13
-
-
+  string_to_color: ^2.0.0
+  in_date_utils: ^1.2.0+2
+  flutter_launcher_icons: ^0.13.1
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
-  flutter_native_splash: ^2.3.2
-  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.3.2 
   hive_generator: any
   build_runner: any
+
+
+flutter_launcher_icons: 
+  image_path_android: "assets/icons/icon.png"
+  image_path_ios: "assets/images/icon-1024x1024.png"
+  android: true # can specify file name here e.g. "ic_launcher"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  remove_alpha_ios: true
+  background_color_ios: "#ffffff"
+
 
 flutter_native_splash:
   background_image: "assets/splash.png"
   android: true
   ios: true
   
-flutter_icons:
-  ios: true
-  android: false
-  image_path: "assets/icons/icon.png"
-  remove_alpha_ios: true
+ 
 # The following section is specific to Flutter packages.
 flutter:
   uses-material-design: true

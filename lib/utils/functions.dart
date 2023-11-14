@@ -29,8 +29,7 @@ List createKeywords(String userName) {
 
 String generateRandomString(int len) {
   var r = Random();
-  return String.fromCharCodes(
-      List.generate(len, (index) => r.nextInt(33) + 89));
+  return String.fromCharCodes(List.generate(len, (index) => r.nextInt(33) + 89));
 }
 
 String formatCurrency(num num) {
@@ -84,8 +83,7 @@ class ImageUtil {
             ),
             CupertinoActionSheetAction(
               onPressed: () async {
-                XFile? result =
-                    await ImagePicker().pickImage(source: ImageSource.gallery);
+                XFile? result = await ImagePicker().pickImage(source: ImageSource.gallery);
 
                 if (result != null) {
                   //File size limit - 5mb
@@ -115,5 +113,13 @@ class ImageUtil {
       print(e);
       rethrow;
     }
+  }
+}
+
+extension IsSameDate on DateTime {
+  /// Return `true` if the dates are equal.
+  /// Only comparing [day], [month] and [year].
+  bool isSameDate(DateTime other) {
+    return day == other.day && month == other.month && year == other.year;
   }
 }

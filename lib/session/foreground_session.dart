@@ -1,4 +1,5 @@
 import 'package:beepo/session/background_manager.dart';
+import 'package:beepo/widgets/toast.dart';
 import 'package:flutter/widgets.dart';
 import 'package:quiver/check.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,25 +27,48 @@ class ForegroundSession extends ChangeNotifier {
 
   ForegroundSession.create() : this(Database.connect());
 
+  bool backfill() => manager!.backfill;
+
   /// Commands sent to the background isolate
 
   /// Refreshes the messages in the conversation identified by [topic].
   Future<int> refreshMessages(List<String> topics, {DateTime? since}) => XmtpIsolate.get().command("refreshMessages", args: [topics, since]);
 
   /// Refreshes the list of all conversations from the remote API.
-  Future<int> refreshConversations({DateTime? since}) => XmtpIsolate.get().command("refreshConversations", args: [since]);
+  Future<int> refreshConversations({DateTime? since}) => manager!.refreshConversations();
 
   /// Whether or not we can send messages to [address].
   Future<bool> canMessage(String address) => XmtpIsolate.get().command("canMessage", args: [address]);
 
   /// Starts a conversation with [address].
   /// Returns the conversation `topic` identifier.
-  Future<String> newConversation(
+  Future<Map> newConversation(
     String address, {
     String conversationId = '',
     Map<String, String> metadata = const {},
-  }) =>
-      XmtpIsolate.get().command("newConversation", args: [address, conversationId, metadata]);
+  }) async {
+    try {
+      bool canMessage = await manager!.canMessage(address);
+      if (canMessage) {
+        xmtp.Conversation convo = await manager!.newConversation(address);
+        return {
+          "success": true,
+          'data': {"topic": convo.topic, "address": convo.peer.hexEip55}
+        };
+      }
+      return {'error': 'Address Is Not On The XMTP Network'};
+    } catch (e) {
+      if (e.toString().contains('Invalid argument (address)')) {
+        showToast('Invalid Address Entered');
+      } else if (e.toString().contains('is not on the XMTP network')) {
+        showToast('Address is not on XMTP network');
+      } else if (e.toString().contains('Address has invalid case-characters')) {
+        showToast('Address has invalid case-characters');
+      }
+      return {'error': e};
+    }
+  }
+  // XmtpIsolate.get().command("newConversation", args: [address, conversationId, metadata]);
 
   /// Sends [content] to the conversation [topic].
   /// Returns the message `id`.
@@ -54,19 +78,28 @@ class ForegroundSession extends ChangeNotifier {
     xmtp.ContentTypeId? contentType,
   }) async =>
       manager!.sendMessage(
-          topic,
-          (await codecs.encode(
-            xmtp.DecodedContent(
-              contentType ?? xmtp.contentTypeText,
-              content,
-            ),
-          )));
+        topic,
+        (await codecs.encode(
+          xmtp.DecodedContent(
+            contentType ?? xmtp.contentTypeText,
+            content,
+          ),
+        )),
+      );
 
   /// Finds saved list of conversations.
   Future<List<xmtp.Conversation>> findConversations() => _db.selectConversations().get();
 
+  Future<List<xmtp.DecodedMessage>> recentMessages() async {
+    var msg = await manager!.recentMessages();
+    print(msg);
+    return msg;
+  }
+
   /// Watch a stream that emits the list of conversations.
   Stream<List<xmtp.Conversation>> watchConversations() => _db.selectConversations().watch();
+
+  // Stream<List<xmtp.DecodedMessage>> watchListMessages() => _db.selectMessages(topic).watch();
 
   /// Finds the [xmtp.DecodedMessage]s for the given [topic] in our local database.
   Future<List<xmtp.DecodedMessage>> findMessages(String topic) => _db.selectMessages(topic).get();
@@ -139,5 +172,10 @@ class ForegroundSession extends ChangeNotifier {
     await _db.clear();
     initialized = false;
     notifyListeners();
+  }
+
+  Future<void> start() async {
+    print('staritng');
+    manager!.start();
   }
 }

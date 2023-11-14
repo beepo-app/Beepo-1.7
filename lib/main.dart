@@ -9,7 +9,6 @@ import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'session/foreground_session.dart';
-import 'package:flutter_app_badger/flutter_app_badger.dart';
 
 void main() async {
   await Hive.initFlutter();
@@ -18,8 +17,6 @@ void main() async {
   await dotenv.load(fileName: ".env");
 
   await session.loadSaved();
-  _monitorTotalUnreadBadge();
-
   await dotenv.load();
 
   runApp(
@@ -37,17 +34,4 @@ void main() async {
       ),
     ),
   );
-}
-
-void _monitorTotalUnreadBadge() {
-  if (!session.initialized) {
-    return;
-  }
-  session.watchTotalNewMessageCount().listen((count) {
-    if (count > 0) {
-      FlutterAppBadger.updateBadgeCount(count);
-    } else {
-      FlutterAppBadger.removeBadge();
-    }
-  });
 }

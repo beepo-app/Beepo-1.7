@@ -8,6 +8,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
+import 'session/foreground_session.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
+
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -17,12 +20,15 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late bool? isSignedUp = Hive.box('beepo2.0').get('isSignedUp');
+
   checkState() async {
     try {
       final accountProvider = Provider.of<AccountProvider>(context, listen: false);
       final walletProvider = Provider.of<WalletProvider>(context, listen: false);
       await accountProvider.initDB();
       await walletProvider.initPlatformState();
+      await accountProvider.getUserByUsernme('aje');
+      await accountProvider.getAllUsers();
     } catch (e) {
       if (kDebugMode) {
         print(e);
@@ -30,8 +36,22 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  void _monitorTotalUnreadBadge() {
+    if (!session.initialized) {
+      return;
+    }
+    session.watchTotalNewMessageCount().listen((count) {
+      if (count > 0) {
+        FlutterAppBadger.updateBadgeCount(count);
+      } else {
+        FlutterAppBadger.removeBadge();
+      }
+    });
+  }
+
   @override
   void initState() {
+    _monitorTotalUnreadBadge();
     checkState();
     super.initState();
   }

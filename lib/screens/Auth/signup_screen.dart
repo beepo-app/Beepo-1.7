@@ -82,7 +82,7 @@ class SignUp extends StatelessWidget {
                   await walletProvider.initPlatformState();
                   Map? res = await walletProvider.web3AuthLogin();
 
-                  print(res);
+                  // ignore: unnecessary_null_comparison
                   if (res != null && res['error'] == null) {
                     loadingDialog("Checking Info!");
 
