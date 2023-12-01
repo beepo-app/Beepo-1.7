@@ -1,13 +1,12 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:beepo/constants/constants.dart';
-import 'package:beepo/providers/account_provider.dart';
-import 'package:beepo/screens/profile/account_type_screen.dart';
-import 'package:beepo/screens/profile/edit_profile_screen.dart';
-import 'package:beepo/screens/profile/user_profile_security_screen.dart';
-import 'package:beepo/widgets/app_text.dart';
+import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/providers/account_provider.dart';
+import 'package:Beepo/screens/profile/account_type_screen.dart';
+import 'package:Beepo/screens/profile/edit_profile_screen.dart';
+import 'package:Beepo/screens/profile/user_profile_security_screen.dart';
+import 'package:Beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -26,8 +25,8 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
-    final accountProvider = Provider.of<AccountProvider>(context, listen: false);
-    String img = Hive.box('beepo2.0').get('base64Image');
+    final accountProvider = Provider.of<AccountProvider>(context, listen: true);
+    String img = Hive.box('Beepo2.0').get('base64Image');
     Uint8List imageBytes = base64Decode(img);
 
     return Scaffold(
@@ -82,7 +81,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: const Icon(
                       Icons.mode_edit_outlined,
                       color: Color(0xffff9c34),
-                      size: 20,
+                      size: 28,
                     ),
                   ),
                 ],
@@ -221,7 +220,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               SizedBox(height: 15.h),
               InkWell(
                 onTap: () {
-                  print('https://www.beepoapp.net');
+                  print('https://www.Beepoapp.net');
                 },
                 child: Row(
                   children: [

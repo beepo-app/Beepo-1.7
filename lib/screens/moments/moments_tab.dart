@@ -1,6 +1,6 @@
-import 'package:beepo/constants/constants.dart';
-import 'package:beepo/screens/moments/moments_screen.dart';
-import 'package:beepo/widgets/app_text.dart';
+import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/screens/moments/moments_screen.dart';
+import 'package:Beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -62,8 +62,7 @@ class _MomentsTabState extends State<MomentsTab> {
                 itemBuilder: (BuildContext context, index) {
                   return InkWell(
                     onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return const MomentsScreens();
                       }));
                     },
@@ -93,21 +92,18 @@ class _MomentsTabState extends State<MomentsTab> {
                               ),
                             ),
                             child: Padding(
-                              padding: EdgeInsets.only(
-                                  left: 10.w, bottom: 10.h, top: 15.h),
+                              padding: EdgeInsets.only(left: 10.w, bottom: 10.h, top: 15.h),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   CircleAvatar(
                                     radius: 20.r,
                                     backgroundColor: AppColors.white,
-                                    backgroundImage: const AssetImage(
-                                        "assets/profile_img1.png"),
+                                    backgroundImage: const AssetImage("assets/profile_img1.png"),
                                   ),
                                   SizedBox(width: 8.w),
                                   Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       AppText(
                                         text: "Andrey Hugh",
@@ -121,10 +117,7 @@ class _MomentsTabState extends State<MomentsTab> {
                                             fontSize: 10.sp,
                                             color: AppColors.white,
                                           ),
-                                          children: const [
-                                            TextSpan(text: "11.1k "),
-                                            TextSpan(text: "Views")
-                                          ],
+                                          children: const [TextSpan(text: "11.1k "), TextSpan(text: "Views")],
                                         ),
                                       ),
                                     ],

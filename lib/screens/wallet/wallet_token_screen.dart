@@ -1,10 +1,10 @@
-import 'package:beepo/constants/constants.dart';
-import 'package:beepo/providers/wallet_provider.dart';
-import 'package:beepo/screens/wallet/token_screen_scan.dart';
-import 'package:beepo/screens/wallet/send_token_screen.dart';
-import 'package:beepo/screens/wallet/transfer_info.dart';
-import 'package:beepo/widgets/app_text.dart';
-import 'package:beepo/widgets/toast.dart';
+import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/providers/wallet_provider.dart';
+import 'package:Beepo/screens/wallet/token_screen_scan.dart';
+import 'package:Beepo/screens/wallet/send_token_screen.dart';
+import 'package:Beepo/screens/wallet/transfer_info.dart';
+import 'package:Beepo/widgets/app_text.dart';
+import 'package:Beepo/widgets/toast.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,7 +15,7 @@ import 'package:provider/provider.dart';
 
 class WalletTokenScreen extends StatefulWidget {
   final Map<String, dynamic>? data;
-  const WalletTokenScreen({Key? key, this.data}) : super(key: key);
+  const WalletTokenScreen({super.key, this.data});
 
   @override
   State<WalletTokenScreen> createState() => _WalletTokenScreenState();

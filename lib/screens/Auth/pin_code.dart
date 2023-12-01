@@ -2,13 +2,12 @@
 
 import 'dart:convert';
 
-import 'package:beepo/components/bottom_nav.dart';
-import 'package:beepo/providers/account_provider.dart';
-import 'package:beepo/providers/auth_provider.dart';
-import 'package:beepo/providers/wallet_provider.dart';
-import 'package:beepo/providers/xmtp.dart';
-import 'package:beepo/screens/Auth/verify_code.dart';
-import 'package:beepo/widgets/toast.dart';
+import 'package:Beepo/components/bottom_nav.dart';
+import 'package:Beepo/providers/account_provider.dart';
+import 'package:Beepo/providers/auth_provider.dart';
+import 'package:Beepo/providers/wallet_provider.dart';
+import 'package:Beepo/screens/Auth/verify_code.dart';
+import 'package:Beepo/widgets/toast.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,7 +17,7 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
 
 import '../../Utils/styles.dart';
-import '../../components/beepo_filled_button.dart';
+import '../../components/Beepo_filled_button.dart';
 
 class PinCode extends StatefulWidget {
   final Uint8List? image;
@@ -27,13 +26,13 @@ class PinCode extends StatefulWidget {
   final String? mnemonic;
   final bool isSignedUp;
   const PinCode({
-    Key? key,
+    super.key,
     this.image,
     this.name,
     this.data,
     this.mnemonic,
     this.isSignedUp = true,
-  }) : super(key: key);
+  });
 
   @override
   State<PinCode> createState() => _PinCodeState();
@@ -149,10 +148,10 @@ class _PinCodeState extends State<PinCode> {
 
                     final walletProvider = Provider.of<WalletProvider>(context, listen: false);
                     final accountProvider = Provider.of<AccountProvider>(context, listen: false);
-                    final xmtpProvider = Provider.of<XMTPProvider>(context, listen: false);
+                    // final xmtpProvider = Provider.of<XMTPProvider>(context, listen: false);
 
                     await walletProvider.initWalletState(response);
-                    await xmtpProvider.initClientFromKey();
+                    // await xmtpProvider.initClientFromKey();
                     await accountProvider.initAccountState();
 
                     Get.to(

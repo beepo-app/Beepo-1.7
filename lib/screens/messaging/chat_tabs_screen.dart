@@ -1,10 +1,11 @@
-import 'package:beepo/constants/constants.dart';
-import 'package:beepo/screens/messaging/calls/calls_tab.dart';
-import 'package:beepo/screens/messaging/chats/chat_tab.dart';
-import 'package:beepo/screens/messaging/chats/search_users_screen.dart';
-import 'package:beepo/screens/moments/moments_tab.dart';
-import 'package:beepo/widgets/filled_buttons.dart';
-import 'package:beepo/widgets/toast.dart';
+import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/screens/messaging/calls/calls_tab.dart';
+import 'package:Beepo/screens/messaging/chats/chat_tab.dart';
+import 'package:Beepo/screens/messaging/chats/search_users_screen.dart';
+import 'package:Beepo/screens/moments/init_camera.dart';
+import 'package:Beepo/screens/moments/moments_tab.dart';
+import 'package:Beepo/widgets/filled_buttons.dart';
+import 'package:Beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -181,7 +182,9 @@ class _MyTabBarState extends State<MyTabBar> {
                 InkWell(
                   onTap: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return const AddStory();
+                      return const InitCamera(
+                        backDirection: false,
+                      );
                     }));
                   },
                   child: Column(

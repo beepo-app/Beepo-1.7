@@ -13,7 +13,7 @@ import '../session/foreground_session.dart';
 
 /// The configured user's address.
 EthereumAddress? useMe() => session.me;
-List? useUsers() => Hive.box('beepo2.0').get('allUsers');
+List? useUsers() => Hive.box('Beepo2.0').get('allUsers');
 
 /// The list of all conversations.
 ///

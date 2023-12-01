@@ -1,14 +1,13 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:beepo/components/beepo_filled_button.dart';
-import 'package:beepo/providers/account_provider.dart';
-import 'package:beepo/screens/wallet/phrase_confirm_screen.dart';
-import 'package:beepo/utils/functions.dart';
-import 'package:beepo/widgets/app_text.dart';
-import 'package:beepo/widgets/beepo_text_field.dart';
-import 'package:beepo/widgets/toast.dart';
+import 'package:Beepo/components/Beepo_filled_button.dart';
+import 'package:Beepo/providers/account_provider.dart';
+import 'package:Beepo/utils/functions.dart';
+import 'package:Beepo/widgets/app_text.dart';
+import 'package:Beepo/widgets/Beepo_text_field.dart';
+import 'package:Beepo/widgets/commons.dart';
+import 'package:Beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -18,8 +17,7 @@ import '../../constants/constants.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final Uint8List imageBytes;
-  const EditProfileScreen({Key? key, required this.imageBytes})
-      : super(key: key);
+  const EditProfileScreen({Key? key, required this.imageBytes}) : super(key: key);
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -33,8 +31,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final accountProvider =
-        Provider.of<AccountProvider>(context, listen: false);
+    final accountProvider = Provider.of<AccountProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 50.h,
@@ -89,9 +86,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           setState(() {
                             selectedImage = null;
                           });
-                          ImageUtil()
-                              .pickProfileImage(context: context)
-                              .then((value) async {
+                          ImageUtil().pickProfileImage(context: context).then((value) async {
                             if (value != null) {
                               setState(() {
                                 selectedImage = value;
@@ -170,23 +165,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 child: BeepoFilledButtons(
                   text: "Save",
                   onPressed: () async {
-                    if (displayName.text != "" &&
-                        bio.text != "" &&
-                        userName.text != '') {
+                    if (displayName.text != "" && bio.text != "" && userName.text != '') {
                       if (bio.text.length > 100) {
                         showToast('Bio has more than 100 characters');
                         return;
                       }
-
+                      if (userName.text.length < 3 || displayName.text.length < 3) {
+                        showToast('Username or display Text should be greater than 3 characters');
+                        return;
+                      }
+                      loadingDialog('Updating Profile ..');
                       Map userdata = await accountProvider.updateUser(
-                          base64Encode(selectedImage ?? widget.imageBytes),
-                          accountProvider.db,
-                          displayName.text,
-                          bio.text,
-                          userName.text);
-
+                          base64Encode(selectedImage ?? widget.imageBytes), accountProvider.db, displayName.text, bio.text, userName.text);
+                      if (userdata['error'] != null) {
+                        Get.back();
+                        showToast('Username Already exists!');
+                        return;
+                      }
                       if (userdata['success']['username'] == userName.text) {
-                        Get.to(() => const PhraseConfirmationScreen());
+                        Get.back();
+                        await accountProvider.initAccountState();
+                        // Get.back();
+                        showToast('Profile Updated Successfully!');
                       }
                     } else {
                       showToast('Please Enter All Fields!');

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ContainerButton extends StatelessWidget {
-  const ContainerButton({Key? key}) : super(key: key);
+  const ContainerButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -41,10 +41,7 @@ class ContainerButton extends StatelessWidget {
                     Spacer(),
                     Text(
                       'Swap',
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey),
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.grey),
                     ),
                     Spacer(),
                     Expanded(child: VerticalDivider()),
@@ -67,10 +64,7 @@ class ContainerButton extends StatelessWidget {
                     Spacer(),
                     Text(
                       'Granda',
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey),
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.grey),
                     ),
                     Spacer(),
                     Expanded(child: VerticalDivider()),
@@ -93,10 +87,7 @@ class ContainerButton extends StatelessWidget {
                 ),
                 child: const Text(
                   'About',
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.grey),
                 ),
               ),
             ),

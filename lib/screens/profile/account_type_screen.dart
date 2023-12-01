@@ -1,6 +1,6 @@
-import 'package:beepo/Constants/constants.dart';
-import 'package:beepo/screens/profile/profile_screen.dart';
-import 'package:beepo/widgets/app_text.dart';
+import 'package:Beepo/Constants/constants.dart';
+import 'package:Beepo/screens/profile/profile_screen.dart';
+import 'package:Beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

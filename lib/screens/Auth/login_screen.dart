@@ -1,10 +1,10 @@
-import 'package:beepo/components/beepo_filled_button.dart';
-import 'package:beepo/providers/account_provider.dart';
-import 'package:beepo/providers/wallet_provider.dart';
-import 'package:beepo/providers/xmtp.dart';
-import 'package:beepo/screens/Auth/create_acct_screen.dart';
-import 'package:beepo/screens/Auth/pin_code.dart';
-import 'package:beepo/widgets/toast.dart';
+import 'package:Beepo/components/Beepo_filled_button.dart';
+import 'package:Beepo/providers/account_provider.dart';
+import 'package:Beepo/providers/wallet_provider.dart';
+import 'package:Beepo/providers/xmtp.dart';
+import 'package:Beepo/screens/Auth/create_acct_screen.dart';
+import 'package:Beepo/screens/Auth/pin_code.dart';
+import 'package:Beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';

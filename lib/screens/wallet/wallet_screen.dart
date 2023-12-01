@@ -1,11 +1,11 @@
-import 'package:beepo/constants/constants.dart';
-import 'package:beepo/providers/wallet_provider.dart';
-import 'package:beepo/providers/xmtp.dart';
-import 'package:beepo/screens/wallet/received_assets_screen.dart';
-import 'package:beepo/screens/wallet/send_assets_screen.dart';
-import 'package:beepo/widgets/app_text.dart';
-import 'package:beepo/widgets/wallet_icon.dart';
-import 'package:beepo/widgets/wallet_list.dart';
+import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/providers/wallet_provider.dart';
+import 'package:Beepo/screens/wallet/received_assets_screen.dart';
+import 'package:Beepo/screens/wallet/send_assets_screen.dart';
+import 'package:Beepo/widgets/app_text.dart';
+import 'package:Beepo/widgets/nft_list.dart';
+import 'package:Beepo/widgets/wallet_icon.dart';
+import 'package:Beepo/widgets/wallet_list.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 import '../../Utils/styles.dart';
 
 class WalletScreen extends StatefulWidget {
-  const WalletScreen({Key? key}) : super(key: key);
+  const WalletScreen({super.key});
 
   @override
   State<WalletScreen> createState() => _WalletScreenState();
@@ -25,6 +25,7 @@ class _WalletScreenState extends State<WalletScreen> {
   String selectedCurrency = 'usd';
   String selectedCurrencySymbol = '\$';
   List<dynamic>? assets;
+  List<dynamic>? nftAssets;
 
   final List<PopupMenuEntry<String>> items = [
     const PopupMenuItem<String>(
@@ -68,7 +69,13 @@ class _WalletScreenState extends State<WalletScreen> {
   Widget build(BuildContext context) {
     final walletProvider = Provider.of<WalletProvider>(context, listen: false);
     assets = walletProvider.assets;
-    // getAssests();
+
+    void getAssests() async {
+      print(await walletProvider.getNFTs('mumbai', '0x31Cb35833884ECCE48BD40515372E0d657AFde46'));
+    }
+
+    // nftAssets = walletProvider.nftAssets;
+    getAssests();
 
     // print(.length);
 
@@ -203,7 +210,10 @@ class _WalletScreenState extends State<WalletScreen> {
                         padding: const EdgeInsets.all(15.0),
                         child: assets == null ? const Center(child: CircularProgressIndicator()) : WalletList(assets_: assets!),
                       ),
-                      Container(),
+                      Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: nftAssets == null ? const Center(child: CircularProgressIndicator()) : NFTList(assets_: nftAssets!),
+                      ),
                     ],
                   ),
                 )

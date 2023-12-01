@@ -1,11 +1,11 @@
 import 'dart:async';
+import 'package:Beepo/utils/api.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:quiver/collection.dart';
 import 'package:quiver/iterables.dart';
 import 'package:xmtp/xmtp.dart' as xmtp;
 
-import '../utils/api.dart';
 import '../database/database.dart';
 import './recovery.dart';
 
@@ -36,14 +36,13 @@ class BackgroundManager {
   StreamSubscription<xmtp.Conversation>? _conversationStream;
   StreamSubscription<xmtp.DecodedMessage>? _messageStream;
   final Set<String> _messageStreamTopics = {};
-  bool backfill = false;
 
   /// Manages recovery attempts for remote streams that fail.
   final Recovery _recovery = Recovery();
 
-  static Future<BackgroundManager> create(xmtp.PrivateKeyBundle keys, db) async {
+  static Future<BackgroundManager> create(xmtp.PrivateKeyBundle keys) async {
     var client = await xmtp.Client.createFromKeys(createApi(), keys);
-    return BackgroundManager(client, db);
+    return BackgroundManager(client, Database.connect());
   }
 
   BackgroundManager(this._client, this._db);
@@ -55,7 +54,6 @@ class BackgroundManager {
     // Query for any new conversations.
     var lastConversation = await _db.selectLastConversation().getSingleOrNull();
     await refreshConversations(since: lastConversation?.createdAt);
-
     // Query for any new messages in known conversations.
     var conversations = await _db.selectConversations().get();
     var lastReceivedAt = await _db.selectLastReceivedSentAt().getSingleOrNull();
@@ -90,24 +88,17 @@ class BackgroundManager {
       );
 
   /// Sends the given [message] to the given [topic].
-  Future<String> sendMessage(
+  Future<xmtp.DecodedMessage> sendMessage(
     String topic,
     xmtp.EncodedContent encoded,
   ) async {
     // First get the conversation.
-    print('semdong message');
     var convo = await _db.selectConversation(topic).getSingleOrNull();
     // Send the message to the network.
     var msg = await _client.sendMessageEncoded(convo!, encoded);
     // Optimistically insert the message into the local database.
     // When the network yields the real message it will be insertOrIgnored.
     await _db.saveMessages([msg!]);
-    return 'msg';
-  }
-
-  Future<List<xmtp.DecodedMessage>> recentMessages() async {
-    var convos = await _db.selectConversations().get();
-    var msg = await _client.listBatchMessages(convos, limit: 1);
     return msg;
   }
 
@@ -119,9 +110,7 @@ class BackgroundManager {
     DateTime? since,
   }) async {
     Set<String> topicSet = Set.from(topics);
-    var conversations = (await _db.selectConversations().get())
-        // TODO: do this in the query ^
-        .where((c) => topicSet.contains(c.topic));
+    var conversations = (await _db.selectConversations().get()).where((c) => topicSet.contains(c.topic));
     return _refreshMessages(
       conversations,
       since: since,
@@ -144,8 +133,11 @@ class BackgroundManager {
   ///
   /// Note: updates are broadcast to listeners who [watchConversations] on the DB.
   Future<int> refreshConversations({DateTime? since}) async {
+    if (since == null) {
+      var c = await _db.selectLastConversation().getSingleOrNull();
+      since = c?.createdAt;
+    }
     var conversations = await _client.listConversations(start: since);
-    // _refreshMessages(conversations);
     await _db.saveConversations(conversations);
     _nudgeToBackfillEmptyHistories();
     return conversations.length;
@@ -158,7 +150,6 @@ class BackgroundManager {
   void _nudgeToBackfillEmptyHistories() async {
     final clock = Stopwatch()..start();
     var conversations = await _db.selectEmptyConversations().get();
-    backfill = false;
     debugPrint('backfill started: (count ${conversations.length})');
     // Split the conversations into batches so we load them in parallel.
     var batches = partition(conversations, 3);
@@ -172,7 +163,6 @@ class BackgroundManager {
       }));
     }
     debugPrint('backfill finished: (count ${conversations.length}) ${clock.elapsedMilliseconds} ms');
-    backfill = true;
   }
 
   Future<void> _restartConversationStream() async {
@@ -216,6 +206,7 @@ class BackgroundManager {
         var convo = await _db.selectConversation(msg.topic).getSingleOrNull();
         _refreshMessages([convo!]);
       }
+      // sendNotification(msg);
       _db.saveMessages([msg]);
     }, onError: (e) {
       _stopMessageStream();

@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:beepo/components/beepo_filled_button.dart';
-import 'package:beepo/constants/constants.dart';
-import 'package:beepo/screens/messaging/chats/chat_dm_screen.dart';
-import 'package:beepo/screens/messaging/chats/chat_tab.dart';
-import 'package:beepo/widgets/app_text.dart';
+import 'package:Beepo/components/Beepo_filled_button.dart';
+import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/screens/messaging/chats/chat_tab.dart';
+import 'package:Beepo/widgets/app_text.dart';
+import 'package:Beepo/widgets/cache_memory_image_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -52,15 +52,15 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         child: Column(
           children: [
             Container(
-              height: 200.h,
               width: double.infinity,
               color: const Color(0xff0e014c),
+              padding: const EdgeInsets.only(bottom: 50),
               child: Column(
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(100),
-                    child: Image.memory(
-                      base64Decode(user!['image']),
+                    child: Image(
+                      image: CacheMemoryImageProvider("profileImage", base64Decode(user!['image'])),
                       height: 100,
                       width: 100,
                       fit: BoxFit.cover,
@@ -79,6 +79,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     fontSize: 10.sp,
                     color: AppColors.white,
                     fontWeight: FontWeight.w200,
+                  ),
+                  SizedBox(
+                    height: 15.h,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -196,9 +199,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         color: const Color(0xff0e014c),
                       ),
                     ),
-                    SizedBox(height: 20.h),
+                    SizedBox(height: 10.h),
                     const Divider(),
-                    SizedBox(height: 20.h),
+                    SizedBox(height: 10.h),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [

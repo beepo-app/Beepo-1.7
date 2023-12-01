@@ -1,17 +1,17 @@
 import 'dart:typed_data';
 
-import 'package:beepo/components/beepo_filled_button.dart';
-import 'package:beepo/constants/constants.dart';
-import 'package:beepo/screens/Auth/pin_code.dart';
-import 'package:beepo/utils/functions.dart';
-import 'package:beepo/widgets/toast.dart';
+import 'package:Beepo/components/Beepo_filled_button.dart';
+import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/screens/Auth/pin_code.dart';
+import 'package:Beepo/utils/functions.dart';
+import 'package:Beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
 class CreateAccountScreen extends StatefulWidget {
   final String? mnemonic;
-  const CreateAccountScreen({Key? key, this.mnemonic}) : super(key: key);
+  const CreateAccountScreen({super.key, this.mnemonic});
 
   @override
   State<CreateAccountScreen> createState() => _CreateAccountScreenState();
@@ -125,8 +125,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
               text: 'Next',
               color: const Color(0xffFF9C34),
               onPressed: () async {
-                if (displayName.text.trim().isEmpty) {
-                  showToast('Please enter a display name');
+                if (displayName.text.trim().isEmpty || displayName.text.trim().length < 3) {
+                  showToast('Please enter a display name with a minimum length of 4 characters');
                   return;
                 }
                 if (selectedImage == null) {

@@ -1,4 +1,4 @@
-import 'package:beepo/screens/Auth/signup_screen.dart';
+import 'package:Beepo/screens/Auth/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -33,18 +33,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   List<Map<String, String>> body = [
     {
       'image': 'assets/onboard1.png',
-      'text':
-          'Beepo  is a decentralized social media platform that prioritizes anonymity with small-scale business capabilities.'
+      'text': 'Beepo  is a decentralized social media platform that prioritizes anonymity with small-scale business capabilities.'
     },
     {
       'image': 'assets/onboard2.png',
-      'text':
-          'Beepo enables seamless communication and media sharing with family and friends using an enhanced E2EE protocol.'
+      'text': 'Beepo enables seamless communication and media sharing with family and friends using an enhanced E2EE protocol.'
     },
     {
       'image': 'assets/onboard3.png',
-      'text':
-          'Beepo is designed to meet the needs of small scale business owners and freelancers for secured and decentralized transactions'
+      'text': 'Beepo is designed to meet the needs of small scale business owners and freelancers for secured and decentralized transactions'
     }
   ];
 
@@ -125,9 +122,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         curve: Curves.easeInOut,
                       );
                     }
-                    controller.nextPage(
-                        duration: const Duration(milliseconds: 500),
-                        curve: Curves.easeIn);
+                    controller.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeIn);
                   },
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(

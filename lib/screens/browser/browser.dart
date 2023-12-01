@@ -1,6 +1,6 @@
-import 'package:beepo/components/browser_container.dart';
-import 'package:beepo/constants/constants.dart';
-import 'package:beepo/widgets/beepo_text_field.dart';
+import 'package:Beepo/components/browser_container.dart';
+import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/widgets/Beepo_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

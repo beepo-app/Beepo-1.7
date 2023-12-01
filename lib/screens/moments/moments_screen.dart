@@ -1,5 +1,5 @@
-import 'package:beepo/constants/constants.dart';
-import 'package:beepo/screens/messaging/chats/chat_tab.dart';
+import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/screens/messaging/chats/chat_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -14,11 +14,7 @@ class _MomentsScreensState extends State<MomentsScreens> {
   final PageController _pageController = PageController(initialPage: 0);
   int _activePage = 0;
 
-  final List<Widget> _pages = [
-    const PageOne(),
-    const PageTwo(),
-    const PageThree()
-  ];
+  final List<Widget> _pages = [const PageOne(), const PageTwo(), const PageThree()];
 
   @override
   Widget build(BuildContext context) {
@@ -47,9 +43,7 @@ class _MomentsScreensState extends State<MomentsScreens> {
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: InkWell(
                       onTap: () {
-                        _pageController.animateToPage(index,
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeIn);
+                        _pageController.animateToPage(index, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(top: 25.0),
@@ -57,11 +51,8 @@ class _MomentsScreensState extends State<MomentsScreens> {
                           width: 100.0, // Adjust the width as needed
                           height: 5.0, // Adjust the height as needed
                           decoration: BoxDecoration(
-                            color: _activePage == index
-                                ? Colors.white
-                                : Colors.grey, // Background color
-                            borderRadius: BorderRadius.circular(
-                                20.0), // Adjust the radius to round the corners
+                            color: _activePage == index ? Colors.white : Colors.grey, // Background color
+                            borderRadius: BorderRadius.circular(20.0), // Adjust the radius to round the corners
                           ),
                         ),
                       ),
@@ -77,8 +68,7 @@ class _MomentsScreensState extends State<MomentsScreens> {
                 children: [
                   IconButton(
                     onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return const ChatTab();
                       }));
                     },

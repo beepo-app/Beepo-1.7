@@ -134,6 +134,16 @@ class Database extends _$Database {
         ]))
       .asyncMap((msg) async => msg.toXmtp(codecs));
 
+  /// List messages in the conversation.
+  MultiSelectable<xmtp.DecodedMessage> selectAllMessages() => (messages.select()
+        ..orderBy([
+          (msg) => OrderingTerm(
+                expression: msg.sentAt,
+                mode: OrderingMode.desc,
+              )
+        ]))
+      .asyncMap((msg) async => msg.toXmtp(codecs));
+
   /// Select the last message in the conversation.
   SingleOrNullSelectable<xmtp.DecodedMessage> selectLastMessage(String topic) => (messages.select()
         ..where((msg) => msg.topic.equals(topic))

@@ -5,19 +5,19 @@ import 'package:flutter_svg/svg.dart';
 import '../utils/styles.dart';
 
 class OutlnButton extends StatelessWidget {
-  SvgPicture? icon;
+  final SvgPicture? icon;
   final String text;
   final VoidCallback onPressed;
 
   // final Color color;
 
-  OutlnButton({
-    Key? key,
+  const OutlnButton({
+    super.key,
     required this.text,
     this.icon,
     // required this.color,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -1,8 +1,8 @@
-import 'package:beepo/components/beepo_filled_button.dart';
-import 'package:beepo/constants/constants.dart';
-import 'package:beepo/providers/wallet_provider.dart';
-import 'package:beepo/screens/profile/profile_screen.dart';
-import 'package:beepo/widgets/app_text.dart';
+import 'package:Beepo/components/Beepo_filled_button.dart';
+import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/providers/wallet_provider.dart';
+import 'package:Beepo/screens/profile/profile_screen.dart';
+import 'package:Beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -125,8 +125,7 @@ class _WalletPhraseScreenState extends State<WalletPhraseScreen> {
                 SizedBox(height: 30.h),
                 BeepoFilledButtons(
                   onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
                       return const ProfileScreen();
                     }));
                   },

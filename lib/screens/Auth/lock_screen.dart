@@ -1,22 +1,23 @@
 import 'dart:convert';
 
-import 'package:beepo/components/bottom_nav.dart';
-import 'package:beepo/providers/account_provider.dart';
-import 'package:beepo/providers/auth_provider.dart';
-import 'package:beepo/providers/wallet_provider.dart';
-import 'package:beepo/providers/xmtp.dart';
-import 'package:beepo/session/foreground_session.dart';
-import 'package:beepo/widgets/commons.dart';
-import 'package:beepo/widgets/toast.dart';
+import 'package:Beepo/components/bottom_nav.dart';
+import 'package:Beepo/providers/account_provider.dart';
+import 'package:Beepo/providers/auth_provider.dart';
+import 'package:Beepo/providers/wallet_provider.dart';
+import 'package:Beepo/session/foreground_session.dart';
+import 'package:Beepo/widgets/commons.dart';
+import 'package:Beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
+import 'package:web3dart/web3dart.dart';
+import 'package:xmtp/xmtp.dart';
 
 import '../../Utils/styles.dart';
 
 class LockScreen extends StatefulWidget {
-  const LockScreen({Key? key}) : super(key: key);
+  const LockScreen({super.key});
 
   @override
   State<LockScreen> createState() => _LockScreenState();
@@ -93,8 +94,9 @@ class _LockScreenState extends State<LockScreen> {
                       Map data = jsonDecode(response);
                       await walletProvider.initMPCWalletState(data);
                       await accountProvider.initAccountState();
+                      EthPrivateKey credentials = EthPrivateKey.fromHex(walletProvider.ethPrivateKey!);
                       if (session.initialized == false) {
-                        await session.authorize(walletProvider.ethPrivateKey!);
+                        await session.authorize(credentials.asSigner());
                       }
 
                       Get.to(
@@ -104,8 +106,9 @@ class _LockScreenState extends State<LockScreen> {
                     }
 
                     await walletProvider.initWalletState(response);
-                    await session.authorize(walletProvider.ethPrivateKey!);
-                    // await xmtpProvider.initClientFromKey();
+                    EthPrivateKey credentials = EthPrivateKey.fromHex(walletProvider.ethPrivateKey!);
+
+                    await session.authorize(credentials.asSigner());
                     await accountProvider.initAccountState();
 
                     Get.to(

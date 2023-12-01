@@ -1,4 +1,4 @@
-import 'package:beepo/constants/constants.dart';
+import 'package:Beepo/constants/constants.dart';
 import 'package:flutter/material.dart';
 
 class FilledButtons extends StatelessWidget {
@@ -6,7 +6,7 @@ class FilledButtons extends StatelessWidget {
   final VoidCallback onPressed;
   final Color? color;
 
-  const FilledButtons({Key? key, required this.text, this.color, required this.onPressed}) : super(key: key);
+  const FilledButtons({super.key, required this.text, this.color, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {

@@ -1,13 +1,13 @@
 import 'dart:convert';
-import 'package:beepo/components/beepo_filled_button.dart';
-import 'package:beepo/components/bottom_nav.dart';
-import 'package:beepo/providers/account_provider.dart';
-import 'package:beepo/providers/wallet_provider.dart';
+import 'package:Beepo/components/Beepo_filled_button.dart';
+import 'package:Beepo/components/bottom_nav.dart';
+import 'package:Beepo/providers/account_provider.dart';
+import 'package:Beepo/providers/wallet_provider.dart';
 
-import 'package:beepo/services/encryption.dart';
-import 'package:beepo/session/foreground_session.dart';
-import 'package:beepo/utils/styles.dart';
-import 'package:beepo/widgets/toast.dart';
+import 'package:Beepo/services/encryption.dart';
+import 'package:Beepo/session/foreground_session.dart';
+import 'package:Beepo/utils/styles.dart';
+import 'package:Beepo/widgets/toast.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +17,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
 import 'package:web3dart/web3dart.dart';
+import 'package:xmtp/xmtp.dart';
 
 class VerifyCode extends StatefulWidget {
   final Map? data;
@@ -128,13 +129,13 @@ class _VerifyCodeState extends State<VerifyCode> {
                     if (ethAddress != null && accountProvider.db != null) {
                       try {
                         if (widget.data != null) {
-                          await Hive.box('beepo2.0').put('encryptedSeedPhrase', (encrypteData.base64));
-                          await Hive.box('beepo2.0').put('base64Image', base64Image);
-                          await Hive.box('beepo2.0').put('ethAddress', ethAddress.toString());
-                          await Hive.box('beepo2.0').put('btcAddress', btcAddress);
-                          await Hive.box('beepo2.0').put('displayName', widget.data!['response']['displayName']);
-                          await Hive.box('beepo2.0').put('username', widget.data!['response']['username']);
-                          await Hive.box('beepo2.0').put('isSignedUp', true);
+                          await Hive.box('Beepo2.0').put('encryptedSeedPhrase', (encrypteData.base64));
+                          await Hive.box('Beepo2.0').put('base64Image', base64Image);
+                          await Hive.box('Beepo2.0').put('ethAddress', ethAddress.toString());
+                          await Hive.box('Beepo2.0').put('btcAddress', btcAddress);
+                          await Hive.box('Beepo2.0').put('displayName', widget.data!['response']['displayName']);
+                          await Hive.box('Beepo2.0').put('username', widget.data!['response']['username']);
+                          await Hive.box('Beepo2.0').put('isSignedUp', true);
                         } else {
                           await accountProvider.createUser(
                             base64Image,
@@ -146,10 +147,9 @@ class _VerifyCodeState extends State<VerifyCode> {
                           );
                         }
 
-                        // print(session.backfill());
-
+                        EthPrivateKey credentials = EthPrivateKey.fromHex(walletProvider.ethPrivateKey!);
                         if (session.initialized == false) {
-                          await session.authorize(walletProvider.ethPrivateKey!);
+                          await session.authorize(credentials.asSigner());
                         }
                         await accountProvider.initAccountState();
 
@@ -186,8 +186,9 @@ class _VerifyCodeState extends State<VerifyCode> {
                         encrypteData,
                       );
 
+                      EthPrivateKey credentials = EthPrivateKey.fromHex(walletProvider.ethPrivateKey!);
                       if (session.initialized == false) {
-                        await session.authorize(walletProvider.ethPrivateKey!);
+                        await session.authorize(credentials.asSigner());
                       }
                       await accountProvider.initAccountState();
 

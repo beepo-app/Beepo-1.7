@@ -1,4 +1,4 @@
-import 'package:beepo/utils/hooks.dart';
+import 'package:Beepo/utils/hooks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:web3dart/web3dart.dart';

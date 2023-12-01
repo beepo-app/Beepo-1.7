@@ -1,13 +1,13 @@
-import 'package:beepo/screens/browser/browser.dart';
-import 'package:beepo/screens/profile/profile_screen.dart';
-import 'package:beepo/screens/wallet/wallet_screen.dart';
+import 'package:Beepo/screens/browser/browser.dart';
+import 'package:Beepo/screens/profile/profile_screen.dart';
+import 'package:Beepo/screens/wallet/wallet_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
 import '../screens/messaging/chat_tabs_screen.dart';
 
 class BottomNavHome extends StatefulWidget {
-  const BottomNavHome({Key? key}) : super(key: key);
+  const BottomNavHome({super.key});
 
   @override
   State<BottomNavHome> createState() => _BottomNavHomeState();
@@ -24,6 +24,7 @@ class _BottomNavHomeState extends State<BottomNavHome> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
         return false;

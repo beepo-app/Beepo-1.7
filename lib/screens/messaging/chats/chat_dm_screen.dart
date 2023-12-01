@@ -1,22 +1,25 @@
 import 'dart:convert';
 
-import 'package:beepo/components/bottom_nav.dart';
-import 'package:beepo/constants/constants.dart';
-import 'package:beepo/screens/profile/user_profile_screen.dart';
-import 'package:beepo/utils/functions.dart';
-import 'package:beepo/utils/hooks.dart';
-import 'package:beepo/utils/target_platform.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:Beepo/components/bottom_nav.dart';
+import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/providers/chat_provider.dart';
+import 'package:Beepo/screens/profile/user_profile_screen.dart';
+import 'package:Beepo/session/foreground_session.dart';
+import 'package:Beepo/utils/functions.dart';
+import 'package:Beepo/utils/target_platform.dart';
+import 'package:Beepo/widgets/cache_memory_image_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/get_navigation.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:string_to_color/string_to_color.dart';
 import 'dart:ui' as ui;
+
+import 'package:xmtp/xmtp.dart';
 
 class ChatDmScreen extends StatefulHookWidget {
   final String topic;
@@ -86,38 +89,22 @@ class _ChatDmScreenState extends State<ChatDmScreen> {
     }
 
     var topic = widget.topic;
-    var sender = useSendMessage();
     var sending = useState(false);
-    var messages = useMessages(topic);
-    // var refresher = useMessagesRefresher(topic);
 
     var input = useTextEditingController();
     var canSend = useState(false);
-    // var read = useMarkAsOpened(topic);
-
-    // print(read);
     var userData = widget.userData;
 
     input.addListener(() => canSend.value = input.text.isNotEmpty);
     submitHandler() async {
       sending.value = true;
-      await sender(topic, input.text).then((_) => input.clear()).whenComplete(() => sending.value = false);
+      await session.sendMessage(topic, input.text.trim()).whenComplete(() {
+        sending.value = false;
+        input.text = '';
+      });
     }
 
     bool noBeepoAcct = userData == null;
-
-    if (!messages.hasData || messages.data == null) {
-      if (messages.connectionState == ConnectionState.waiting) {
-        return const CircularProgressIndicator();
-      }
-
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 20),
-        child: Center(child: Text('No conversations yet')),
-      );
-    }
-
-    int length = messages.data!.length;
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -161,11 +148,9 @@ class _ChatDmScreenState extends State<ChatDmScreen> {
                           width: 50,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(100),
-                            child: Image.memory(
-                              base64Decode(userData['image']),
-                              height: 45,
-                              width: 45,
-                              fit: BoxFit.cover,
+                            child: Image(
+                              image: CacheMemoryImageProvider("profileImage", base64Decode(userData['image'])),
+                              fit: BoxFit.fill,
                             ),
                           ),
                         ),
@@ -223,6 +208,14 @@ class _ChatDmScreenState extends State<ChatDmScreen> {
               // Using LayoutBuilder to get the maxHeight for ListView.
               child: LayoutBuilder(
                 builder: (context, constrains) {
+                  List<DecodedMessage>? msgs = context.watch<ChatProvider>().messages;
+                  if (msgs == null || msgs.isEmpty) {
+                    return const Text('no messages yet');
+                  }
+
+                  List messages = msgs.where((element) => element.topic == topic).toList();
+                  int length = messages.length;
+
                   final isShrinkWrap = _singleMessageHeight! * length > constrains.maxHeight ? false : true;
 
                   return ListView.builder(
@@ -230,12 +223,12 @@ class _ChatDmScreenState extends State<ChatDmScreen> {
                     shrinkWrap: isShrinkWrap,
                     padding: const EdgeInsets.symmetric(vertical: 5),
                     physics: const ClampingScrollPhysics(),
-                    itemCount: messages.data!.length,
+                    itemCount: messages.length,
                     reverse: true,
                     itemBuilder: (context, index) {
-                      final message = messages.data![index];
-                      final isFirstInSection = index == length - 1 ? true : message.sender != messages.data![index + 1].sender;
-                      final isFirstInDate = index == length - 1 ? true : !message.sentAt.isSameDate(messages.data![index + 1].sentAt);
+                      DecodedMessage message = messages[index];
+                      final isFirstInSection = index == length - 1 ? true : message.sender != messages[index + 1].sender;
+                      final isFirstInDate = index == length - 1 ? true : !message.sentAt.isSameDate(messages[index + 1].sentAt);
 
                       bool isMe = widget.senderAddress.toString() != message.sender.toString();
 
@@ -397,7 +390,7 @@ class _ChatDmScreenState extends State<ChatDmScreen> {
                   //   ],
                   //   androidSound:
                   //       'assets/mixkit-interface-hint-notification-911.wav',
-                  //   androidSmallIcon: 'assets/beepo_img.png',
+                  //   androidSmallIcon: 'assets/Beepo_img.png',
                   //
                   // )
                   // );
@@ -444,7 +437,7 @@ class MessageBox extends StatelessWidget {
         builder: (context, constrains) {
           final isMobile = Theme.of(context).platform.isMobile;
           final maxWidth = constrains.maxWidth;
-          // print('object');
+
           return ConstrainedBox(
             constraints: BoxConstraints(
               maxWidth: isMobile ? maxWidth - 50 : maxWidth * 0.75,
@@ -531,19 +524,19 @@ class MessageBubble extends StatelessWidget {
 
     final isMobile = theme.platform.isMobile;
     final messageTextStyle = textTheme.bodyMedium!.copyWith(
-      fontSize: isMobile ? 16 : null,
+      fontSize: isMobile ? 14 : null,
       color: !isMe ? Colors.black : Colors.white,
     );
 
     final timeTextStyle = textTheme.bodySmall!.copyWith(
-      fontSize: isMobile ? null : 10,
+      fontSize: isMobile ? null : 8,
       color: !isMe ? Colors.black54 : Colors.white70,
     );
 
     final messageText = message;
     final timeText = sentAt;
 
-    final timeTextWidth = textWidth(timeText, timeTextStyle) + (isMe ? 16.0 : 0);
+    final timeTextWidth = textWidth(timeText, timeTextStyle) + (isMe ? 20.0 : 6);
     final messageTextWidth = textWidth(messageText, messageTextStyle);
     final whiteSpaceWidth = textWidth(' ', messageTextStyle);
     // More space on desktop (+8)
@@ -574,7 +567,7 @@ class MessageBubble extends StatelessWidget {
                   ),
                   child: Text(
                     '$messageText'
-                    '${isTimeInSameLine ? extraSpace : ''}',
+                    '${isTimeInSameLine ? extraSpace : ' '}',
                     style: messageTextStyle,
                   ),
                 ),
@@ -590,13 +583,10 @@ class MessageBubble extends StatelessWidget {
                       ),
                       // Message status icon
                       if (isMe)
-                        const Padding(
-                          padding: EdgeInsets.only(left: 5),
-                          child: Icon(
-                            Icons.done_all,
-                            color: Colors.white70,
-                            size: 16,
-                          ),
+                        const Icon(
+                          Icons.done_all,
+                          color: Colors.white70,
+                          size: 14,
                         ),
                     ],
                   ),

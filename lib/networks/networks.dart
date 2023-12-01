@@ -8,7 +8,7 @@ var networkInfo = {
     'description': 'The first blockchain network',
     'derivationPath': "m/84'/0'/0'/0/0",
     'isTestnet': false,
-    'logoUrl': 'https://beepo.blob.core.windows.net/logos/Bitcoin.png',
+    'logoUrl': 'https://Beepo.blob.core.windows.net/logos/Bitcoin.png',
     'nameoncoinmarketcap': 'bitcoin',
   },
 
@@ -20,7 +20,7 @@ var networkInfo = {
   //   'description': 'The first non-EVM based blockchain network aside bitcoin',
   //   'derivationPath': "m/44'/501'/0'/0",
   //   'isTestnet': false,
-  //   'logoUrl': 'https://beepo.blob.core.windows.net/logos/Solana.png',
+  //   'logoUrl': 'https://Beepo.blob.core.windows.net/logos/Solana.png',
   //   'nameoncoinmarketcap': 'Solana',
   // },
 
@@ -35,7 +35,7 @@ var networkInfo = {
       'description': 'The first EVM based blockchain network',
       'derivationPath': "m/44'/60'/0'/0",
       'isTestnet': false,
-      'logoUrl': 'https://beepo.blob.core.windows.net/logos/Ethereum.png',
+      'logoUrl': 'https://Beepo.blob.core.windows.net/logos/Ethereum.png',
       'nameoncoinmarketcap': 'ethereum',
     },
     'usdt': {
@@ -101,7 +101,7 @@ var networkInfo = {
       'description': 'The centralized  EVM based smart blockchain network with low transaction fees',
       'derivationPath': "m/44'/60'/0'/0",
       'isTestNet': false,
-      'logoUrl': 'https://beepo.blob.core.windows.net/logos/Smartchain.png',
+      'logoUrl': 'https://Beepo.blob.core.windows.net/logos/Smartchain.png',
       'nameoncoinmarketcap': 'binancecoin',
     },
     'busd': {
@@ -115,7 +115,7 @@ var networkInfo = {
       'nativeTicker': 'BNB',
       'derivationPath': "m/44'/60'/0'/0",
       'isTestNet': false,
-      'logoUrl': 'https://beepo.blob.core.windows.net/logos/Smartchain.png',
+      'logoUrl': 'https://Beepo.blob.core.windows.net/logos/Smartchain.png',
       'nameoncoinmarketcap': 'tether',
     },
     'busdt': {
@@ -148,7 +148,7 @@ var networkInfo = {
       'description': 'This is the Polygon matic description',
       'derivationPath': "m/44'/60'/0'/0",
       'isTestNet': false,
-      'logoUrl': 'https://beepo.blob.core.windows.net/logos/Polygon.png',
+      'logoUrl': 'https://Beepo.blob.core.windows.net/logos/Polygon.png',
       'nameoncoinmarketcap': 'matic-network',
     },
     42220: {
@@ -161,7 +161,7 @@ var networkInfo = {
       'description': 'The Celo network',
       'derivationPath': "m/44'/52752'/0'/0",
       'isTestNet': false,
-      'logoUrl': 'https://beepo.blob.core.windows.net/logos/Celo.png',
+      'logoUrl': 'https://Beepo.blob.core.windows.net/logos/Celo.png',
       'nameoncoinmarketcap': 'celo',
     },
     256256: {
@@ -174,7 +174,7 @@ var networkInfo = {
       'description': 'The Caduceus network',
       'derivationPath': "m/44'/60'/0'/0",
       'isTestNet': false,
-      'logoUrl': 'https://beepo.blob.core.windows.net/logos/Caduceus.png',
+      'logoUrl': 'https://Beepo.blob.core.windows.net/logos/Caduceus.png',
       'nameoncoinmarketcap': 'caduceus',
     },
     // 32520: {
@@ -185,7 +185,7 @@ var networkInfo = {
     //   'description': 'The Bitgert network',
     //   'derivationPath': "m/44'/60'/0'/0",
     //   'isTestNet': false,
-    //   'logoUrl': 'https://beepoassets.s3.amazonaws.com/bitgert.jpeg',
+    //   'logoUrl': 'https://Beepoassets.s3.amazonaws.com/bitgert.jpeg',
     //   'nameoncoinmarketcap': 'Bitgert',
     // },
     'bitgert': {
@@ -204,10 +204,10 @@ var networkInfo = {
       'derivationPath': "m/44'/60'/0'/0",
       "address": '0x8FFf93E810a2eDaaFc326eDEE51071DA9d398E83',
       'isTestNet': false,
-      'logoUrl': 'https://beepoassets.s3.amazonaws.com/bitgert.jpeg',
+      'logoUrl': 'https://Beepoassets.s3.amazonaws.com/bitgert.jpeg',
       'nameoncoinmarketcap': 'bitrise-token',
     },
-    "beepo": {
+    "Beepo": {
       'name': 'Beepo',
       'displayName': 'Beepo',
       "address": '0x87c6ccc98f62d2aa4bd072610b8064991bf81d83',
@@ -223,7 +223,7 @@ var networkInfo = {
       'description': 'The Beepo network',
       'derivationPath': "m/44'/60'/0'/0",
       'isTestNet': false,
-      'logoUrl': 'https://beepoassets.s3.amazonaws.com/beepo.jpeg',
+      'logoUrl': 'https://res.cloudinary.com/dwruvre6o/image/upload/v1701096455/icon_cownk2.png',
       'nameoncoinmarketcap': 'tether',
     },
   },
@@ -267,9 +267,9 @@ var networkInfo = {
     256256: {'contractAddress': "0x07686C0BA221f2427BB95B88ee8A94E784022ed0"}
   },
 
-  'supportedNetworkIds': [1, 5, 56, 42220, 137, 256256, 32520, "bitcoin", "beepo"],
+  'supportedNetworkIds': [1, 5, 56, 42220, 137, 256256, 32520, "bitcoin", "Beepo"],
 
-  'supportedNetworkNames': ['bitcoin', 'bitgert', 'ethereum', 'smartchainMainnet', 'smartchainTestnet', 'celo', 'polygon', 'caduceus', 'beepo'],
+  'supportedNetworkNames': ['bitcoin', 'bitgert', 'ethereum', 'smartchainMainnet', 'smartchainTestnet', 'celo', 'polygon', 'caduceus', 'Beepo'],
 
   'networkNameMap': {
     'ethereumMainnet': 1,
@@ -280,6 +280,8 @@ var networkInfo = {
     'caduceusMainnet': 256256,
     'bitgert': 32520
   },
+
+  'networkNames': ['ethereum', 'bsc', 'bscTestnet', 'matic', 'mumbai', 'sepolia', 'goerli'],
 
   'explorerUrls': {
     1: "https://etherscan.io",

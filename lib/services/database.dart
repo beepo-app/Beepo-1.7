@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:web3dart/web3dart.dart';
@@ -24,16 +23,17 @@ dbCreateUser(String image, Db db, String displayName, String ethAddress, btcAddr
           'ethAddress': ethAddress,
           'btcAddress': btcAddress,
           'image': image,
+          'createdAt': DateTime.now()
         },
       );
 
-      await Hive.box('beepo2.0').put('encryptedSeedPhrase', (encrypteData.base64));
-      await Hive.box('beepo2.0').put('base64Image', image);
-      await Hive.box('beepo2.0').put('ethAddress', ethAddress);
-      await Hive.box('beepo2.0').put('btcAddress', btcAddress);
-      await Hive.box('beepo2.0').put('displayName', displayName);
-      await Hive.box('beepo2.0').put('username', username);
-      await Hive.box('beepo2.0').put('isSignedUp', true);
+      await Hive.box('Beepo2.0').put('encryptedSeedPhrase', (encrypteData.base64));
+      await Hive.box('Beepo2.0').put('base64Image', image);
+      await Hive.box('Beepo2.0').put('ethAddress', ethAddress);
+      await Hive.box('Beepo2.0').put('btcAddress', btcAddress);
+      await Hive.box('Beepo2.0').put('displayName', displayName);
+      await Hive.box('Beepo2.0').put('username', username);
+      await Hive.box('Beepo2.0').put('isSignedUp', true);
     } catch (e) {
       if (kDebugMode) {
         print(e);
@@ -41,6 +41,28 @@ dbCreateUser(String image, Db db, String displayName, String ethAddress, btcAddr
     }
   } else {
     await dbCreateUser(image, db, displayName, ethAddress, btcAddress, encrypteData);
+  }
+
+  await db.close();
+}
+
+dbUploadStatus(String image, Db db, String privacy, String message, String username) async {
+  await db.open();
+  var usersCollection = db.collection('status');
+
+  try {
+    await usersCollection.insertOne(
+      {
+        'privacy': privacy,
+        'message': message,
+        'image': image,
+        'createdAt': DateTime.now(),
+      },
+    );
+  } catch (e) {
+    if (kDebugMode) {
+      print(e);
+    }
   }
 
   await db.close();
@@ -63,10 +85,10 @@ Future<Map<String, dynamic>> dbUpdateUser(image, Db db, displayName, bio, newUse
 
         await usersCollection.replaceOne(where.eq("ethAddress", ethAddress), newData);
 
-        await Hive.box('beepo2.0').put('base64Image', image);
-        await Hive.box('beepo2.0').put('displayName', displayName);
-        await Hive.box('beepo2.0').put('username', newUsername);
-        await Hive.box('beepo2.0').put('bio', bio);
+        await Hive.box('Beepo2.0').put('base64Image', image);
+        await Hive.box('Beepo2.0').put('displayName', displayName);
+        await Hive.box('Beepo2.0').put('username', newUsername);
+        await Hive.box('Beepo2.0').put('bio', bio);
         return (newData);
       } else {
         throw ({'error': "An error occured here!"});
@@ -87,29 +109,24 @@ Future<Map> dbGetAllUsers(Db db) async {
   await db.open();
   var usersCollection = db.collection('users');
 
-  print('fetching data');
-  print('isConnected');
-  print(db.isConnected);
-  print('isConnected');
-
   List<Map>? val = await usersCollection.find().toList();
 
-  print(val);
-
-  print(val.toString());
+  // ignore: unnecessary_null_comparison
   if (val == null) {
     await db.close();
     throw ("User Not Found");
   } else {
     await db.close();
     Iterable<Map<dynamic, dynamic>> data = val.map((e) => {
+          'joined': e['createdAt'],
           'username': e['username'],
           'displayName': e['displayName'],
           'ethAddress': e['ethAddress'],
           'btcAddress': e['btcAddress'],
           'image': e['image'],
+          'bio': e['bio'],
         });
-    await Hive.box('beepo2.0').put('allUsers', data.toList());
+    await Hive.box('Beepo2.0').put('allUsers', data.toList());
     return {'success': "done", "data": val};
   }
 }

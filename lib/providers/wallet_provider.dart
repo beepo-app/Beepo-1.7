@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
-import 'package:beepo/networks/erc20.dart';
-import 'package:beepo/networks/networks.dart';
-import 'package:beepo/widgets/toast.dart';
+import 'package:Beepo/networks/erc20.dart';
+import 'package:Beepo/networks/networks.dart';
+import 'package:Beepo/widgets/toast.dart';
 import 'package:decimal/decimal.dart';
 import 'package:ed25519_hd_key/ed25519_hd_key.dart';
 import 'package:flutter/foundation.dart';
@@ -322,10 +321,33 @@ class WalletProvider extends ChangeNotifier {
     }
   }
 
+  Future<List> getNFTs(String chain, String address) async {
+    try {
+      var client = http.Client();
+
+      // var response = await client.get(Uri.parse('https://api.opensea.io/api/v2/chain/$chain/account/$address/nfts'),
+      //     headers: {"x-api-key": "a20f84e1347745a4b949d14162ee58a3"});
+
+      var response = await client
+          .get(Uri.parse('https://eth-mainnet.g.alchemy.com/nft/v3/HDQnQBbyr2HtgKSym1OqrbGED_H7Ev2N/getNFTsForOwner?owner=$address&pageSize=10'));
+
+      print(response.body);
+      if (response.body.isNotEmpty) {
+        var nfts = jsonDecode(response.body);
+        return nfts['nfts'];
+      }
+      return [];
+    } catch (e) {
+      return [
+        {'error': e}
+      ];
+    }
+  }
+
   Future<void> initPlatformState() async {
     Uri redirectUrls;
     if (Platform.isAndroid) {
-      redirectUrls = Uri.parse('beepo2.0https://beepo2.0/auth');
+      redirectUrls = Uri.parse('Beepo2.0https://Beepo2.0/auth');
     } else {
       throw UnKnownException('Unknown platform');
     }

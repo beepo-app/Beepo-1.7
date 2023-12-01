@@ -4,7 +4,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:beepo/widgets/toast.dart';
+import 'package:Beepo/widgets/toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
@@ -109,6 +109,52 @@ class ImageUtil {
           ),
         ),
       );
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<Uint8List?> pickImageFromGallery() async {
+    try {
+      XFile? result = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (result != null) {
+        //File size limit - 5mb
+        if ((await result.length()) > 5000000) {
+          showToast('File too large');
+          return null;
+        } else {
+          Uint8List res = await result.readAsBytes();
+          return res;
+        }
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<Uint8List?> pickImageFromCamera() async {
+    try {
+      XFile? result = await ImagePicker().pickImage(
+        source: ImageSource.camera,
+        preferredCameraDevice: CameraDevice.front,
+      );
+
+      if (result != null) {
+        //File size limit - 5mb
+        if ((await result.length()) > 5000000) {
+          showToast('File too large');
+          return null;
+        } else {
+          Uint8List res = await result.readAsBytes();
+          return res;
+        }
+      } else {
+        return null;
+      }
     } catch (e) {
       print(e);
       rethrow;

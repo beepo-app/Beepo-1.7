@@ -1,7 +1,7 @@
-import 'package:beepo/constants/constants.dart';
-import 'package:beepo/screens/profile/profile_screen.dart';
-import 'package:beepo/screens/wallet/phrase_confirm_screen.dart';
-import 'package:beepo/widgets/app_text.dart';
+import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/screens/profile/profile_screen.dart';
+import 'package:Beepo/screens/wallet/phrase_confirm_screen.dart';
+import 'package:Beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -9,8 +9,7 @@ class UserProfileSecurityScreen extends StatefulWidget {
   const UserProfileSecurityScreen({super.key});
 
   @override
-  State<UserProfileSecurityScreen> createState() =>
-      _UserProfileSecurityScreenState();
+  State<UserProfileSecurityScreen> createState() => _UserProfileSecurityScreenState();
 }
 
 class _UserProfileSecurityScreenState extends State<UserProfileSecurityScreen> {
@@ -99,8 +98,7 @@ class _UserProfileSecurityScreenState extends State<UserProfileSecurityScreen> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
                       return const PhraseConfirmationScreen();
                     }));
                   },

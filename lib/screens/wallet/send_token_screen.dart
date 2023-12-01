@@ -1,9 +1,9 @@
-import 'package:beepo/components/beepo_filled_button.dart';
-import 'package:beepo/constants/constants.dart';
-import 'package:beepo/providers/wallet_provider.dart';
-import 'package:beepo/screens/wallet/send_token_confirm_screen.dart';
-import 'package:beepo/widgets/app_text.dart';
-import 'package:beepo/widgets/toast.dart';
+import 'package:Beepo/components/Beepo_filled_button.dart';
+import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/providers/wallet_provider.dart';
+import 'package:Beepo/screens/wallet/send_token_confirm_screen.dart';
+import 'package:Beepo/widgets/app_text.dart';
+import 'package:Beepo/widgets/toast.dart';
 import 'package:decimal/decimal.dart';
 import 'package:ethereum_addresses/ethereum_addresses.dart';
 import 'package:flutter/material.dart';

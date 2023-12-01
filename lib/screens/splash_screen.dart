@@ -1,4 +1,4 @@
-import 'package:beepo/screens/auth/onboarding_screen.dart';
+import 'package:Beepo/screens/auth/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatelessWidget {

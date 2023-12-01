@@ -1,4 +1,4 @@
-name: beepo
+name: Beepo
 description: A new Flutter project.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -75,14 +75,21 @@ dependencies:
   shared_preferences: ^2.0.18
   quiver: ^3.2.1
   path: ^1.8.2
-  path_provider: ^2.0.13
-  drift: ^2.5.0
+  path_provider: ^2.0.0
+  drift: ^2.13.1
   flutter_app_badger: ^1.5.0
   blockies_ethereum: ^0.0.2
-  sqlite3_flutter_libs: ^0.5.13
+  sqlite3_flutter_libs: ^0.5.0
   string_to_color: ^2.0.0
   in_date_utils: ^1.2.0+2
-  flutter_launcher_icons: ^0.13.1
+  flutter_launcher_icons: ^0.13.1 
+  awesome_notifications: ^0.8.2
+  flutter_dynamic_icon: ^2.1.0
+  flutter_local_notifications: ^16.1.0
+  async:
+  camera: ^0.10.5+5
+  image: ^4.1.3
+ 
 
 
 dev_dependencies:
@@ -92,6 +99,7 @@ dev_dependencies:
   flutter_native_splash: ^2.3.2 
   hive_generator: any
   build_runner: any
+  drift_dev: ^2.13.0
 
 
 flutter_launcher_icons: 

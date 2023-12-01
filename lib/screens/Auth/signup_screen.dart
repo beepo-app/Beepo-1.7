@@ -1,12 +1,12 @@
-import 'package:beepo/components/beepo_filled_button.dart';
-import 'package:beepo/components/outline_button.dart';
-import 'package:beepo/providers/account_provider.dart';
-import 'package:beepo/providers/wallet_provider.dart';
-import 'package:beepo/screens/Auth/login_screen.dart';
-import 'package:beepo/screens/Auth/pin_code.dart';
-import 'package:beepo/screens/auth/create_acct_screen.dart';
-import 'package:beepo/widgets/commons.dart';
-import 'package:beepo/widgets/toast.dart';
+import 'package:Beepo/components/Beepo_filled_button.dart';
+import 'package:Beepo/components/outline_button.dart';
+import 'package:Beepo/providers/wallet_provider.dart';
+import 'package:Beepo/screens/Auth/login_screen.dart';
+import 'package:Beepo/screens/Auth/pin_code.dart';
+import 'package:Beepo/screens/auth/create_acct_screen.dart';
+import 'package:Beepo/services/notification_service.dart';
+import 'package:Beepo/widgets/commons.dart';
+import 'package:Beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -20,7 +20,7 @@ class SignUp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final walletProvider = Provider.of<WalletProvider>(context, listen: false);
-    final accountProvider = Provider.of<AccountProvider>(context, listen: false);
+    // final accountProvider = Provider.of<AccountProvider>(context, listen: false);
 
     return Scaffold(
       body: Align(
@@ -80,7 +80,7 @@ class SignUp extends StatelessWidget {
                 icon: SvgPicture.asset('assets/google.svg'),
                 text: 'Continue with Google',
                 onPressed: () async {
-                  List users = await Hive.box('beepo2.0').get('allUsers');
+                  List users = await Hive.box('Beepo2.0').get('allUsers');
 
                   await walletProvider.initPlatformState();
                   Map? res = await walletProvider.web3AuthLogin();
@@ -91,9 +91,10 @@ class SignUp extends StatelessWidget {
 
                     await walletProvider.initMPCWalletState(res);
                     if (walletProvider.ethAddress != null) {
+                      // users = await Hive.box('Beepo2.0').get('allUsers');
                       var newRes = users.firstWhereOrNull((e) => e['ethAddress'] == walletProvider.ethAddress.toString());
 
-                      if (newRes['error'] != null) {
+                      if (newRes == null) {
                         Get.back();
                         Get.to(() => const CreateAccountScreen());
                         return;

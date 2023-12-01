@@ -11,8 +11,7 @@ dynamic loadingDialog(String label) {
       child: Center(
         child: Container(
           width: 170,
-          height: 200,
-          padding: const EdgeInsets.all(30),
+          padding: const EdgeInsets.only(bottom: 30, left: 7, right: 7),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             color: Colors.white,

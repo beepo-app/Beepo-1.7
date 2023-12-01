@@ -2,12 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:beepo/constants/constants.dart';
-import 'package:beepo/providers/account_provider.dart';
-import 'package:beepo/providers/xmtp.dart';
-import 'package:beepo/screens/messaging/chats/chat_dm_screen.dart';
-import 'package:beepo/session/foreground_session.dart';
-import 'package:beepo/widgets/toast.dart';
+import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/providers/chat_provider.dart';
+import 'package:Beepo/screens/messaging/chats/chat_dm_screen.dart';
+import 'package:Beepo/session/foreground_session.dart';
+import 'package:Beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -41,7 +40,7 @@ class _SearchScreenState extends State<SearchScreen> {
   List? userDataArray;
 
   final random_ = Random();
-  var users = Hive.box('beepo2.0').get('allUsers');
+  var users = Hive.box('Beepo2.0').get('allUsers');
 
   final TextEditingController _textFieldController = TextEditingController();
 
@@ -65,7 +64,6 @@ class _SearchScreenState extends State<SearchScreen> {
           setState(() {
             searching = false;
             isFound = true;
-
             userDataArray = datas;
           });
           return;
@@ -76,16 +74,16 @@ class _SearchScreenState extends State<SearchScreen> {
         setState(() {
           searching = true;
         });
-        Map res = await session.newConversation(value);
-        print(res);
-        if (res['success']) {
-          setState(() {
-            searching = false;
-            isFound = true;
-            topic = res['data']['topic'];
-            address = res['data']['address'];
-          });
-        }
+        // Map res = await session.newConversation(value);
+        // print(res);
+        // if (res['success']) {
+        //   setState(() {
+        //     searching = false;
+        //     isFound = true;
+        //     topic = res['data']['topic'];
+        //     address = res['data']['address'];
+        //   });
+        // }
         // var res = await xmtpProvider.newConversation(value);
         return;
       }
@@ -95,6 +93,8 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String? me = context.watch<ChatProvider>().me;
+
     return Scaffold(
       body: Column(
         children: [
@@ -229,25 +229,33 @@ class _SearchScreenState extends State<SearchScreen> {
                                   padding: EdgeInsets.zero,
                                   itemCount: userDataArray!.length,
                                   itemBuilder: (context, index) {
-                                    Future<Map> newConvo() async => await session.newConversation(userDataArray![index]['ethAddress']);
+                                    Future<String> newConvo(userAddress) async => await session.newConversation(userAddress);
 
                                     return GestureDetector(
                                       onTap: () async {
-                                        Map data = await newConvo();
-                                        if (data['error'] == null) {
-                                          var topic = data['data']['topic'];
-                                          var address = data['data']['address'];
+                                        String userAddress = userDataArray![index]['ethAddress'].toString();
 
+                                        if (me == userAddress) {
+                                          showToast('no self-messaging, sender and recipient must be different');
+                                          return;
+                                        }
+
+                                        try {
+                                          var data = await newConvo(userAddress);
                                           Get.to(
                                             () => ChatDmScreen(
-                                              topic: topic!,
-                                              senderAddress: address,
+                                              topic: data,
+                                              senderAddress: userAddress,
+                                              userData: userDataArray![index],
                                             ),
                                           );
-                                          return;
-                                        } else {
-                                          showToast(data['error']);
+                                        } catch (e) {
+                                          if (e.toString().contains('no self-messaging')) {
+                                            showToast('no self-messaging, sender and recipient must be different');
+                                            return;
+                                          }
                                         }
+                                        return;
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.all(15),
@@ -265,11 +273,28 @@ class _SearchScreenState extends State<SearchScreen> {
                                             const SizedBox(
                                               width: 10,
                                             ),
-                                            Text(
-                                              userDataArray![index]['username'],
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                                            Row(
+                                              children: [
+                                                Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      userDataArray![index]['displayName'],
+                                                      maxLines: 1,
+                                                      overflow: TextOverflow.ellipsis,
+                                                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                    ),
+                                                    Text(
+                                                      '@${userDataArray![index]['username']}',
+                                                      maxLines: 1,
+                                                      overflow: TextOverflow.ellipsis,
+                                                      style: const TextStyle(
+                                                        fontSize: 14,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
                                             )
                                           ],
                                         ),
@@ -278,23 +303,40 @@ class _SearchScreenState extends State<SearchScreen> {
                                   })
                               : GestureDetector(
                                   onTap: () async {
-                                    Future<Map> newConvo() async => await session.newConversation(userDataArray![0]['ethAddress']);
+                                    if (selectedItem == "Usernames") {
+                                      String userAddress = userDataArray![0]['ethAddress'].toString();
 
-                                    Map data = await newConvo();
-                                    if (data['error'] == null) {
-                                      var topic = data['data']['topic'];
-                                      var address = data['data']['address'];
+                                      Future<String> newConvo(userAddress) async => await session.newConversation(userAddress);
 
-                                      Get.to(
-                                        () => ChatDmScreen(
-                                          topic: topic!,
-                                          senderAddress: address,
-                                        ),
-                                      );
+                                      if (me == userAddress) {
+                                        showToast('no self-messaging, sender and recipient must be different');
+                                        return;
+                                      }
+
+                                      try {
+                                        var data = await newConvo(userAddress);
+                                        Get.to(
+                                          () => ChatDmScreen(
+                                            topic: data,
+                                            senderAddress: userAddress,
+                                            userData: userDataArray![0],
+                                          ),
+                                        );
+                                      } catch (e) {
+                                        if (e.toString().contains('no self-messaging')) {
+                                          showToast('no self-messaging, sender and recipient must be different');
+                                          return;
+                                        }
+                                      }
                                       return;
-                                    } else {
-                                      showToast(data['error']);
                                     }
+                                    Get.to(
+                                      () => ChatDmScreen(
+                                        topic: topic!,
+                                        senderAddress: address,
+                                      ),
+                                    );
+                                    return;
                                   },
                                   child: Container(
                                     padding: const EdgeInsets.all(15),
@@ -311,7 +353,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                 ),
                                               )
                                             : CircleAvatar(
-                                                backgroundColor: ColorUtils.stringToColor(userDataArray![0]['ethAddress']),
+                                                backgroundColor: ColorUtils.stringToColor(address!),
                                                 child: Text(
                                                   _textFieldController.text.substring(0, 2),
                                                   style: const TextStyle(color: Colors.white),
@@ -321,22 +363,28 @@ class _SearchScreenState extends State<SearchScreen> {
                                           width: 10,
                                         ),
                                         selectedItem == 'Usernames'
-                                            ? Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                            ? Row(
+                                                mainAxisSize: MainAxisSize.max,
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
-                                                  Text(
-                                                    userDataArray![0]['displayName'],
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                                                  ),
-                                                  Text(
-                                                    '@${userDataArray![0]['username']}',
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: const TextStyle(
-                                                      fontSize: 14,
-                                                    ),
+                                                  Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        userDataArray![0]['displayName'],
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow.ellipsis,
+                                                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                      ),
+                                                      Text(
+                                                        '@${userDataArray![0]['username']}',
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow.ellipsis,
+                                                        style: const TextStyle(
+                                                          fontSize: 14,
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ],
                                               )

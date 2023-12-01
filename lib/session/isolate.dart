@@ -28,12 +28,12 @@ Map<String, Future<Object?> Function(BackgroundManager manager, List args)> _com
         metadata: args[2] as Map<String, String>,
       )
       .then((convo) => convo.topic),
-  // "sendMessage": (manager, args) => manager
-  //     .sendMessage(
-  //       args[0] as String,
-  //       args[1] as xmtp.EncodedContent,
-  //     )
-  //     .then((sent) => sent.id),
+  "sendMessage": (manager, args) => manager
+      .sendMessage(
+        args[0] as String,
+        args[1] as xmtp.EncodedContent,
+      )
+      .then((sent) => sent.id),
 };
 
 /// When we spawn the [XmtpIsolate] this is the entrypoint (i.e. "main()").
@@ -43,7 +43,7 @@ void _mainXmtpIsolate(List args) async {
   final responsePort = args[0] as SendPort;
   final keys = args[1] as xmtp.PrivateKeyBundle;
   debugPrint('starting xmtp worker for ${keys.wallet}');
-  final manager = await BackgroundManager.create(keys, '');
+  final manager = await BackgroundManager.create(keys);
   // Start listening for commands
   final ReceivePort workerPort = ReceivePort('xmtp worker');
   workerPort.listen((command) async {

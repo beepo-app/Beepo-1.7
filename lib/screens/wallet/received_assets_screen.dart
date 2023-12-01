@@ -1,8 +1,7 @@
-import 'package:beepo/constants/constants.dart';
-import 'package:beepo/screens/wallet/token_screen_scan.dart';
-import 'package:beepo/screens/wallet/wallet_screen.dart';
-import 'package:beepo/widgets/app_text.dart';
-import 'package:beepo/widgets/beepo_text_field.dart';
+import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/screens/wallet/token_screen_scan.dart';
+import 'package:Beepo/widgets/app_text.dart';
+import 'package:Beepo/widgets/Beepo_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -10,8 +9,8 @@ class ReceivedAssetScreen extends StatefulWidget {
   final List<dynamic> assets_;
   const ReceivedAssetScreen({
     required this.assets_,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
   @override
   State<ReceivedAssetScreen> createState() => _ReceivedAssetScreenState();
 }

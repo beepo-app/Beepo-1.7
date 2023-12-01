@@ -1,9 +1,8 @@
-import 'package:beepo/components/beepo_filled_button.dart';
-import 'package:beepo/components/bottom_nav.dart';
-import 'package:beepo/constants/constants.dart';
-import 'package:beepo/providers/wallet_provider.dart';
-import 'package:beepo/screens/wallet/wallet_screen.dart';
-import 'package:beepo/widgets/app_text.dart';
+import 'package:Beepo/components/Beepo_filled_button.dart';
+import 'package:Beepo/components/bottom_nav.dart';
+import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/providers/wallet_provider.dart';
+import 'package:Beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
@@ -13,8 +12,8 @@ class TransferSuccess extends StatefulWidget {
   final Map? txData;
   const TransferSuccess({
     this.txData,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<TransferSuccess> createState() => _TransferSuccessState();
