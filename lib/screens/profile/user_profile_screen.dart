@@ -60,7 +60,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(100),
                     child: Image(
-                      image: CacheMemoryImageProvider("profileImage", base64Decode(user!['image'])),
+                      image: CacheMemoryImageProvider(user!['image'], base64Decode(user['image'])),
                       height: 100,
                       width: 100,
                       fit: BoxFit.cover,

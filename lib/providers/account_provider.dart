@@ -1,4 +1,5 @@
 import 'package:Beepo/services/database.dart';
+import 'package:async/async.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mongo_dart/mongo_dart.dart';
@@ -16,6 +17,7 @@ class AccountProvider extends ChangeNotifier {
       db = await Db.create('mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
       await db!.open();
       notifyListeners();
+      getAllUsers();
       print('DB init');
       return "DB init";
     } catch (e) {
@@ -41,7 +43,9 @@ class AccountProvider extends ChangeNotifier {
   }
 
   Future<Map> getAllUsers() async {
+    print('running');
     try {
+      print('running 22222');
       Map data = await dbGetAllUsers(db!);
       print(data);
       return {'success': "done"};
@@ -60,29 +64,6 @@ class AccountProvider extends ChangeNotifier {
       Map data = await dbGetUser(db!, username!);
       print(data);
       return {'success': "done"};
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-        return ({'error': e.toString()});
-      }
-    }
-    return ({'error': 'Not done'});
-  }
-
-  Future<Map> getUserByUsernme(username) async {
-    try {
-      db ??= await Db.create('mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
-
-      if (!db!.isConnected || db!.state != State.opening || db!.state != State.open) {
-        await db!.open();
-      }
-
-      Map data = await dbGetUserByUsernme(db!, username);
-
-      if (data['error'] != null) {
-        return {'status': "error", "data": data};
-      }
-      return data;
     } catch (e) {
       if (kDebugMode) {
         print(e);
@@ -137,4 +118,21 @@ class AccountProvider extends ChangeNotifier {
     }
     return ({'error': 'Not done'});
   }
+
+  Stream<dynamic> findAndWatchAllUsers(Db? db) {
+    if (db != null) {
+      return _useLookupStream(
+        () => dbGetAllUsers(db),
+        () => dbWatchAllUsers(db),
+      );
+    }
+    return const Stream.empty();
+  }
+
+  Stream<T> _useLookupStream<T>(
+    Future<T> Function() find,
+    Stream<T> Function() watch, [
+    List<Object?> keys = const <Object>[],
+  ]) =>
+      StreamGroup.mergeBroadcast([find().asStream(), watch()]);
 }

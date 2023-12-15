@@ -1,13 +1,21 @@
-import 'dart:io';
+import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:Beepo/components/bottom_nav.dart';
 import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/providers/account_provider.dart';
+import 'package:Beepo/providers/chat_provider.dart';
+import 'package:Beepo/widgets/toast.dart';
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 class StatusView extends StatefulWidget {
   final Uint8List img;
-  const StatusView({super.key, required this.img});
+  final CameraController cam;
+  const StatusView({super.key, required this.img, required this.cam});
 
   @override
   State<StatusView> createState() => _StatusViewState();
@@ -19,8 +27,15 @@ class _StatusViewState extends State<StatusView> {
   String selectedItem = 'Public';
 
   void uploadStatus() async {
-    print(input.text);
-    print(input.text);
+    final accountProvider = Provider.of<AccountProvider>(context, listen: false);
+
+    ChatProvider().uploadStatus(base64Encode(widget.img), accountProvider.db, input.text, selectedItem, accountProvider.ethAddress);
+    input.clear();
+    // widget.cam.dispose();
+    Get.to(
+      () => const BottomNavHome(),
+    );
+    showToast('Uploading Status!');
   }
 
   @override
@@ -31,6 +46,7 @@ class _StatusViewState extends State<StatusView> {
     );
 
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Stack(
         alignment: Alignment.center,
         textDirection: TextDirection.rtl,
@@ -44,7 +60,7 @@ class _StatusViewState extends State<StatusView> {
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  fit: BoxFit.fill,
+                  fit: BoxFit.contain,
                   image: MemoryImage(widget.img),
                 ),
               ),
@@ -69,9 +85,9 @@ class _StatusViewState extends State<StatusView> {
                         },
                         controller: input,
                         style: const TextStyle(
-                          fontStyle: FontStyle.italic,
                           color: AppColors.secondaryColor,
                         ),
+
                         decoration: InputDecoration(
                           fillColor: AppColors.white,
                           filled: true,
@@ -81,7 +97,6 @@ class _StatusViewState extends State<StatusView> {
                           contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           hintText: "Type message...",
                           hintStyle: const TextStyle(
-                            fontStyle: FontStyle.italic,
                             color: AppColors.secondaryColor,
                           ),
                         ),
@@ -96,6 +111,7 @@ class _StatusViewState extends State<StatusView> {
                   SizedBox(width: 10.w),
                   GestureDetector(
                     onTap: () {
+                      FocusScope.of(context).unfocus();
                       uploadStatus();
                     },
                     child: Container(

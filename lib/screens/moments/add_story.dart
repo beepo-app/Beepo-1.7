@@ -1,8 +1,5 @@
-import 'dart:async';
-
 import 'package:Beepo/constants/constants.dart';
 import 'package:Beepo/screens/moments/blank_screen.dart';
-import 'package:Beepo/screens/moments/status_view.dart';
 import 'package:Beepo/utils/functions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -55,6 +52,7 @@ class _AddStoryState extends State<AddStory> {
 
         Get.to(
           () => BlankScreen(
+            cam: widget.controller,
             compressedBytes: compressedBytes,
           ),
         );
@@ -129,6 +127,7 @@ class _AddStoryState extends State<AddStory> {
 
                                     Get.to(
                                       () => BlankScreen(
+                                        cam: widget.controller,
                                         compressedBytes: compressedBytes,
                                       ),
                                     );

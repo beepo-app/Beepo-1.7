@@ -26,12 +26,21 @@ class _MyAppState extends State<MyApp> {
   List<xmtp.DecodedMessage>? data;
   checkState() async {
     try {
-      final accountProvider = Provider.of<AccountProvider>(context, listen: false);
       final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+      final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+      final acctProvider = Provider.of<AccountProvider>(context, listen: false);
 
-      await accountProvider.initDB();
+      await acctProvider.initDB();
       await walletProvider.initPlatformState();
-      await accountProvider.getAllUsers();
+      await acctProvider.getAllUsers();
+
+      chatProvider.findAndWatchAllStatuses(acctProvider.db).listen((event) {
+        chatProvider.saveStatuses(acctProvider.db);
+      });
+
+      acctProvider.findAndWatchAllUsers(acctProvider.db).listen((event) async {
+        await acctProvider.getAllUsers();
+      });
     } catch (e) {
       if (kDebugMode) {
         print(e);
@@ -48,9 +57,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    // final acctProvider = Provider.of<AccountProvider>(context, listen: false);
 
     chatProvider.findAndWatchAllMessages().listen((event) {
-      print(event[0].content);
       chatProvider.updateMessages(event);
     });
 

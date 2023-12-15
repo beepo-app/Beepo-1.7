@@ -149,7 +149,7 @@ class _ChatDmScreenState extends State<ChatDmScreen> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(100),
                             child: Image(
-                              image: CacheMemoryImageProvider("profileImage", base64Decode(userData['image'])),
+                              image: CacheMemoryImageProvider(userData['image'], base64Decode(userData['image'])),
                               fit: BoxFit.fill,
                             ),
                           ),

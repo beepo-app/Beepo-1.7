@@ -1,22 +1,28 @@
 import 'package:Beepo/app.dart';
-import 'package:Beepo/providers/account_provider.dart';
+
 import 'package:Beepo/services/database.dart';
 import 'package:Beepo/session/foreground_session.dart';
 import 'package:async/async.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:xmtp/xmtp.dart';
 
 class ChatProvider extends ChangeNotifier {
   List<DecodedMessage>? messages;
   List<Conversation>? convos;
+  dynamic statuses = Hive.box('Beepo2.0').get('Statuses');
   String? me;
 
-  Future<String> uploadStatus(base64Image, text, privacy) async {
-    try {
-      await dbUploadStatus(base64Image, AccountProvider().db!, text, privacy, me!);
+  getAllStatus(db) {
+    var d = dbGetAllStatus(db);
+    return d;
+  }
 
+  Future<String> uploadStatus(base64Image, db, text, privacy, ethAddress) async {
+    try {
+      await dbUploadStatus(base64Image, db, text, privacy, ethAddress);
+      saveStatuses(db);
       return "done";
     } catch (e) {
       if (kDebugMode) {
@@ -27,8 +33,44 @@ class ChatProvider extends ChangeNotifier {
     return ('Not done');
   }
 
+  Future<String> deleteStatus(db, List data, ethAddress) async {
+    try {
+      await dbDeleteStatus(db, data, ethAddress);
+      saveStatuses(db);
+      return "done";
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+        return (e.toString());
+      }
+    }
+    return ('Not done');
+  }
+
+  void saveStatuses(db) async {
+    var event = await dbGetAllStatus(db);
+    try {
+      var data = event.map((e) {
+        return {
+          "data": e['data'],
+          "ethAddress": e['ethAddress'],
+          "viewers": e['viewers'],
+        };
+      });
+
+      await Hive.box('Beepo2.0').put('Statuses', data.toList());
+      statuses = data.toList();
+      notifyListeners();
+
+      print(statuses.last['data'].last);
+      print(data.last['data'].last);
+    } catch (e) {
+      debugPrint(" chat ln 52 ${e.toString()}");
+    }
+  }
+
   void updateMessages(List<DecodedMessage> event) async {
-    print(event.length);
+    // print(event.length);
     if (event.isEmpty) return;
     if (messages != null && messages!.isNotEmpty) {
       if (messages![0].sentAt == event[0].sentAt && messages![0].sender == event[0].sender) {
@@ -52,6 +94,17 @@ class ChatProvider extends ChangeNotifier {
     me = me ?? event[0].me.toString();
     convos = event;
     notifyListeners();
+  }
+
+  Stream<dynamic> findAndWatchAllStatuses(Db? db) {
+    if (db != null) {
+      print('hiiiii   2');
+      return _useLookupStream(
+        () => dbGetAllStatus(db),
+        () => dbWatchAllStatus(db),
+      );
+    }
+    return const Stream.empty();
   }
 
   Stream<List<Conversation>> findAndWatchAllConvos() {

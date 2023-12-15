@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:Beepo/screens/moments/add_story.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
@@ -33,8 +32,11 @@ class InitCameraState extends State<InitCamera> {
     _controller = CameraController(backCamera, ResolutionPreset.ultraHigh, enableAudio: true);
     initializeControllerFuture = _controller.initialize();
 
+    // if (!_controller.value.isInitialized) return;
+    // _controller.value.
+
     Timer(
-      const Duration(milliseconds: 500),
+      const Duration(milliseconds: 700),
       () => Navigator.push(
         context,
         MaterialPageRoute(

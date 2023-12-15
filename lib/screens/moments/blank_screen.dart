@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:Beepo/screens/moments/add_story.dart';
 import 'package:Beepo/screens/moments/status_view.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
@@ -9,7 +8,8 @@ import 'package:get/get.dart';
 
 class BlankScreen extends StatefulWidget {
   final List<int> compressedBytes;
-  const BlankScreen({super.key, required this.compressedBytes});
+  final CameraController cam;
+  const BlankScreen({super.key, required this.compressedBytes, required this.cam});
 
   @override
   BlankScreenState createState() => BlankScreenState();
@@ -29,6 +29,7 @@ class BlankScreenState extends State<BlankScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => StatusView(
+            cam: widget.cam,
             img: Uint8List.fromList(widget.compressedBytes),
           ),
         ),
