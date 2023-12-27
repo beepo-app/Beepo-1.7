@@ -8,6 +8,7 @@ import 'package:Beepo/session/foreground_session.dart';
 import 'package:Beepo/utils/functions.dart';
 import 'package:Beepo/utils/target_platform.dart';
 import 'package:Beepo/widgets/cache_memory_image_provider.dart';
+import 'package:Beepo/widgets/commons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -326,6 +327,7 @@ class _ChatDmScreenState extends State<ChatDmScreen> {
                           suffixIcon: input.text.isEmpty
                               ? IconButton(
                                   onPressed: () {
+                                    inchatTxBox(context, (userData ?? {"displayName": widget.senderAddress!, "ethAddress": widget.senderAddress!}));
                                     // context
                                     //     .read<ChatNotifier>()
                                     //     .cameraUploadImageChat(widget.model.uid);
