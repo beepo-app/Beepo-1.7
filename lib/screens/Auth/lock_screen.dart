@@ -88,7 +88,7 @@ class _LockScreenState extends State<LockScreen> {
                       showToast("Incorrect Pin Entered");
                       return;
                     }
-                    loadingDialog("Logging In!");
+                    fullScreenLoader("Logging In!");
 
                     if (response.contains('privKey')) {
                       Map data = jsonDecode(response);
@@ -99,6 +99,7 @@ class _LockScreenState extends State<LockScreen> {
                         await session.authorize(credentials.asSigner());
                       }
 
+                      Future.delayed(const Duration(seconds: 3));
                       Get.to(
                         () => const BottomNavHome(),
                       );
@@ -108,7 +109,10 @@ class _LockScreenState extends State<LockScreen> {
                     await walletProvider.initWalletState(response);
                     EthPrivateKey credentials = EthPrivateKey.fromHex(walletProvider.ethPrivateKey!);
 
-                    await session.authorize(credentials.asSigner());
+                    if (session.initialized == false) {
+                      await session.authorize(credentials.asSigner());
+                    }
+                    //await session.authorize(credentials.asSigner());
                     await accountProvider.initAccountState();
 
                     Get.to(

@@ -312,7 +312,7 @@ class ConversationListItem extends HookWidget {
         children: [
           Expanded(
               child: Text(
-            content.toString(),
+            content.contains("inChatTxChat-BeepoV2") ? "In Chat Tx" : content.toString(),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           )),

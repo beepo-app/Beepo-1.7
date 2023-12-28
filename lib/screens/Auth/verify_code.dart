@@ -7,6 +7,7 @@ import 'package:Beepo/providers/wallet_provider.dart';
 import 'package:Beepo/services/encryption.dart';
 import 'package:Beepo/session/foreground_session.dart';
 import 'package:Beepo/utils/styles.dart';
+import 'package:Beepo/widgets/commons.dart';
 import 'package:Beepo/widgets/toast.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter/foundation.dart';
@@ -107,6 +108,7 @@ class _VerifyCodeState extends State<VerifyCode> {
               onPressed: () async {
                 //print(widget.pin);
                 if (widget.pin == otp.text) {
+                  fullScreenLoader("Creating Your Account!");
                   final walletProvider = Provider.of<WalletProvider>(context, listen: false);
                   final accountProvider = Provider.of<AccountProvider>(context, listen: false);
 
@@ -153,6 +155,7 @@ class _VerifyCodeState extends State<VerifyCode> {
                         }
                         await accountProvider.initAccountState();
 
+                        Get.back();
                         Get.to(
                           () => const BottomNavHome(),
                         );
@@ -192,6 +195,7 @@ class _VerifyCodeState extends State<VerifyCode> {
                       }
                       await accountProvider.initAccountState();
 
+                      Get.back();
                       Get.to(
                         () => const BottomNavHome(),
                       );

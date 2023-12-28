@@ -133,7 +133,9 @@ class WalletProvider extends ChangeNotifier {
           'native': native,
           'address': address,
           'contractAddress': value['address'],
+          // ignore: unnecessary_null_comparison
           "24h_price_change": marketData != null && marketData.isNotEmpty ? marketData[1] : 0,
+          // ignore: unnecessary_null_comparison
           "current_price": marketData != null && marketData.isNotEmpty ? marketData[0] : 0,
         };
         String price = ((assetData['current_price'] * double.parse(assetData['bal']))).toStringAsFixed(2);
@@ -144,7 +146,7 @@ class WalletProvider extends ChangeNotifier {
         totalBalance = totalBal.toStringAsFixed(2);
       });
       assets = data;
-      return 'Done Fetching!';
+      return data;
     } catch (e) {
       print({"error 120": e});
     }

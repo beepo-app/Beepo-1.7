@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:Beepo/constants/constants.dart';
 import 'package:Beepo/providers/auth_provider.dart';
+import 'package:Beepo/providers/chat_provider.dart';
 import 'package:Beepo/providers/wallet_provider.dart';
 import 'package:Beepo/screens/wallet/transfer_success.dart';
+import 'package:Beepo/session/foreground_session.dart';
 import 'package:Beepo/utils/styles.dart';
 import 'package:Beepo/widgets/app_text.dart';
 import 'package:Beepo/widgets/commons.dart';
@@ -11,14 +15,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
+import 'package:xmtp/xmtp.dart' as xmtp;
 
 class SendTokenPinScreen extends StatefulWidget {
   final Map? txData;
+  final String? type;
 
   const SendTokenPinScreen({
-    Key? key,
+    super.key,
     this.txData,
-  }) : super(key: key);
+    this.type,
+  });
 
   @override
   State<SendTokenPinScreen> createState() => _SendTokenPinScreenState();
@@ -30,6 +37,7 @@ class _SendTokenPinScreenState extends State<SendTokenPinScreen> {
   @override
   Widget build(BuildContext context) {
     final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
     Map? txData = widget.txData;
     return Scaffold(
       backgroundColor: AppColors.backgroundGrey,
@@ -123,6 +131,7 @@ class _SendTokenPinScreenState extends State<SendTokenPinScreen> {
                 onChanged: (val) async {
                   if (otp.text.length == 4) {
                     String response = await login(otp.text);
+
                     if (response.contains("Incorrect Pin Entered")) {
                       showToast("Incorrect Pin Entered");
                       return;
@@ -136,6 +145,24 @@ class _SendTokenPinScreenState extends State<SendTokenPinScreen> {
                       await walletProvider.sendNativeToken(data['address'], asset['rpc'], data['amount']);
                     } else {
                       await walletProvider.sendERC20(asset['contractAddress'], data['address'], asset['rpc'], data['amount']);
+                    }
+
+                    if (widget.type != null) {
+                      List<xmtp.Conversation> conversations = chatProvider.convos!;
+                      List<xmtp.Conversation> convo =
+                          conversations.where((element) => element.peer.toString() == data['address'].toString()).toList();
+
+                      await session.sendMessage(
+                          convo[0].topic,
+                          jsonEncode(
+                            {
+                              'amount': txData['data']['amount'],
+                              'ticker': txData['asset']['ticker'],
+                              "amtInUSD": txData['amtInUSD'],
+                              "inChatTxChat-BeepoV2": true,
+                              "sender": walletProvider.ethAddress.toString(),
+                            },
+                          ));
                     }
 
                     Get.to(() => TransferSuccess(txData: txData));

@@ -43,7 +43,8 @@ dynamic loadingDialog(String label) {
 
 class InChatTx extends StatefulWidget {
   final Map user;
-  const InChatTx({super.key, required this.user});
+  final List assets;
+  const InChatTx({super.key, required this.user, required this.assets});
 
   @override
   State<InChatTx> createState() => _InChatTxState();
@@ -70,9 +71,8 @@ class _InChatTxState extends State<InChatTx> {
   @override
   Widget build(BuildContext context) {
     final walletProvider = Provider.of<WalletProvider>(context, listen: false);
-    List? assets = walletProvider.assets;
-    Map asset = assets?.firstWhere((element) => element['ticker'] == selectedCurItem);
     String userId = widget.user['displayName'];
+    Map? asset = widget.assets.firstWhereOrNull((element) => element['ticker'] == selectedCurItem);
 
     userId = userId.length > 30 ? '${userId.substring(0, 3)}...${userId.substring(userId.length - 7, userId.length)}' : userId;
 
@@ -234,15 +234,29 @@ class _InChatTxState extends State<InChatTx> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Text(
-                    "Amount",
-                    style: TextStyle(
-                      color: Color(0xe50d004c),
-                      fontSize: 18,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Text(
+                        "Amount",
+                        style: TextStyle(
+                          color: Color(0xe50d004c),
+                          fontSize: 14,
+                        ),
+                      ),
                     ),
-                  ),
+                    Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Text(
+                        "Bal ${asset != null ? asset['bal'] : 0} ${asset != null ? asset['ticker'] : ''} ",
+                        style: const TextStyle(
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 3),
                 TextField(
@@ -270,22 +284,25 @@ class _InChatTxState extends State<InChatTx> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.only(top: 3),
-                      child: Text(
-                        "\$${Decimal.tryParse(amount.text) == null ? int.tryParse(amount.text) == null ? 0 : int.tryParse(amount.text)! * int.parse(asset['current_price']) : Decimal.tryParse(amount.text)! * Decimal.parse(asset['current_price'].toString())}",
-                        style: const TextStyle(
-                          color: Color(0xe50d004c),
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
+                    asset == null
+                        ? const Text('')
+                        : Container(
+                            padding: const EdgeInsets.only(top: 3),
+                            child: Text(
+                              "\$${Decimal.tryParse(amount.text) == null ? int.tryParse(amount.text) == null ? 0 : int.tryParse(amount.text)! * int.parse(asset['current_price']) : Decimal.tryParse(amount.text)! * Decimal.parse(asset['current_price'].toString())}",
+                              style: const TextStyle(
+                                color: Color(0xe50d004c),
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
                   ],
                 ),
                 const SizedBox(height: 35),
                 BeepoFilledButtons(
                   text: 'Send',
                   onPressed: () async {
+                    if (asset == null) return;
                     Decimal res = await walletProvider.estimateGasPrice(asset['rpc']);
 
                     var amountToSend = res + Decimal.parse(amount.text);
@@ -295,8 +312,9 @@ class _InChatTxState extends State<InChatTx> {
                       return;
                     }
 
+                    Get.back();
                     Get.to(
-                      () => SendTokenConfirmScreen(asset: asset, data: {'amount': amount.text, 'gasFee': res, "address": address}),
+                      () => SendTokenConfirmScreen(asset: asset, data: {'amount': amount.text, 'gasFee': res, "address": address}, type: 'inChatTx'),
                     );
                   },
                 ),
@@ -310,10 +328,15 @@ class _InChatTxState extends State<InChatTx> {
 }
 
 dynamic inchatTxBox(context, user) {
+  final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+  List assets = walletProvider.assets!;
   Get.dialog(
     Material(
       color: Colors.black.withOpacity(.2),
-      child: InChatTx(user: user),
+      child: InChatTx(
+        user: user,
+        assets: assets,
+      ),
     ),
   );
 }
@@ -344,32 +367,34 @@ AppBar appBar(String title, {bool centerTitle = true}) {
   );
 }
 
-Widget fullScreenLoader(String title) {
-  return Material(
-    child: Container(
-      width: double.infinity,
-      height: double.infinity,
-      color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Lottie.asset(
-                  'assets/lottie/lottie_1.json',
-                  height: 150,
-                  width: 150,
+dynamic fullScreenLoader(String title) {
+  return Get.dialog(
+    Material(
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Lottie.asset(
+                    'assets/lottie/lottie_1.json',
+                    height: 150,
+                    width: 150,
+                  ),
                 ),
-              ),
-              Text(
-                title,
-                style: Get.textTheme.titleLarge,
-              ),
-              const SizedBox(height: 10),
-            ],
+                Text(
+                  title,
+                  style: Get.textTheme.titleLarge,
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
           ),
         ),
       ),

@@ -7,7 +7,10 @@ import 'package:mongo_dart/mongo_dart.dart';
 import 'package:web3dart/web3dart.dart';
 
 dbCreateUser(String image, Db db, String displayName, String ethAddress, btcAddress, encrypteData) async {
-  await db.open();
+  if (db.state == State.closed) {
+    await db.open();
+  }
+
   var usersCollection = db.collection('users');
 
   List usernameArray = displayName.split(' ');
@@ -147,7 +150,7 @@ dbUploadStatus(String image, Db db, String message, String privacy, String ethAd
   if (data == null) {
     try {
       status.createIndex(keys: {'expireAt': 1, 'expireAfterSeconds': 0});
-      DateTime finalTime = DateTime.now().add(const Duration(hours: 23, minutes: 59, seconds: 59));
+      DateTime finalTime = DateTime.now().add(const Duration(hours: 0, minutes: 0, seconds: 59));
 
       var d = await status.insertOne(
         {
@@ -178,7 +181,7 @@ dbUploadStatus(String image, Db db, String message, String privacy, String ethAd
 
   List oldData = data['data'];
 
-  DateTime finalTime = DateTime.now().add(const Duration(hours: 23, minutes: 59, seconds: 59));
+  DateTime finalTime = DateTime.now().add(const Duration(hours: 0, minutes: 0, seconds: 59));
 
   oldData.add({
     'privacy': privacy,

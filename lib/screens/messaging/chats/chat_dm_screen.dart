@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:Beepo/components/bottom_nav.dart';
 import 'package:Beepo/constants/constants.dart';
 import 'package:Beepo/providers/chat_provider.dart';
+import 'package:Beepo/providers/wallet_provider.dart';
 import 'package:Beepo/screens/profile/user_profile_screen.dart';
 import 'package:Beepo/session/foreground_session.dart';
 import 'package:Beepo/utils/functions.dart';
@@ -151,7 +152,7 @@ class _ChatDmScreenState extends State<ChatDmScreen> {
                             borderRadius: BorderRadius.circular(100),
                             child: Image(
                               image: CacheMemoryImageProvider(userData['image'], base64Decode(userData['image'])),
-                              fit: BoxFit.fill,
+                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
@@ -560,7 +561,49 @@ class MessageBubble extends StatelessWidget {
 
             final isTimeInSameLine = messageTextWidth + extraSpaceWidth < maxWidth || messageTextWidth > maxWidth;
 
-            // Using Stack to show message time in bottom right corner.
+            if (messageText.contains("inChatTxChat-BeepoV2")) {
+              final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+              var decodedText = jsonDecode(messageText);
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        color: const Color.fromRGBO(196, 196, 196, 0.57),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Text(
+                          decodedText['sender'] == walletProvider.ethAddress.toString() ? "You Sent" : "You Received",
+                          style: messageTextStyle,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      '\$${decodedText['amtInUSD']}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 23,
+                        color: AppColors.white,
+                      ),
+                    ),
+                    Text(
+                      '${decodedText['amount']} ${decodedText['ticker']}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        color: AppColors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
             return Stack(
               children: [
                 Padding(

@@ -2,17 +2,20 @@ import 'package:Beepo/components/Beepo_filled_button.dart';
 import 'package:Beepo/constants/constants.dart';
 import 'package:Beepo/screens/wallet/send_token_pin_screen.dart';
 import 'package:Beepo/widgets/app_text.dart';
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SendTokenConfirmScreen extends StatefulWidget {
   final Map? asset;
   final Map? data;
+  final String? type;
   const SendTokenConfirmScreen({
     this.asset,
     this.data,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+    this.type,
+  });
 
   @override
   State<SendTokenConfirmScreen> createState() => _SendTokenConfirmScreenState();
@@ -99,8 +102,15 @@ class _SendTokenConfirmScreenState extends State<SendTokenConfirmScreen> {
               text: "Approve",
               color: const Color(0xff0e014c),
               onPressed: () {
+                String amtInUSD = (Decimal.tryParse(data['amount']) == null
+                        ? int.tryParse(data['amount']) == null
+                            ? 0
+                            : int.tryParse(data['amount'])! * int.parse(asset['current_price'])
+                        : Decimal.tryParse(data['amount'])! * Decimal.parse(asset['current_price'].toString()))
+                    .toString();
+
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return SendTokenPinScreen(txData: {'asset': asset, 'data': data});
+                  return SendTokenPinScreen(txData: {'asset': asset, 'data': data, "amtInUSD": amtInUSD}, type: widget.type);
                 }));
               },
             ),
