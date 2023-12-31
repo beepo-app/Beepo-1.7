@@ -54,7 +54,7 @@ class _InChatTxState extends State<InChatTx> {
   late final TextEditingController amount;
 
   final List<String> walletItems = ['Crypto', 'Fiat'];
-  final List<String> curItems = ['BNB', 'ETH', "CELO", "BEEP", "Brise", "MATIC", "CMP", "USDT"];
+  final List<String> curItems = ['BNB', 'ETH', "CELO", "BEEP", "Brise", "MATIC", "CMP", "USDT", "HLUSD"];
 
   String selectedWalletItem = 'Crypto';
   String selectedCurItem = 'BNB';
@@ -77,6 +77,8 @@ class _InChatTxState extends State<InChatTx> {
     userId = userId.length > 30 ? '${userId.substring(0, 3)}...${userId.substring(userId.length - 7, userId.length)}' : userId;
 
     String address = widget.user["ethAddress"];
+
+    print(asset);
 
     return Center(
       child: Container(

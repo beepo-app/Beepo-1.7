@@ -92,6 +92,19 @@ var networkInfo = {
       'nameoncoinmarketcap': 'binancecoin',
     },
 
+    666888: {
+      'name': 'HeLa Testnet',
+      'displayName': 'HeLa',
+      'chainId': 666888,
+      "native": true,
+      'ticker': 'HLUSD',
+      'nativeTicker': 'HLUSD',
+      'description': 'This is the Polygon matic description',
+      'derivationPath': "m/44'/60'/0'/0",
+      'isTestNet': false,
+      'logoUrl': 'https://Beepo.blob.core.windows.net/logos/Polygon.png',
+      'nameoncoinmarketcap': 'matic-network',
+    },
     137: {
       'name': 'Polygon Mainnet',
       'displayName': 'Polygon',
@@ -191,6 +204,11 @@ var networkInfo = {
     5: {
       'https': 'https://goerli.infura.io/v3/5fd05c9976d44bb7a6e849317e9ad9c0',
       'testnet': 'https://goerli.infura.io/v3/5fd05c9976d44bb7a6e849317e9ad9c0',
+      'wss': '',
+    },
+    666888: {
+      'https': 'https://testnet-rpc.helachain.com',
+      'testnet': 'https://testnet-rpc.helachain.com',
       'wss': '',
     },
     56: {'https': 'https://bsc-dataseed.binance.org/', 'testnet': 'https://data-seed-prebsc-1-s1.binance.org:8545/', 'wss': ""},
