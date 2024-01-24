@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Beepo/app.dart';
 import 'package:Beepo/networks/erc20.dart';
 import 'package:Beepo/networks/networks.dart';
 import 'package:Beepo/widgets/toast.dart';
@@ -8,7 +10,9 @@ import 'package:decimal/decimal.dart';
 import 'package:ed25519_hd_key/ed25519_hd_key.dart';
 import 'package:flutter/foundation.dart';
 import 'package:bip39/bip39.dart' as bip39;
+import 'package:get/get_utils/src/extensions/export.dart';
 import 'package:hex/hex.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:web3auth_flutter/enums.dart';
 import 'package:web3auth_flutter/input.dart';
 import 'package:web3auth_flutter/output.dart';
@@ -25,8 +29,28 @@ class WalletProvider extends ChangeNotifier {
   String? password;
   String? mnemonic;
   List? assets;
+  List? assetsPrices;
   String? totalBalance;
   Web3AuthResponse? mpcResponse;
+
+  List? allPrices;
+
+  int count = 0;
+
+  // final StreamController<void> _periodicController = StreamController<void>();
+
+  String startPeriodicUpdates() {
+    const duration = Duration(seconds: 30);
+    Stream.periodic(duration, (_) => null).listen((_) async {
+      try {
+        await getAssets();
+        await watchTxs().then((value) {});
+      } catch (error) {
+        print("Error in periodicUpdates: $error");
+      }
+    });
+    return '';
+  }
 
   String generateMnemonic() {
     return bip39.generateMnemonic();
@@ -38,6 +62,7 @@ class WalletProvider extends ChangeNotifier {
       await generateBTCWallet(mnemonic_);
       await generateETHWallet(mnemonic_);
       await getAssets();
+      startPeriodicUpdates();
       return "Done";
     } catch (e) {
       return (e.toString());
@@ -50,6 +75,7 @@ class WalletProvider extends ChangeNotifier {
       ethPrivateKey = data['privKey'];
       ethAddress = address;
       await getAssets();
+      startPeriodicUpdates();
       return "Done";
     } catch (e) {
       return (e.toString());
@@ -96,56 +122,70 @@ class WalletProvider extends ChangeNotifier {
       List data = [];
       double totalBal = 0.0;
 
+      List prices = await getPrices();
+
       Map<Object, Map<String, Object>> allNetworks = networks['networksInfo'];
       Map<Object, Map<String, Object>> rpcUrls = networks['rpcUrls'];
-      allNetworks.forEach((key, value) async {
+
+      List<Future> futures = [];
+
+      (allNetworks.forEach((key, value) {
         double? bal = 0.0;
         String rpcLink = '';
         bool native = false;
 
         String address = ethAddress!.toString();
-        // print(key);
-        if (rpcUrls[key] != null) {
-          rpcLink = rpcUrls[key]!['testnet'].toString();
-          bal = await getNativeETHBalances(rpcLink, ethAddress);
-          native = true;
-        } else if (key == 'Bitcoin') {
-          address = btcAddress!;
-          bal = await getBTCBalance(ethAddress);
-        } else {
-          Map<String, dynamic>? rpc = value;
-          rpcLink = rpc['rpc']['testnet'];
-          bal = await getERC20Balance(value['address'], rpcLink);
-          // print(bal);
+
+        getData() async {
+          if (rpcUrls[key] != null) {
+            rpcLink = rpcUrls[key]!['testnet'].toString();
+            bal = await getNativeETHBalances(rpcLink, ethAddress);
+            native = true;
+          } else if (key == 'Bitcoin') {
+            address = btcAddress!;
+            bal = await getBTCBalance(ethAddress);
+          } else {
+            Map<String, dynamic>? rpc = value;
+            rpcLink = rpc['rpc']['testnet'];
+            bal = await getERC20Balance(value['address'], rpcLink);
+          }
+
+          totalBal = totalBal + (bal ?? 0);
+
+          Map? curAsset = prices.isNotEmpty ? prices.firstWhereOrNull((ele) => ele['displayName'] == value['ticker']) : null;
+
+          Map<String, dynamic> assetData = {
+            'displayName': value['displayName'],
+            'logoUrl': value['logoUrl'],
+            'ticker': value['ticker'],
+            'nativeTicker': value['nativeTicker'],
+            'bal': bal == null ? '0' : bal!.toStringAsFixed(2),
+            'chainID': value['chainId'],
+            'rpc': rpcLink,
+            'native': native,
+            'address': address,
+            'contractAddress': value['address'],
+            "24h_price_change": curAsset != null ? double.parse(curAsset['price_change_percentage_24h'].toStringAsFixed(2)) : null,
+            "current_price": curAsset != null ? double.parse(curAsset['current_price'].toStringAsFixed(2)) : null,
+          };
+
+          String? price =
+              assetData['current_price'] != null ? (assetData['current_price'] * double.parse(assetData['bal'])).toStringAsFixed(2) : null;
+
+          totalBal = price != null ? totalBal + double.parse(price) : totalBal + 0;
+          assetData['bal_to_price'] = price;
+          data.add(assetData);
+          totalBalance = totalBal.toStringAsFixed(2);
         }
 
-        List? marketData = await getPrices(value['nameoncoinmarketcap']);
-        totalBal = totalBal + (bal ?? 0);
-        //print(marketData);
-        Map<String, dynamic> assetData = {
-          'displayName': value['displayName'],
-          'logoUrl': value['logoUrl'],
-          'ticker': value['ticker'],
-          'nativeTicker': value['nativeTicker'],
-          'bal': bal == null ? '0' : bal.toStringAsFixed(2),
-          'chainID': value['chainId'],
-          'rpc': rpcLink,
-          'native': native,
-          'address': address,
-          'contractAddress': value['address'],
-          // ignore: unnecessary_null_comparison
-          "24h_price_change": marketData != null && marketData.isNotEmpty ? marketData[1] : 0,
-          // ignore: unnecessary_null_comparison
-          "current_price": marketData != null && marketData.isNotEmpty ? marketData[0] : 0,
-        };
-        String price = ((assetData['current_price'] * double.parse(assetData['bal']))).toStringAsFixed(2);
+        Future<void> future = getData();
+        futures.add(future);
+      }));
 
-        totalBal = totalBal + double.parse(price);
-        assetData['bal_to_price'] = price;
-        data.add(assetData);
-        totalBalance = totalBal.toStringAsFixed(2);
-      });
+      await Future.wait(futures);
       assets = data;
+      notifyListeners();
+
       return data;
     } catch (e) {
       print({"error 120": e});
@@ -199,6 +239,7 @@ class WalletProvider extends ChangeNotifier {
     try {
       var url = Uri.parse("https://get-transactions.vercel.app/api/getTxs?address=$ethAddress&chainID=$chainID&type=$type");
       var response = await http.get(url);
+      print(response.body);
       if (response.statusCode == 200) {
         Map res = json.decode(response.body);
         return res;
@@ -210,21 +251,59 @@ class WalletProvider extends ChangeNotifier {
     }
   }
 
-  Future<List> getPrices(coinId) async {
+  watchTxs() async {
+    return;
     try {
-      var url =
-          Uri.parse("https://api.coingecko.com/api/v3/coins/$coinId?localization=false&community_data=false&developer_data=false&sparkline=false");
+      if (assets == null || assets!.isEmpty) return;
+      List? localTxs = await Hive.box('Beepo2.0').get('txs');
+
+      var res = assets!.map((asset) async {
+        var type = asset['native'] ? 'EVM' : 'TOKEN';
+        var data = await getTxs(asset['chainID'], type);
+        return ({"ticker": asset['ticker'], 'data': data['data'] != null && data['data'].isEmpty ? [] : data['data'][0]});
+      });
+
+      var txs = (await Future.wait(res));
+
+      if (txs.isNotEmpty) {
+        bool updateData = false;
+
+        if (localTxs != null) {
+          for (var tx in localTxs) {
+            print('tx');
+            print(tx);
+            print('tx');
+            Map curAsset = txs.firstWhere((element) => element['ticker'] == tx['ticker']);
+            print(curAsset);
+            if (curAsset.isNotEmpty && (tx['data']["timestamp"] < curAsset['data']["timestamp"])) {
+              print('true');
+              print('true 22');
+              print('true');
+              print('true 222');
+              print('true');
+              print('true 22');
+              print('true');
+              updateData = true;
+              sendWalletNotification(curAsset);
+            }
+          }
+        }
+
+        if (updateData || localTxs == null) {
+          await Hive.box('Beepo2.0').put('txs', txs);
+        }
+      }
+    } catch (error) {
+      print("Error in watch tx: $error");
+    }
+  }
+
+  Future<List> getPrices() async {
+    try {
+      var url = Uri.parse("https://get-transactions.vercel.app/api/getPrices");
       var response = await http.get(url);
       if (response.statusCode == 200) {
-        Map res = json.decode(response.body);
-        List data = [
-          double.parse(double.parse(res['market_data']['current_price']['usd'].toString()).toStringAsFixed(2)),
-          double.parse(double.parse(res['market_data']['price_change_percentage_24h'].toString()).toStringAsFixed(2)),
-        ];
-        // print('*********************');
-        // print(coinId);
-        // print(data);
-        // print('*********************');
+        List data = json.decode(response.body);
         return data;
       }
       return [];

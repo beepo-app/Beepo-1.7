@@ -8,7 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 class WalletPhraseScreen extends StatefulWidget {
-  const WalletPhraseScreen({Key? key}) : super(key: key);
+  const WalletPhraseScreen({super.key});
 
   @override
   State<WalletPhraseScreen> createState() => _WalletPhraseScreenState();

@@ -7,11 +7,15 @@ import 'package:Beepo/screens/profile/account_type_screen.dart';
 import 'package:Beepo/screens/profile/edit_profile_screen.dart';
 import 'package:Beepo/screens/profile/user_profile_security_screen.dart';
 import 'package:Beepo/widgets/app_text.dart';
+import 'package:Beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 //import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
+
+import 'about.dart';
 
 //import '../../Utils/styles.dart';
 
@@ -31,7 +35,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 60.h,
+        toolbarHeight: 45.h,
         centerTitle: true,
         backgroundColor: AppColors.secondaryColor,
         title: Padding(
@@ -97,14 +101,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               SizedBox(height: 40.h),
               InkWell(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return const AccountTypeScreen();
-                      },
-                    ),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) {
+                  //       return const AccountTypeScreen();
+                  //     },
+                  //   ),
+                  // );
                 },
                 child: Row(
                   children: [
@@ -178,49 +182,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               SizedBox(height: 15.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: AppText(
-                        text: "Help",
-                        fontSize: 14.sp,
-                        color: AppColors.secondaryColor,
-                      ),
-                    ),
-                  ),
-                  const Icon(
-                    Icons.arrow_forward,
-                    color: Color(0x660e014c),
-                    size: 20,
-                  ),
-                ],
-              ),
-              SizedBox(height: 15.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: AppText(
-                        text: "Notification",
-                        fontSize: 14.sp,
-                        color: AppColors.secondaryColor,
-                      ),
-                    ),
-                  ),
-                  const Icon(
-                    Icons.arrow_forward,
-                    color: Color(0x660e014c),
-                    size: 20,
-                  ),
-                ],
-              ),
-              SizedBox(height: 15.h),
               InkWell(
                 onTap: () {
-                  print('https://www.Beepoapp.net');
+                  Get.to(() => const About());
                 },
                 child: Row(
                   children: [

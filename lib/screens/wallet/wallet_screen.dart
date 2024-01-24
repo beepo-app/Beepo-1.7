@@ -61,23 +61,18 @@ class _WalletScreenState extends State<WalletScreen> {
 
   @override
   void initState() {
-    // getAssests();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final walletProvider = Provider.of<WalletProvider>(context, listen: false);
-    assets = walletProvider.assets;
+    final walletProvider = Provider.of<WalletProvider>(context, listen: true);
+    assets = context.watch<WalletProvider>().assets;
 
-    void getAssests() async {
-      print(await walletProvider.getNFTs('mumbai', '0x31Cb35833884ECCE48BD40515372E0d657AFde46'));
-    }
+    // walletProvider.watchTxs();
 
+    // print(assets);
     // nftAssets = walletProvider.nftAssets;
-    getAssests();
-
-    // print(.length);
 
     return DefaultTabController(
       length: 2,

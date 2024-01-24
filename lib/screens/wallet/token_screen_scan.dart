@@ -9,7 +9,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 class TokenScreenScan extends StatelessWidget {
   final Map<String, dynamic>? data;
-  const TokenScreenScan({Key? key, this.data}) : super(key: key);
+  const TokenScreenScan({super.key, this.data});
 
   @override
   Widget build(BuildContext context) {

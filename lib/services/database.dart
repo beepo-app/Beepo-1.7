@@ -51,6 +51,28 @@ dbCreateUser(String image, Db db, String displayName, String ethAddress, btcAddr
   // await db.close();
 }
 
+Stream<dynamic> dbWatchTx(Db db) {
+  if (db.state == State.closed) {
+    db.open();
+  }
+  var status = db.collection('status');
+
+  var update = status.watch(<Map<String, Object>>[
+    {
+      r'$match': {'operationType': 'update'}
+    }
+  ], changeStreamOptions: ChangeStreamOptions(fullDocument: 'updateLookup'));
+  var insert = status.watch(<Map<String, Object>>[
+    {
+      r'$match': {'operationType': 'insert'}
+    }
+  ], changeStreamOptions: ChangeStreamOptions(fullDocument: 'updateLookup'));
+
+  print('watching all statueses 222');
+
+  return StreamGroup.mergeBroadcast([update, insert]);
+}
+
 Stream<dynamic> dbWatchAllStatus(Db db) {
   if (db.state == State.closed) {
     db.open();

@@ -61,6 +61,9 @@ class NotificationService {
       return;
     }
     if (payload['navigate'] == 'true') {
+      if (payload['destination'] == "Wallet") {
+        return;
+      }
       Get.to(() => ChatDmScreen(
             topic: payload['topic']!,
             userData: jsonDecode(payload['userData']!),

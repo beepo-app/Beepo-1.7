@@ -5,9 +5,12 @@ import 'package:Beepo/constants/constants.dart';
 import 'package:Beepo/screens/messaging/chats/chat_tab.dart';
 import 'package:Beepo/widgets/app_text.dart';
 import 'package:Beepo/widgets/cache_memory_image_provider.dart';
+import 'package:Beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:iconsax/iconsax.dart';
 
 class UserProfileScreen extends StatefulWidget {
@@ -151,12 +154,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                           BeepoFilledButtons(
                                             text: 'Block',
                                             onPressed: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(builder: (context) {
-                                                  return const ChatTab();
-                                                }),
-                                              );
+                                              showToast('Coming Soon!');
+                                              Get.back();
                                             },
                                             color: AppColors.secondaryColor,
                                           ),

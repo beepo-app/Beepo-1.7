@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:Beepo/session/isolate.dart';
 import 'package:Beepo/utils/api.dart';
 import 'package:Beepo/utils/codecs.dart';

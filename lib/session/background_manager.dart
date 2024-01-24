@@ -87,6 +87,9 @@ class BackgroundManager {
         metadata: metadata,
       );
 
+  // Future<xmtp.Conversation> getConsentList( ) =>
+  //     _client.exportContactConsents();
+
   /// Sends the given [message] to the given [topic].
   Future<xmtp.DecodedMessage> sendMessage(
     String topic,

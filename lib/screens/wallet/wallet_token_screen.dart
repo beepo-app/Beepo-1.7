@@ -80,10 +80,15 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
                   ),
                 ),
                 const SizedBox(width: 5),
-                AppText(
-                  text: '${widget.data!['24h_price_change'].toString()}%',
-                  color: widget.data!['24h_price_change'] > 0 ? AppColors.activeTextColor : AppColors.favouriteButtonRed,
-                ),
+                widget.data!['24h_price_change'] != null
+                    ? AppText(
+                        text: '${widget.data!['24h_price_change'].toString()}%',
+                        color: widget.data!['24h_price_change'] > 0 ? AppColors.activeTextColor : AppColors.favouriteButtonRed,
+                      )
+                    : const AppText(
+                        text: 'null',
+                        color: AppColors.favouriteButtonRed,
+                      ),
               ],
             ),
           ),

@@ -3,19 +3,20 @@ import 'dart:convert';
 import 'package:Beepo/constants/constants.dart';
 import 'package:Beepo/providers/account_provider.dart';
 import 'package:Beepo/providers/chat_provider.dart';
-import 'package:Beepo/screens/messaging/calls/calls_tab.dart';
+// import 'package:Beepo/screens/messaging/calls/calls_tab.dart';
 import 'package:Beepo/screens/messaging/chats/chat_tab.dart';
-import 'package:Beepo/screens/messaging/chats/search_users_screen.dart';
+import 'package:Beepo/screens/messaging/chats/request.dart';
+// import 'package:Beepo/screens/messaging/chats/search_users_screen.dart';
 import 'package:Beepo/screens/moments/blank_status_screen.dart';
 import 'package:Beepo/screens/moments/init_camera.dart';
 import 'package:Beepo/screens/moments/moments_tab.dart';
-import 'package:Beepo/widgets/toast.dart';
+// import 'package:Beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:hawk_fab_menu/hawk_fab_menu.dart';
+// import 'package:hawk_fab_menu/hawk_fab_menu.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:iconsax/iconsax.dart';
+// import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 
 class ChatTabsScreen extends StatefulWidget {
@@ -32,7 +33,7 @@ class _ChatTabsScreenState extends State<ChatTabsScreen> with TickerProviderStat
   void initState() {
     super.initState();
     _tabController = TabController(
-      length: 3,
+      length: 2,
       vsync: this,
     );
   }
@@ -47,10 +48,11 @@ class _ChatTabsScreenState extends State<ChatTabsScreen> with TickerProviderStat
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: [
-                const ChatTab(),
-                const MomentsTab(),
-                CallTab(),
+              children: const [
+                ChatTab(),
+                MomentsTab(),
+                // RequestsTab()
+                // CallTab(),
               ],
             ),
           ),
@@ -80,7 +82,7 @@ class _MyTabBarState extends State<MyTabBar> {
   void initState() {
     super.initState();
     widget.controller.addListener(() {
-      print("CHANGED");
+      // print("CHANGED");
       pageIndex = widget.controller.index;
       setState(() {});
     });
@@ -90,7 +92,7 @@ class _MyTabBarState extends State<MyTabBar> {
   void dispose() {
     super.dispose();
     widget.controller.addListener(() {
-      print("REVERSED");
+      // print("REVERSED");
       pageIndex = widget.controller.index;
       // setState(() {});
     });
@@ -128,16 +130,16 @@ class _MyTabBarState extends State<MyTabBar> {
                   ),
                 ),
               ),
-              Tab(
-                child: Text(
-                  "Calls",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
+              // Tab(
+              //   child: Text(
+              //     "Requests",
+              //     style: TextStyle(
+              //       color: Colors.white,
+              //       fontSize: 15.sp,
+              //       fontWeight: FontWeight.w700,
+              //     ),
+              //   ),
+              // ),
             ],
           ),
 
