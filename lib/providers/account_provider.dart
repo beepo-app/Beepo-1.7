@@ -119,6 +119,24 @@ class AccountProvider extends ChangeNotifier {
     return ({'error': 'Not done'});
   }
 
+  Future<Map> deleteUser(db) async {
+    try {
+      var data = await dbDeleteUser(db, ethAddress);
+      await initAccountState();
+      if (data['error'] == null) {
+        return {'success': data};
+      } else {
+        return {'error': data["error"]};
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+        return ({'error': e.toString()});
+      }
+    }
+    return ({'error': 'Not done'});
+  }
+
   Stream<dynamic> findAndWatchAllUsers(Db? db) {
     if (db != null) {
       return _useLookupStream(

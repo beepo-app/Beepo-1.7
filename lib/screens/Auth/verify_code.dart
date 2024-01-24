@@ -155,7 +155,9 @@ class _VerifyCodeState extends State<VerifyCode> {
                         }
                         await accountProvider.initAccountState();
 
+                        Hive.box('Beepo2.0').put('isAutoLockSwitch', true);
                         Get.back();
+
                         Get.to(
                           () => const BottomNavHome(),
                         );

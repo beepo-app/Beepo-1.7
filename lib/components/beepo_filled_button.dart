@@ -7,7 +7,7 @@ class BeepoFilledButtons extends StatelessWidget {
   final VoidCallback onPressed;
   final Color? color;
 
-  const BeepoFilledButtons({Key? key, required this.text, this.color, required this.onPressed}) : super(key: key);
+  const BeepoFilledButtons({super.key, required this.text, this.color, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {

@@ -73,7 +73,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
 
     Hive.box('Beepo2.0').watch(key: "isLocked").listen((event) {
-      print("BoxEvent | key: ${event.key}, value: ${event.value}, deleted: ${event.deleted},");
+      //print("BoxEvent | key: ${event.key}, value: ${event.value}, deleted: ${event.deleted},");
       setState(() {
         isLocked = event.value;
       });
@@ -98,9 +98,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           home: isSignedUp == null
               ? const OnboardingScreen()
               : isSignedUp!
-                  ? isLocked
-                      ? const LockScreen()
-                      : const BottomNavHome()
+                  ? const LockScreen()
                   : const OnboardingScreen(),
         );
       },

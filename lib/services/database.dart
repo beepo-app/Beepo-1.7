@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:Beepo/session/foreground_session.dart';
 import 'package:Beepo/widgets/toast.dart';
 import 'package:async/async.dart';
 import 'package:flutter/foundation.dart';
@@ -227,6 +228,28 @@ dbUploadStatus(String image, Db db, String message, String privacy, String ethAd
       print(e);
     }
   }
+}
+
+Future<Map<String, dynamic>> dbDeleteUser(Db db, ethAddress) async {
+  await db.open();
+  var usersCollection = db.collection('users');
+  var status = db.collection('status');
+
+  try {
+    var d = await usersCollection.deleteOne(where.eq("ethAddress", ethAddress));
+    print(d);
+    d = await status.deleteOne(where.eq("ethAddress", ethAddress));
+    showToast('Account Deleted Successfully!');
+    session.clear();
+    Hive.deleteBoxFromDisk("Beepo2.0");
+    print(d);
+  } catch (e) {
+    if (kDebugMode) {
+      print(e);
+    }
+  }
+
+  return ({'error': "An error occured!"});
 }
 
 Future<Map<String, dynamic>> dbUpdateUser(image, Db db, displayName, bio, newUsername, ethAddress) async {
