@@ -1,168 +1,225 @@
-import 'package:beepo/widgets/toast.dart';
-import 'package:flutter/foundation.dart';
-import 'package:hive/hive.dart';
-import 'package:xmtp/xmtp.dart' as xmtp;
-import 'package:web3dart/credentials.dart';
-import 'dart:developer' as dev;
+// import 'dart:convert';
 
-class XMTPProvider extends ChangeNotifier {
-  final String _conversationId = 'chat';
-  final Box _box = Hive.box('beepo2.0');
+// import 'package:Beepo/providers/account_provider.dart';
+// import 'package:Beepo/widgets/toast.dart';
+// import 'package:flutter/foundation.dart'; 
+// import 'package:get/get.dart';
+// import 'package:hive/hive.dart';
+// import 'package:xmtp/xmtp.dart' as xmtp;
+// import 'package:web3dart/credentials.dart';
+// import 'dart:developer' as dev;
 
-  late xmtp.Client client;
-  List<xmtp.Conversation> _conversations = [];
-  bool _isLoadingConversations = false;
+// class XMTPProvider extends ChangeNotifier {
+//   XMTPProvider() {
+//     getClient('null');
+//   }
 
-  // Getter for conversations
-  List<xmtp.Conversation> get conversations => _conversations;
+//   final String _conversationId = 'chat';
+//   String? ethPrivateKey;
+//   final Box _box = Hive.box('Beepo2.0');
 
-  // Getter for isLoadingConversations
-  bool get isLoadingConversations => _isLoadingConversations;
+//   late xmtp.Client client;
+//   List<xmtp.Conversation> _conversations = [];
+//   bool _isLoadingConversations = false;
 
-  //get client and notify listeners
-  Future<xmtp.Client> getClient(privateKey) async {
-    var key = _box.get('xmpt_key');
-    bool isLoggedIn = _box.get('isLoggedIn', defaultValue: false);
+//   // Getter for conversations
+//   List<xmtp.Conversation> get conversations => _conversations;
 
-    if (isLoggedIn) {
-      if (key != null) {
-        client = await initClientFromKey();
-        notifyListeners();
-        // return client;
-        print('from key client');
-      } else {
-        client = await initClient(privateKey);
-        notifyListeners();
-        // return client;
-        print('new client');
-      }
-    }
-    return client;
-  }
+//   // Getter for isLoadingConversations
+//   bool get isLoadingConversations => _isLoadingConversations;
 
-  //get privatekey
-  Future<xmtp.Client> initClient(String privateKey) async {
-    try {
-      EthPrivateKey credentials = EthPrivateKey.fromHex(privateKey);
+//   getMessages() {
+//     return _box.get('messages');
+//   }
 
-      var api = xmtp.Api.create(host: 'production.xmtp.network');
-      var client =
-          await xmtp.Client.createFromWallet(api, credentials.asSigner());
+//   //get client and notify listeners
+//   Future<xmtp.Client> getClient(String? privateKey) async {
+//     var key = _box.get('xmpt_key');
+//     bool isSignedUp = _box.get('isSignedUp', defaultValue: false);
+//     print(isSignedUp);
 
-      Uint8List key = client.keys.writeToBuffer();
+//     if (isSignedUp) {
+//       if (key != null) {
+//         client = await initClientFromKey();
+//         notifyListeners();
+//       } else {
+//         client = await initClient(privateKey!);
+//         notifyListeners();
+//       }
+//     }
+//     await listConversations();
+//     return client;
+//   }
 
-      Hive.box('beepo2.0').put('xmpt_key', key);
-      // notifyListeners();
-      return client;
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-      rethrow;
-    }
-  }
+//   Future<xmtp.Client> initClient(String privateKey) async {
+//     try {
+//       EthPrivateKey credentials = EthPrivateKey.fromHex(privateKey);
 
-  //init client from key
-  Future<xmtp.Client> initClientFromKey() async {
-    Uint8List key = Hive.box('beepo2.0').get('xmpt_key');
+//       var api = xmtp.Api.create(host: 'production.xmtp.network');
+//       var client = await xmtp.Client.createFromWallet(api, credentials.asSigner());
 
-    var privateKey = xmtp.PrivateKeyBundle.fromBuffer(key);
+//       Uint8List key = client.keys.writeToBuffer();
 
-    var api = xmtp.Api.create(host: 'production.xmtp.network');
-    var client = await xmtp.Client.createFromKeys(api, privateKey);
+//       Hive.box('Beepo2.0').put('xmpt_key', key);
+//       // notifyListeners();
+//       return client;
+//     } catch (e) {
+//       if (kDebugMode) {
+//         print({"error xmtp 61": e});
+//       }
+//       rethrow;
+//     }
+//   }
 
-    print(client.address);
-    return client;
-  }
+//   Future<xmtp.Client> initClientFromKey() async {
+//     Uint8List key = Hive.box('Beepo2.0').get('xmpt_key');
 
-  //list conversations stream
-  Stream<xmtp.DecodedMessage> streamMessages({xmtp.Conversation? convo}) {
-    return client.streamMessages(convo!);
-  }
+//     print('object');
+//     var privateKey = xmtp.PrivateKeyBundle.fromBuffer(key);
 
-  //send message
-  void sendMessage({xmtp.Conversation? convo, String? content}) async {
-    try {
-      await client.sendMessage(convo!, content!);
+//     var api = xmtp.Api.create(host: 'production.xmtp.network');
+//     client = await xmtp.Client.createFromKeys(api, privateKey);
+//     // await listConversations();
+//     return client;
+//   }
 
-      print('msg sent');
-      notifyListeners();
-    } catch (e) {
-      print(e);
-    }
-  }
+//   //list conversations stream
+//   Stream<xmtp.DecodedMessage> streamMessages({xmtp.Conversation? convo}) {
+//     var mes = client.streamMessages(convo!);
+//     return mes;
+//   }
 
-  // Method to fetch conversations
-  Future<void> fetchConversations(privateKey) async {
-    _isLoadingConversations = true;
-    notifyListeners();
+//   //send message
+//   void sendMessage({xmtp.Conversation? convo, String? content}) async {
+//     try {
+//       await client.sendMessage(convo!, content!);
 
-    _conversations = await listConversations(privateKey);
+//       print('msg sent');
+//       notifyListeners();
+//     } catch (e) {
+//       print(e);
+//     }
+//   }
 
-    _isLoadingConversations = false;
-    notifyListeners();
-  }
+//   Future<void> fetchConversations() async {
+//     _isLoadingConversations = true;
+//     notifyListeners();
+//     _conversations = await listConversations();
+//     _isLoadingConversations = false;
+//     notifyListeners();
+//   }
 
-  //list conversations
-  Future<List<xmtp.Conversation>> listConversations(privateKey) async {
-    try {
-      client = await getClient(privateKey);
-      var convos = await client.listConversations();
-      return convos;
-    } catch (e) {
-      print(e);
-      return [];
-    }
-  }
+//   //list conversations
+//   Future<List<xmtp.Conversation>> listConversations() async {
+//     try {
+//       // client = await getClient(privateKey);
+//       _conversations = await client.listConversations();
+//       notifyListeners();
+//       // print(convos);
+//       return _conversations;
+//     } catch (e) {
+//       print(e);
+//       return [];
+//     }
+//   }
 
-  //list messages
-  Future<List<xmtp.DecodedMessage>> listMessages(
-      {xmtp.Conversation? convo}) async {
-    try {
-      var msgs = await client.listMessages(convo!);
-      return msgs;
-    } catch (e) {
-      print(e);
-      rethrow;
-    }
-  }
+//   //list messages
+//   Future<List<xmtp.DecodedMessage>> listMessages({xmtp.Conversation? convo}) async {
+//     try {
+//       var msgs = await client.listMessages(convo!);
+//       return msgs;
+//     } catch (e) {
+//       print(e);
+//       rethrow;
+//     }
+//   }
 
-  //create new conversation
-  Future<xmtp.Conversation> newConversation(String address,
-      {Map<String, String>? metadata}) async {
-    try {
-      var convo = await client.newConversation(
-        address,
-        conversationId: _conversationId,
-        metadata: metadata!,
-      );
-      notifyListeners();
-      return convo;
-    } catch (e) {
-      showToast('User is not on XMTP network');
-      dev.log(e.toString());
-      rethrow;
-    }
-  }
+//   //create new conversation
+//   Future<xmtp.Conversation> newConversation(String address) async {
+//     try {
+//       var convo = await client.newConversation(
+//         address.trim(),
+//         conversationId: _conversationId,
+//       );
+//       notifyListeners();
+//       return convo;
+//     } catch (e) {
+//       dev.log(e.toString());
+//       if (e.toString().contains('Invalid argument (address)')) {
+//         showToast('Invalid Address Entered');
+//       } else if (e.toString().contains('is not on the XMTP network')) {
+//         showToast('Address is not on XMTP network');
+//       } else if (e.toString().contains('Address has invalid case-characters')) {
+//         showToast('Address has invalid case-characters');
+//       }
+//       rethrow;
+//     }
+//   }
 
-  //check if can chat
-  Future<bool> checkAddress(String address) async {
-    try {
-      return await client.canMessage(address);
-    } catch (e) {
-      return false;
-    }
-  }
+//   //check if can chat
+//   Future<bool> checkAddress(String address) async {
+//     try {
+//       print(client.address);
+//       return await client.canMessage(address);
+//     } catch (e) {
+//       return false;
+//     }
+//   }
 
-  Future<List<xmtp.DecodedMessage>> mostRecentMessage(
-      {List<xmtp.Conversation>? convo}) async {
-    try {
-      var msg = await client.listBatchMessages(convo!, limit: 1);
+//   Future<List<xmtp.DecodedMessage>> mostRecentMessage({List<xmtp.Conversation>? convos}) async {
+//     try {
+//       var msg = await client.listBatchMessages(convos!, limit: 1);
 
-      return msg;
-    } catch (e) {
-      print(e);
-      rethrow;
-    }
-  }
-}
+//       var list = [];
+//       var d = Future.wait(msg.map(
+//         (e) async => jsonEncode({
+//           "convo": jsonEncode(convos.firstWhereOrNull((convo) => convo.topic == e.topic)),
+//           "encoded": e.encoded,
+//           "content": e.content,
+//           "sentAt": e.sentAt,
+//           "id": e.id,
+//           "sender": e.sender,
+//           "topic": e.topic,
+//           "contentType": e.contentType,
+//           "BeepoAcct": await AccountProvider().getUserByAddress(e.sender)
+//         }),
+//       ));
+
+//       print('list');
+//       print(await d);
+//       print('list');
+//       await Hive.box('Beepo2.0').put('messages', (await d));
+
+//       return msg;
+//     } catch (e) {
+//       print('${e.toString()} xmtp 168');
+//       rethrow;
+//     }
+//   }
+
+//   Future<void> saveListMessagesToStorage(xmtp.Conversation convo) async {
+//     try {
+//       var msg = await client.listMessages(convo, limit: 1);
+
+//       await Hive.box('Beepo2.0').put('encryptedSeedPhrase', (msg));
+
+//       msg.map(
+//         (e) => {},
+//       );
+//       var msgJson = {
+//         "content": msg[0].content,
+//         "sentAt": msg[0].sentAt,
+//         "id": msg[0].id,
+//         "sender": msg[0].sender,
+//         "topic": msg[0].topic,
+//         "contentType": msg[0].contentType
+//       };
+// // "topic":msg[0].,
+
+//       print(jsonDecode(msgJson.toString()));
+//     } catch (e) {
+//       print('${e.toString()} xmtp 180');
+//       rethrow;
+//     }
+//   }
+// }

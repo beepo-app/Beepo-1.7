@@ -1,6 +1,6 @@
 {
-    "name": "beepo",
-    "short_name": "beepo",
+    "name": "Beepo",
+    "short_name": "Beepo",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -1,14 +1,16 @@
-import 'package:beepo/constants/constants.dart';
-import 'package:beepo/screens/wallet/token_screen_scan.dart';
-import 'package:beepo/screens/wallet/wallet_screen.dart';
-import 'package:beepo/widgets/app_text.dart';
-import 'package:beepo/widgets/beepo_text_field.dart';
+import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/screens/wallet/token_screen_scan.dart';
+import 'package:Beepo/widgets/app_text.dart';
+import 'package:Beepo/widgets/Beepo_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ReceivedAssetScreen extends StatefulWidget {
-  const ReceivedAssetScreen({super.key});
-
+  final List<dynamic> assets_;
+  const ReceivedAssetScreen({
+    required this.assets_,
+    super.key,
+  });
   @override
   State<ReceivedAssetScreen> createState() => _ReceivedAssetScreenState();
 }
@@ -18,6 +20,7 @@ class _ReceivedAssetScreenState extends State<ReceivedAssetScreen> {
 
   @override
   Widget build(BuildContext context) {
+    List<dynamic> assets = widget.assets_;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -63,7 +66,7 @@ class _ReceivedAssetScreenState extends State<ReceivedAssetScreen> {
             SizedBox(height: 15.h),
             Expanded(
               child: ListView.separated(
-                itemCount: 8,
+                itemCount: assets.length,
                 physics: const AlwaysScrollableScrollPhysics(
                   parent: BouncingScrollPhysics(),
                 ),
@@ -82,17 +85,16 @@ class _ReceivedAssetScreenState extends State<ReceivedAssetScreen> {
                     color: AppColors.white,
                     child: ListTile(
                       onTap: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return const TokenScreenScan();
+                        Navigator.push(context, MaterialPageRoute(builder: (context) {
+                          return TokenScreenScan(data: assets[index]);
                         }));
                       },
-                      leading: Image.asset(AppImages.bCoin),
-                      title: const Row(
+                      leading: Image.network(assets[index]['logoUrl']),
+                      title: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          AppText(text: "Bitcoin"),
-                          AppText(text: "\$622.43"),
+                          AppText(text: assets[index]['displayName']),
+                          AppText(text: assets[index]['bal']),
                         ],
                       ),
                       subtitle: Row(
@@ -100,17 +102,15 @@ class _ReceivedAssetScreenState extends State<ReceivedAssetScreen> {
                         children: [
                           Row(
                             children: [
-                              const AppText(text: "\$30,396"),
+                              AppText(text: '\$${assets[index]['current_price'].toString()}'),
                               SizedBox(width: 8.w),
                               AppText(
-                                text: "+1.97",
-                                color: isColor
-                                    ? AppColors.activeTextColor
-                                    : AppColors.favouriteButtonRed,
+                                text: '${assets[index]['24h_price_change'].toString()}%',
+                                color: assets[index]['24h_price_change'] > 0 ? AppColors.activeTextColor : AppColors.favouriteButtonRed,
                               ),
                             ],
                           ),
-                          const AppText(text: "\$622.43"),
+                          AppText(text: "\$${assets[index]['bal_to_price'].toString()}"),
                         ],
                       ),
                     ),

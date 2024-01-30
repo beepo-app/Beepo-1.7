@@ -1,14 +1,14 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:io';
+import 'dart:convert';
 
-import 'package:beepo/components/bottom_nav.dart';
-import 'package:beepo/providers/account_provider.dart';
-import 'package:beepo/providers/auth_provider.dart';
-import 'package:beepo/providers/wallet_provider.dart';
-import 'package:beepo/providers/xmtp.dart';
-import 'package:beepo/screens/Auth/verify_code.dart';
-import 'package:beepo/widgets/toast.dart';
+import 'package:Beepo/components/bottom_nav.dart';
+import 'package:Beepo/providers/account_provider.dart';
+import 'package:Beepo/providers/auth_provider.dart';
+import 'package:Beepo/providers/wallet_provider.dart';
+import 'package:Beepo/screens/Auth/verify_code.dart';
+import 'package:Beepo/widgets/toast.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -17,18 +17,22 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
 
 import '../../Utils/styles.dart';
-import '../../components/beepo_filled_button.dart';
+import '../../components/Beepo_filled_button.dart';
 
 class PinCode extends StatefulWidget {
-  final File? image;
+  final Uint8List? image;
   final String? name;
+  final Map? data;
+  final String? mnemonic;
   final bool isSignedUp;
   const PinCode({
-    Key? key,
+    super.key,
     this.image,
     this.name,
+    this.data,
+    this.mnemonic,
     this.isSignedUp = true,
-  }) : super(key: key);
+  });
 
   @override
   State<PinCode> createState() => _PinCodeState();
@@ -65,9 +69,7 @@ class _PinCodeState extends State<PinCode> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              widget.isSignedUp
-                  ? "Enter pin to access your account"
-                  : "Create a PIN to protect your\ndata and transactions",
+              widget.isSignedUp ? "Enter pin to access your account" : "Create a PIN to protect your\ndata and transactions",
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: secondaryColor,
@@ -120,9 +122,20 @@ class _PinCodeState extends State<PinCode> {
                     if (widget.image != null) {
                       Get.to(
                         () => VerifyCode(
+                          mnemonic: widget.mnemonic,
                           name: widget.name!,
                           image: widget.image!,
                           pin: otp.text,
+                        ),
+                      );
+                    }
+                    if (widget.data != null) {
+                      Get.to(
+                        () => VerifyCode(
+                          image: base64Decode(widget.data!['response']['image']),
+                          pin: otp.text,
+                          data: widget.data,
+                          name: widget.data!['response']['image'],
                         ),
                       );
                     }
@@ -133,15 +146,12 @@ class _PinCodeState extends State<PinCode> {
                       return;
                     }
 
-                    final walletProvider =
-                        Provider.of<WalletProvider>(context, listen: false);
-                    final accountProvider =
-                        Provider.of<AccountProvider>(context, listen: false);
-                    final xmtpProvider =
-                        Provider.of<XMTPProvider>(context, listen: false);
+                    final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+                    final accountProvider = Provider.of<AccountProvider>(context, listen: false);
+                    // final xmtpProvider = Provider.of<XMTPProvider>(context, listen: false);
 
                     await walletProvider.initWalletState(response);
-                    await xmtpProvider.initClientFromKey();
+                    // await xmtpProvider.initClientFromKey();
                     await accountProvider.initAccountState();
 
                     Get.to(

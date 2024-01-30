@@ -1,4 +1,4 @@
-import 'package:beepo/constants/constants.dart';
+import 'package:Beepo/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -95,8 +95,7 @@ class CallTab extends StatelessWidget {
                         ),
                         Icon(
                           Icons.phone_callback,
-                          color:
-                              callRecieved == true ? Colors.red : Colors.green,
+                          color: callRecieved == true ? Colors.red : Colors.green,
                           size: 20,
                         ),
                       ],

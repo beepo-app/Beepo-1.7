@@ -1,18 +1,19 @@
-import 'package:beepo/Utils/styles.dart';
-import 'package:beepo/components/beepo_filled_button.dart';
-import 'package:beepo/constants/constants.dart';
-import 'package:beepo/screens/wallet/phrase_screen.dart';
-import 'package:beepo/widgets/app_text.dart';
+import 'package:Beepo/Utils/styles.dart';
+import 'package:Beepo/components/Beepo_filled_button.dart';
+import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/screens/wallet/phrase_screen.dart';
+import 'package:Beepo/widgets/app_text.dart';
+import 'package:Beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 
 class PhraseConfirmationScreen extends StatefulWidget {
   const PhraseConfirmationScreen({Key? key}) : super(key: key);
 
   @override
-  State<PhraseConfirmationScreen> createState() =>
-      _PhraseConfirmationScreenState();
+  State<PhraseConfirmationScreen> createState() => _PhraseConfirmationScreenState();
 }
 
 class _PhraseConfirmationScreenState extends State<PhraseConfirmationScreen> {
@@ -123,9 +124,11 @@ class _PhraseConfirmationScreenState extends State<PhraseConfirmationScreen> {
               BeepoFilledButtons(
                 text: "Proceed",
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return const WalletPhraseScreen();
-                  }));
+                  if (value1 == true && value2 == true && value3 == true && value4 == true) {
+                    Get.to(() => const WalletPhraseScreen());
+                  } else {
+                    showToast('Kindly select all aptions!');
+                  }
                 },
               ),
             ],

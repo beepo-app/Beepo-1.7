@@ -1,28 +1,33 @@
 import 'dart:convert';
-import 'dart:io';
-import 'package:beepo/components/beepo_filled_button.dart';
-import 'package:beepo/components/bottom_nav.dart';
-import 'package:beepo/providers/account_provider.dart';
-import 'package:beepo/providers/wallet_provider.dart';
-import 'package:beepo/providers/xmtp.dart';
-import 'package:beepo/services/encryption.dart';
-import 'package:beepo/utils/styles.dart';
+import 'package:Beepo/components/Beepo_filled_button.dart';
+import 'package:Beepo/components/bottom_nav.dart';
+import 'package:Beepo/providers/account_provider.dart';
+import 'package:Beepo/providers/wallet_provider.dart';
+
+import 'package:Beepo/services/encryption.dart';
+import 'package:Beepo/session/foreground_session.dart';
+import 'package:Beepo/utils/styles.dart';
+import 'package:Beepo/widgets/commons.dart';
+import 'package:Beepo/widgets/toast.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
 import 'package:web3dart/web3dart.dart';
+import 'package:xmtp/xmtp.dart';
 
 class VerifyCode extends StatefulWidget {
-  final File image;
+  final Map? data;
+  final Uint8List image;
   final String name;
+  final String? type;
   final String pin;
-  const VerifyCode(
-      {key, required this.image, required this.name, required this.pin})
-      : super(key: key);
+  final String? mnemonic;
+  const VerifyCode({key, required this.image, this.mnemonic, this.data, this.type, required this.name, required this.pin}) : super(key: key);
 
   @override
   State<VerifyCode> createState() => _VerifyCodeState();
@@ -101,26 +106,80 @@ class _VerifyCodeState extends State<VerifyCode> {
             BeepoFilledButtons(
               text: 'Continue',
               onPressed: () async {
-                print(widget.pin);
+                //print(widget.pin);
                 if (widget.pin == otp.text) {
-                  final walletProvider =
-                      Provider.of<WalletProvider>(context, listen: false);
-                  final accountProvider =
-                      Provider.of<AccountProvider>(context, listen: false);
-                  final xmtpProvider =
-                      Provider.of<XMTPProvider>(context, listen: false);
+                  fullScreenLoader("Creating Your Account!");
+                  final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+                  final accountProvider = Provider.of<AccountProvider>(context, listen: false);
 
-                  String mnemonic = walletProvider.generateMnemonic();
+                  String mnemonic = widget.mnemonic ?? walletProvider.generateMnemonic();
+
                   String padding = "000000000000";
-                  Encrypted encrypteData =
-                      encryptWithAES('${otp.text}$padding', mnemonic);
+                  Encrypted encrypteData = encryptWithAES('${otp.text}$padding', mnemonic);
+                  var mpcRes = walletProvider.mpcResponse;
+
+                  if (mpcRes != null) {
+                    encrypteData = encryptWithAES('${otp.text}$padding', jsonEncode(mpcRes));
+
+                    // print(mpcRes.privKey);
+                    await walletProvider.initMPCWalletState((mpcRes).toJson());
+
+                    EthereumAddress? ethAddress = walletProvider.ethAddress;
+                    String? btcAddress = walletProvider.btcAddress;
+                    String base64Image = base64Encode(widget.image);
+
+                    if (ethAddress != null && accountProvider.db != null) {
+                      try {
+                        if (widget.data != null) {
+                          await Hive.box('Beepo2.0').put('encryptedSeedPhrase', (encrypteData.base64));
+                          await Hive.box('Beepo2.0').put('base64Image', base64Image);
+                          await Hive.box('Beepo2.0').put('ethAddress', ethAddress.toString());
+                          await Hive.box('Beepo2.0').put('btcAddress', btcAddress);
+                          await Hive.box('Beepo2.0').put('displayName', widget.data!['response']['displayName']);
+                          await Hive.box('Beepo2.0').put('username', widget.data!['response']['username']);
+                          await Hive.box('Beepo2.0').put('isSignedUp', true);
+                        } else {
+                          await accountProvider.createUser(
+                            base64Image,
+                            accountProvider.db,
+                            widget.name,
+                            ethAddress.toString(),
+                            btcAddress,
+                            encrypteData,
+                          );
+                        }
+
+                        EthPrivateKey credentials = EthPrivateKey.fromHex(walletProvider.ethPrivateKey!);
+                        if (session.initialized == false) {
+                          await session.authorize(credentials.asSigner());
+                        }
+                        await accountProvider.initAccountState();
+
+                        Hive.box('Beepo2.0').put('isAutoLockSwitch', true);
+                        Get.back();
+
+                        Get.to(
+                          () => const BottomNavHome(),
+                        );
+                        return;
+                      } catch (e) {
+                        if (kDebugMode) {
+                          print(e.toString());
+                        }
+                      }
+                    }
+                    showToast("An Error Occured Please Try Again Later!");
+                    return;
+                  }
 
                   await walletProvider.initWalletState(mnemonic);
 
-                  EthereumAddress? ethAddress = walletProvider.address;
-                  List<int> imageBytes = await widget.image.readAsBytes();
-                  String base64Image = base64Encode(imageBytes);
+                  EthereumAddress? ethAddress = walletProvider.ethAddress;
+                  String? btcAddress = walletProvider.btcAddress;
+                  String base64Image = base64Encode(widget.image);
 
+                  // print(mpcRes);
+                  // print(mnemonic);
                   if (ethAddress != null && accountProvider.db != null) {
                     try {
                       await accountProvider.createUser(
@@ -128,20 +187,28 @@ class _VerifyCodeState extends State<VerifyCode> {
                         accountProvider.db,
                         widget.name,
                         ethAddress.toString(),
+                        btcAddress,
                         encrypteData,
                       );
 
-                      await xmtpProvider.initClient(walletProvider.privateKey!);
+                      EthPrivateKey credentials = EthPrivateKey.fromHex(walletProvider.ethPrivateKey!);
+                      if (session.initialized == false) {
+                        await session.authorize(credentials.asSigner());
+                      }
+                      await accountProvider.initAccountState();
+
+                      Get.back();
+                      Get.to(
+                        () => const BottomNavHome(),
+                      );
                     } catch (e) {
                       if (kDebugMode) {
                         print(e.toString());
                       }
                     }
                   }
-
-                  Get.to(
-                    () => const BottomNavHome(),
-                  );
+                  showToast("An Error Occured Please Try Again Later!");
+                  return;
                 }
               },
             ),

@@ -1,13 +1,31 @@
-import 'package:beepo/constants/constants.dart';
-import 'package:beepo/screens/wallet/transfer_success.dart';
-import 'package:beepo/utils/styles.dart';
-import 'package:beepo/widgets/app_text.dart';
+import 'dart:convert';
+
+import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/providers/auth_provider.dart';
+import 'package:Beepo/providers/chat_provider.dart';
+import 'package:Beepo/providers/wallet_provider.dart';
+import 'package:Beepo/screens/wallet/transfer_success.dart';
+import 'package:Beepo/session/foreground_session.dart';
+import 'package:Beepo/utils/styles.dart';
+import 'package:Beepo/widgets/app_text.dart';
+import 'package:Beepo/widgets/commons.dart';
+import 'package:Beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:provider/provider.dart';
+import 'package:xmtp/xmtp.dart' as xmtp;
 
 class SendTokenPinScreen extends StatefulWidget {
-  const SendTokenPinScreen({super.key});
+  final Map? txData;
+  final String? type;
+
+  const SendTokenPinScreen({
+    super.key,
+    this.txData,
+    this.type,
+  });
 
   @override
   State<SendTokenPinScreen> createState() => _SendTokenPinScreenState();
@@ -18,6 +36,9 @@ class _SendTokenPinScreenState extends State<SendTokenPinScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    Map? txData = widget.txData;
     return Scaffold(
       backgroundColor: AppColors.backgroundGrey,
       appBar: AppBar(
@@ -61,7 +82,7 @@ class _SendTokenPinScreenState extends State<SendTokenPinScreen> {
             ),
             SizedBox(height: 10.h),
             AppText(
-              text: "1 BNB",
+              text: "${txData!['data']['amount']} ${txData['asset']['ticker']}",
               fontSize: 19.sp,
               fontWeight: FontWeight.w700,
               color: const Color(0xff0e014c),
@@ -75,7 +96,7 @@ class _SendTokenPinScreenState extends State<SendTokenPinScreen> {
             SizedBox(height: 10.h),
             Center(
               child: AppText(
-                text: "0x0E61830c8e35db159eF816868AfcA1388781796e",
+                text: "${txData['data']['address']}",
                 fontSize: 12.sp,
                 color: const Color(0xff0e014c),
               ),
@@ -107,14 +128,45 @@ class _SendTokenPinScreenState extends State<SendTokenPinScreen> {
                 animationDuration: const Duration(milliseconds: 300),
                 enableActiveFill: true,
                 controller: otp,
-                onChanged: (val) {
+                onChanged: (val) async {
                   if (otp.text.length == 4) {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return const TransferSuccess();
-                    }));
+                    String response = await login(otp.text);
+
+                    if (response.contains("Incorrect Pin Entered")) {
+                      showToast("Incorrect Pin Entered");
+                      return;
+                    }
+                    loadingDialog('Sending ${txData['data']['amount']} ${txData['asset']['ticker']}');
+
+                    Map asset = txData['asset'];
+                    Map data = txData['data'];
+
+                    if (asset['native'] != null && asset['native'] == true) {
+                      await walletProvider.sendNativeToken(data['address'], asset['rpc'], data['amount']);
+                    } else {
+                      await walletProvider.sendERC20(asset['contractAddress'], data['address'], asset['rpc'], data['amount']);
+                    }
+
+                    if (widget.type != null) {
+                      List<xmtp.Conversation> conversations = chatProvider.convos!;
+                      List<xmtp.Conversation> convo =
+                          conversations.where((element) => element.peer.toString() == data['address'].toString()).toList();
+
+                      await session.sendMessage(
+                          convo[0].topic,
+                          jsonEncode(
+                            {
+                              'amount': txData['data']['amount'],
+                              'ticker': txData['asset']['ticker'],
+                              "amtInUSD": txData['amtInUSD'],
+                              "inChatTxChat-BeepoV2": true,
+                              "sender": walletProvider.ethAddress.toString(),
+                            },
+                          ));
+                    }
+
+                    Get.to(() => TransferSuccess(txData: txData));
                   }
-                  ;
                 },
               ),
             ),

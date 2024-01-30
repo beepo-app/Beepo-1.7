@@ -56,7 +56,7 @@ extension ImageExtension on String {
 // }
 
 class AppImages {
-  static const String beepo = "assets/icons/beepo.png";
+  static const String Beepo = "assets/icons/Beepo.png";
   static const String bCoin = "assets/bCoin.png";
   static const String chatIcon = "assets/chat_icon.svg";
   static final String logo = 'Vos-logo'.svg;
@@ -180,8 +180,7 @@ class AppStrings {
   static const String deletePost = "Delete Post";
   static const String newMessage = "New Message";
   static const String hideFromProfile = "Hide from profile";
-  static const String turnOffNotification =
-      "Turn off notification for this post";
+  static const String turnOffNotification = "Turn off notification for this post";
   static const String create = "Create";
   static const String follow = "Follow";
   static const String active = "Active";
@@ -209,8 +208,7 @@ class AppStrings {
   static const String recommendedForYou = "Recommended for you";
   static const String regularPriceOptional = "Regular Price (Optional)";
   static const String shopWelcomeText = 'Welcome to Voster Ecommerce Store';
-  static const String selectYourPositionText =
-      'Kindly select your position before you can proceed.';
+  static const String selectYourPositionText = 'Kindly select your position before you can proceed.';
   static const String welcomeBack = "Welcome Back";
   static const String password = 'Password';
   static const String confirmPassword = "Confirm Password";

@@ -1,4 +1,4 @@
-# beepo
+# Beepo
 
 the professionally crafted User interface with a logically inspired user experience for Beepo Application designed in Flutter
 

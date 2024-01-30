@@ -1,12 +1,12 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:beepo/Utils/styles.dart';
+import 'package:Beepo/Utils/styles.dart';
 import 'package:flutter/material.dart';
 
 class NumberKeyboard extends StatelessWidget {
   final Function(int) onPressed;
 
-  const NumberKeyboard({Key? key, required this.onPressed}) : super(key: key);
+  const NumberKeyboard({super.key, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -64,8 +64,7 @@ class _NumberKey extends StatelessWidget {
   final int? number;
   final void Function(int) onPressed;
 
-  const _NumberKey({Key? key, this.number, required this.onPressed})
-      : super(key: key);
+  const _NumberKey({super.key, this.number, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {

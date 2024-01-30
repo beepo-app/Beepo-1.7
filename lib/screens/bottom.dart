@@ -1,8 +1,8 @@
-import 'package:beepo/constants/constants.dart';
+import 'package:Beepo/constants/constants.dart';
 import 'package:flutter/material.dart';
 
-class bottom extends StatelessWidget {
-  const bottom({super.key});
+class Bottom extends StatelessWidget {
+  const Bottom({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +10,7 @@ class bottom extends StatelessWidget {
       body: Container(),
       bottomSheet: Padding(
         padding: const EdgeInsets.only(bottom: 20),
-        child: Container(
+        child: SizedBox(
           height: 100,
           child: Row(
             children: [

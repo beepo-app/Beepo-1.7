@@ -1,15 +1,21 @@
-import 'package:beepo/constants/constants.dart';
-import 'package:beepo/screens/wallet/token_screen_scan.dart';
-import 'package:beepo/screens/wallet/send_token_screen.dart';
-import 'package:beepo/screens/wallet/transfer_info.dart';
-import 'package:beepo/widgets/app_text.dart';
+import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/providers/wallet_provider.dart';
+import 'package:Beepo/screens/wallet/token_screen_scan.dart';
+import 'package:Beepo/screens/wallet/send_token_screen.dart';
+import 'package:Beepo/screens/wallet/transfer_info.dart';
+import 'package:Beepo/widgets/app_text.dart';
+import 'package:Beepo/widgets/toast.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class WalletTokenScreen extends StatefulWidget {
-  const WalletTokenScreen({
-    Key? key,
-  }) : super(key: key);
+  final Map<String, dynamic>? data;
+  const WalletTokenScreen({super.key, this.data});
 
   @override
   State<WalletTokenScreen> createState() => _WalletTokenScreenState();
@@ -18,9 +24,32 @@ class WalletTokenScreen extends StatefulWidget {
 class _WalletTokenScreenState extends State<WalletTokenScreen> {
   bool isPositive = false;
   bool isSent = false;
+  List? tx;
+
+  getAssests() async {
+    try {
+      final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+      var type = widget.data!['native'] ? 'EVM' : 'TOKEN';
+      var data = await walletProvider.getTxs(widget.data!['chainID'], type);
+      setState(() {
+        tx = data['data'];
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    getAssests();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    print(widget.data);
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -28,7 +57,9 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Get.back();
+          },
           icon: const Icon(
             Icons.arrow_back_rounded,
             size: 30,
@@ -40,23 +71,24 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
-                const Text(
-                  '\$54.00',
-                  style: TextStyle(
+                Text(
+                  '\$${widget.data!['current_price'].toString()}',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(width: 5),
-                Text(
-                  "1.87",
-                  style: TextStyle(
-                    color: isPositive ? Colors.green : Colors.red,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                widget.data!['24h_price_change'] != null
+                    ? AppText(
+                        text: '${widget.data!['24h_price_change'].toString()}%',
+                        color: widget.data!['24h_price_change'] > 0 ? AppColors.activeTextColor : AppColors.favouriteButtonRed,
+                      )
+                    : const AppText(
+                        text: 'null',
+                        color: AppColors.favouriteButtonRed,
+                      ),
               ],
             ),
           ),
@@ -76,11 +108,12 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
                 const SizedBox(height: 75),
                 CircleAvatar(
                   radius: 28.r,
+                  backgroundImage: NetworkImage(widget.data!['logoUrl']),
                   backgroundColor: AppColors.backgroundGrey,
                 ),
                 const SizedBox(height: 8),
                 AppText(
-                  text: "35.4789 CELO",
+                  text: "${widget.data!['bal']} ${widget.data!['ticker']}",
                   fontSize: 20.sp,
                   color: AppColors.white,
                 ),
@@ -95,9 +128,8 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
                           angle: 24.5,
                           child: IconButton(
                             onPressed: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return const SendToken();
+                              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                return SendToken(data: widget.data!);
                               }));
                             },
                             icon: const Icon(
@@ -120,9 +152,8 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
                       children: [
                         IconButton(
                           onPressed: () {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) {
-                              return const TokenScreenScan();
+                            Navigator.push(context, MaterialPageRoute(builder: (context) {
+                              return TokenScreenScan(data: widget.data!);
                             }));
                           },
                           icon: const Icon(
@@ -159,12 +190,15 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
               color: AppColors.secondaryColor,
             ),
             subtitle: AppText(
-              text: "wallet address",
+              text: widget.data!['address'],
               fontSize: 12.sp,
               color: AppColors.secondaryColor,
             ),
             trailing: IconButton(
-              onPressed: () {},
+              onPressed: () async {
+                await Clipboard.setData(ClipboardData(text: widget.data!['address']));
+                showToast('Address Copied To Clipboard!');
+              },
               icon: const Icon(
                 Icons.copy_outlined,
                 size: 30,
@@ -176,73 +210,86 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
             height: 2,
             thickness: 2,
           ),
-          Expanded(
-              child: Container(
-            color: Colors.white,
-            width: double.infinity,
-            child: ListView.builder(
-              shrinkWrap: true,
-              padding: EdgeInsets.zero,
-              itemCount: 4,
-              itemBuilder: (ctx, i) {
-                return ListTile(
-                  minLeadingWidth: 10,
-                  leading: Icon(
-                    isSent ? Icons.arrow_upward : Icons.arrow_downward,
-                    size: 20,
-                    color: isSent ? Colors.red : Colors.green,
+          tx == null
+              ? SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: 200,
+                  child: const Center(
+                    child: CircularProgressIndicator(),
                   ),
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return const TransferInfo();
-                    }));
-                  },
-                  title: Row(
-                    children: [
-                      Expanded(
-                        child: AppText(
-                          text: "Deposit",
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.secondaryColor,
-                        ),
+                )
+              : tx!.isEmpty
+                  ? SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      height: 200,
+                      child: const Center(
+                        child: Text('No Transactions Yet!'),
                       ),
-                      AppText(
-                        text: "+0.23 CELO",
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                        color: isSent ? Colors.red : Colors.green,
+                    )
+                  : Expanded(
+                      child: Container(
+                      color: Colors.white,
+                      width: double.infinity,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        itemCount: tx!.length,
+                        itemBuilder: (ctx, i) {
+                          return ListTile(
+                            minLeadingWidth: 10,
+                            leading: Icon(
+                              tx![i]['type'] == 'Send' ? Icons.arrow_upward : Icons.arrow_downward,
+                              size: 20,
+                              color: tx![i]['type'] == 'Send' ? Colors.red : Colors.green,
+                            ),
+                            onTap: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                return TransferInfo(data: {'tx': tx![i], 'data': widget.data});
+                              }));
+                            },
+                            title: Row(
+                              children: [
+                                Expanded(
+                                  child: AppText(
+                                    text: "${tx![i]['type']}",
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.secondaryColor,
+                                  ),
+                                ),
+                                AppText(
+                                  text: "${tx![i]['value']} ${widget.data!['ticker']}",
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: tx![i]['type'] == 'Send' ? Colors.red : Colors.green,
+                                ),
+                              ],
+                            ),
+                            subtitle: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    tx![i]['type'] == 'Send' ? "To: ${tx![i]['to']}" : "From: ${tx![i]['from']}",
+                                    style: TextStyle(
+                                      color: const Color(0x7f0e014c),
+                                      fontSize: 10.sp,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  DateFormat('M-d-yyyy hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(tx![i]['timestamp'] * 1000)),
+                                  style: TextStyle(
+                                    color: const Color(0x7f0e014c),
+                                    fontSize: 10.sp,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
-                    ],
-                  ),
-                  subtitle: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          isSent
-                              ? "To: From: 0x0G61836c8e35db159eG816868AfcA1388781856j"
-                              : "From: From: 0x0G61836c8e35db159eG816868AfcA1388781856j",
-                          style: const TextStyle(
-                            color: Color(0x7f0e014c),
-                            fontSize: 11,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        "${DateTime.now()}",
-                        style: TextStyle(
-                          color: const Color(0x7f0e014c),
-                          fontSize: 7.sp,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          )),
+                    )),
         ],
       ),
     );

@@ -1,15 +1,34 @@
-import 'package:beepo/components/beepo_filled_button.dart';
-import 'package:beepo/constants/constants.dart';
-import 'package:beepo/screens/Auth/pin_code.dart';
-import 'package:beepo/widgets/app_text.dart';
+import 'package:Beepo/components/Beepo_filled_button.dart';
+import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/screens/wallet/send_token_pin_screen.dart';
+import 'package:Beepo/widgets/app_text.dart';
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class SendTokenConfirmScreen extends StatelessWidget {
-  const SendTokenConfirmScreen({super.key});
+class SendTokenConfirmScreen extends StatefulWidget {
+  final Map? asset;
+  final Map? data;
+  final String? type;
+  const SendTokenConfirmScreen({
+    this.asset,
+    this.data,
+    super.key,
+    this.type,
+  });
 
   @override
+  State<SendTokenConfirmScreen> createState() => _SendTokenConfirmScreenState();
+}
+
+class _SendTokenConfirmScreenState extends State<SendTokenConfirmScreen> {
+  @override
   Widget build(BuildContext context) {
+    Map data = widget.data!;
+    Map asset = widget.asset!;
+
+    //print(asset);
+
     return Scaffold(
       backgroundColor: AppColors.backgroundGrey,
       appBar: AppBar(
@@ -53,7 +72,7 @@ class SendTokenConfirmScreen extends StatelessWidget {
             ),
             SizedBox(height: 10.h),
             AppText(
-              text: "1 BNB",
+              text: "${data['amount']} ${asset["ticker"]}",
               fontSize: 19.sp,
               fontWeight: FontWeight.w700,
               color: const Color(0xff0e014c),
@@ -67,14 +86,14 @@ class SendTokenConfirmScreen extends StatelessWidget {
             SizedBox(height: 10.h),
             Center(
               child: AppText(
-                text: "0x0E61830c8e35db159eF816868AfcA1388781796e",
+                text: data['address'],
                 fontSize: 12.sp,
                 color: const Color(0xff0e014c),
               ),
             ),
             SizedBox(height: 50.h),
             AppText(
-              text: "Gas Fee: 0.0098 SOL",
+              text: "Gas Fee: ${data['gasFee']} ${asset["nativeTicker"]}",
               fontSize: 14.sp,
               color: const Color(0xff0e014c),
             ),
@@ -83,8 +102,15 @@ class SendTokenConfirmScreen extends StatelessWidget {
               text: "Approve",
               color: const Color(0xff0e014c),
               onPressed: () {
+                String amtInUSD = (Decimal.tryParse(data['amount']) == null
+                        ? int.tryParse(data['amount']) == null
+                            ? 0
+                            : int.tryParse(data['amount'])! * int.parse(asset['current_price'])
+                        : Decimal.tryParse(data['amount'])! * Decimal.parse(asset['current_price'].toString()))
+                    .toString();
+
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const PinCode();
+                  return SendTokenPinScreen(txData: {'asset': asset, 'data': data, "amtInUSD": amtInUSD}, type: widget.type);
                 }));
               },
             ),

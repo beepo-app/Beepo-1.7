@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:beepo/Constants/constants.dart';
+import 'package:Beepo/Constants/constants.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 const kwelcomeTextStyle = TextStyle(
@@ -52,10 +52,7 @@ TextStyle searchHintTextStyle(BuildContext context) => TextStyle(
       color: Theme.of(context).primaryColorLight,
     );
 
-TextStyle followersFollowingTextStyle = TextStyle(
-    color: AppColors.primaryColor,
-    fontWeight: FontWeight.w500,
-    fontSize: 12.sp);
+TextStyle followersFollowingTextStyle = TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.w500, fontSize: 12.sp);
 
 final gradientBoxDecoration = BoxDecoration(
   gradient: AppColors.pinkTextGradient,

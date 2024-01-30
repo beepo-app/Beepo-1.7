@@ -1,4 +1,4 @@
-import 'package:beepo/constants/constants.dart';
+import 'package:Beepo/constants/constants.dart';
 
 class AppImages {
   static const String beepo = "assets/icons/beepo.png";

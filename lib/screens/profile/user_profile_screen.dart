@@ -1,15 +1,21 @@
-import 'package:beepo/components/beepo_filled_button.dart';
-import 'package:beepo/constants/constants.dart';
-import 'package:beepo/screens/messaging/chats/chat_dm_screen.dart';
-import 'package:beepo/screens/messaging/chats/chat_tab.dart';
-import 'package:beepo/widgets/app_text.dart';
+import 'dart:convert';
+
+import 'package:Beepo/components/Beepo_filled_button.dart';
+import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/screens/messaging/chats/chat_tab.dart';
+import 'package:Beepo/widgets/app_text.dart';
+import 'package:Beepo/widgets/cache_memory_image_provider.dart';
+import 'package:Beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:iconsax/iconsax.dart';
 
 class UserProfileScreen extends StatefulWidget {
-  const UserProfileScreen({super.key});
+  final Map? user;
+  const UserProfileScreen({super.key, this.user});
 
   @override
   State<UserProfileScreen> createState() => _UserProfileScreenState();
@@ -20,6 +26,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var user = widget.user;
+
     return Scaffold(
       backgroundColor: AppColors.backgroundGrey,
       appBar: AppBar(
@@ -47,34 +55,44 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         child: Column(
           children: [
             Container(
-              height: 200.h,
               width: double.infinity,
               color: const Color(0xff0e014c),
+              padding: const EdgeInsets.only(bottom: 50),
               child: Column(
                 children: [
-                  CircleAvatar(
-                    backgroundColor: AppColors.white,
-                    radius: 40.r,
-                    backgroundImage: const AssetImage("assets/profile.png"),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: Image(
+                      image: CacheMemoryImageProvider(user!['image'], base64Decode(user['image'])),
+                      height: 100,
+                      width: 100,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                   SizedBox(height: 8.h),
                   AppText(
-                    text: "Sylvia Chirah",
+                    text: user['displayName'],
                     fontSize: 20.sp,
                     color: AppColors.white,
                     fontWeight: FontWeight.w700,
                   ),
                   SizedBox(height: 2.h),
                   AppText(
-                    text: "Sylvia Chirah",
+                    text: "@${user['username']}",
                     fontSize: 10.sp,
                     color: AppColors.white,
                     fontWeight: FontWeight.w200,
                   ),
+                  SizedBox(
+                    height: 15.h,
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           IconButton(
                             icon: const Icon(
@@ -83,10 +101,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                               color: Color(0xffFF9C34),
                             ),
                             onPressed: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return const ChatDmScreen();
-                              }));
+                              // Navigator.push(context,
+                              //     MaterialPageRoute(builder: (context) {
+                              //   // return const ChatDmScreen();
+                              // }));
                             },
                           ),
                           SizedBox(height: 2.h),
@@ -113,8 +131,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     content: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 20),
+                                      padding: const EdgeInsets.symmetric(vertical: 20),
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
@@ -137,13 +154,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                           BeepoFilledButtons(
                                             text: 'Block',
                                             onPressed: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) {
-                                                  return const ChatTab();
-                                                }),
-                                              );
+                                              showToast('Coming Soon!');
+                                              Get.back();
                                             },
                                             color: AppColors.secondaryColor,
                                           ),
@@ -179,17 +191,16 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   children: [
                     Center(
                       child: AppText(
-                        text:
-                            "Hi there, am a blockchain developer \nbut i sell shoes, WAGMI😍 Buy my Shoes",
+                        text: user['bio'] ?? 'No Bio Available',
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w400,
                         textAlign: TextAlign.center,
                         color: const Color(0xff0e014c),
                       ),
                     ),
-                    SizedBox(height: 20.h),
+                    SizedBox(height: 10.h),
                     const Divider(),
-                    SizedBox(height: 20.h),
+                    SizedBox(height: 10.h),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [

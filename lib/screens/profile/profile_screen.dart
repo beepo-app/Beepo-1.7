@@ -1,22 +1,41 @@
-import 'package:beepo/constants/constants.dart';
-import 'package:beepo/screens/profile/account_type_screen.dart';
-import 'package:beepo/screens/profile/edit_profile_screen.dart';
-import 'package:beepo/screens/profile/user_profile_security_screen.dart';
-import 'package:beepo/widgets/app_text.dart';
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/providers/account_provider.dart';
+import 'package:Beepo/screens/profile/account_type_screen.dart';
+import 'package:Beepo/screens/profile/edit_profile_screen.dart';
+import 'package:Beepo/screens/profile/user_profile_security_screen.dart';
+import 'package:Beepo/widgets/app_text.dart';
+import 'package:Beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:iconsax/iconsax.dart';
+import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+//import 'package:iconsax/iconsax.dart';
+import 'package:provider/provider.dart';
 
-import '../../Utils/styles.dart';
+import 'about.dart';
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+//import '../../Utils/styles.dart';
+
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
 
   @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  @override
   Widget build(BuildContext context) {
+    final accountProvider = Provider.of<AccountProvider>(context, listen: true);
+    String img = Hive.box('Beepo2.0').get('base64Image');
+    Uint8List imageBytes = base64Decode(img);
+
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 60.h,
+        toolbarHeight: 45.h,
         centerTitle: true,
         backgroundColor: AppColors.secondaryColor,
         title: Padding(
@@ -37,9 +56,14 @@ class ProfileScreen extends StatelessWidget {
             children: [
               Align(
                 alignment: Alignment.center,
-                child: CircleAvatar(
-                  radius: 60.r,
-                  backgroundImage: const AssetImage("assets/profile_img1.png"),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: Image.memory(
+                    imageBytes,
+                    height: 120,
+                    width: 120,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               SizedBox(height: 15.h),
@@ -47,22 +71,21 @@ class ProfileScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   AppText(
-                    text: "Yomna Elema",
+                    text: accountProvider.displayName!,
                     color: const Color(0xffff9c34),
                     fontSize: 20.sp,
                   ),
                   SizedBox(width: 8.w),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return const EditProfileScreen();
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return EditProfileScreen(imageBytes: imageBytes);
                       }));
                     },
                     child: const Icon(
                       Icons.mode_edit_outlined,
                       color: Color(0xffff9c34),
-                      size: 20,
+                      size: 28,
                     ),
                   ),
                 ],
@@ -70,7 +93,7 @@ class ProfileScreen extends StatelessWidget {
               SizedBox(height: 2.h),
               Center(
                 child: AppText(
-                  text: "@username",
+                  text: "@${accountProvider.username!}",
                   color: AppColors.secondaryColor,
                   fontSize: 13.sp,
                 ),
@@ -78,14 +101,14 @@ class ProfileScreen extends StatelessWidget {
               SizedBox(height: 40.h),
               InkWell(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return const AccountTypeScreen();
-                      },
-                    ),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) {
+                  //       return const AccountTypeScreen();
+                  //     },
+                  //   ),
+                  // );
                 },
                 child: Row(
                   children: [
@@ -159,49 +182,9 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 15.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: AppText(
-                        text: "Help",
-                        fontSize: 14.sp,
-                        color: AppColors.secondaryColor,
-                      ),
-                    ),
-                  ),
-                  const Icon(
-                    Icons.arrow_forward,
-                    color: Color(0x660e014c),
-                    size: 20,
-                  ),
-                ],
-              ),
-              SizedBox(height: 15.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: AppText(
-                        text: "Notification",
-                        fontSize: 14.sp,
-                        color: AppColors.secondaryColor,
-                      ),
-                    ),
-                  ),
-                  const Icon(
-                    Icons.arrow_forward,
-                    color: Color(0x660e014c),
-                    size: 20,
-                  ),
-                ],
-              ),
-              SizedBox(height: 15.h),
               InkWell(
                 onTap: () {
-                  print('https://www.beepoapp.net');
+                  Get.to(() => const About());
                 },
                 child: Row(
                   children: [

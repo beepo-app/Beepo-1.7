@@ -7,7 +7,7 @@
 
 
 // class AuthService {
-//   Box box = Hive.box('beepo');
+//   Box box = Hive.box('Beepo');
 
 //   //GETTERS
 //   String get userPin => box.get('PIN', defaultValue: '');
