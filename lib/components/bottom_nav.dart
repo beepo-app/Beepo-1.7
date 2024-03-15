@@ -18,7 +18,7 @@ class _BottomNavHomeState extends State<BottomNavHome> {
   List<Widget> body = [
     const ChatTabsScreen(),
     const WalletScreen(),
-    // const Browser(),
+    const Browser(),
     const ProfileScreen(),
   ];
 
@@ -50,10 +50,10 @@ class _BottomNavHomeState extends State<BottomNavHome> {
               icon: Icon(Iconsax.wallet),
               label: 'Wallet',
             ),
-            // BottomNavigationBarItem(
-            //   icon: Icon(Iconsax.global),
-            //   label: 'Browser',
-            // ),
+            BottomNavigationBarItem(
+              icon: Icon(Iconsax.global),
+              label: 'Browser',
+            ),
             BottomNavigationBarItem(
               icon: Icon(Iconsax.security_user),
               label: 'Profile',

@@ -6,6 +6,7 @@ import 'package:Beepo/providers/chat_provider.dart';
 import 'package:Beepo/providers/wallet_provider.dart';
 import 'package:Beepo/screens/Auth/lock_screen.dart';
 import 'package:Beepo/screens/auth/onboarding_screen.dart';
+import 'package:Beepo/screens/browser/browser.dart';
 import 'package:Beepo/services/notification_service.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/foundation.dart';
@@ -96,7 +97,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             useMaterial3: true,
           ),
           home: isSignedUp == null
-              ? const OnboardingScreen()
+              ? const Browser()
               : isSignedUp!
                   ? const LockScreen()
                   : const OnboardingScreen(),

@@ -1,4 +1,4 @@
-package com.example.Beepo
+package com.beepo.app
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 
