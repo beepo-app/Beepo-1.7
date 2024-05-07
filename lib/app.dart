@@ -34,7 +34,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   checkState() async {
     try {
-      final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+      final walletProvider =
+          Provider.of<WalletProvider>(context, listen: false);
       final chatProvider = Provider.of<ChatProvider>(context, listen: false);
       final acctProvider = Provider.of<AccountProvider>(context, listen: false);
 
@@ -58,7 +59,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    _lifeCycleListener = AppLifecycleListener(onStateChange: _onLifeCycleChanged);
+    _lifeCycleListener =
+        AppLifecycleListener(onStateChange: _onLifeCycleChanged);
     checkState();
     super.initState();
   }
@@ -97,7 +99,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             useMaterial3: true,
           ),
           home: isSignedUp == null
-              ? const Browser()
+              ? const OnboardingScreen()
               : isSignedUp!
                   ? const LockScreen()
                   : const OnboardingScreen(),
@@ -156,7 +158,8 @@ void sendWalletNotification(Map data) async {
 void sendNotification(xmtp.DecodedMessage msg) async {
   List? users = Hive.box('Beepo2.0').get('allUsers', defaultValue: null);
 
-  Map? d = users?.firstWhereOrNull((element) => element['ethAddress'].toString() == msg.sender.toString());
+  Map? d = users?.firstWhereOrNull(
+      (element) => element['ethAddress'].toString() == msg.sender.toString());
 
   try {
     await NotificationService.showNotifications(
@@ -164,7 +167,12 @@ void sendNotification(xmtp.DecodedMessage msg) async {
       body: msg.content.toString(),
       summary: '',
       img: d?['image'],
-      payload: {'navigate': "true", 'topic': msg.topic, 'userData': jsonEncode(d), 'sender': msg.sender.toString()},
+      payload: {
+        'navigate': "true",
+        'topic': msg.topic,
+        'userData': jsonEncode(d),
+        'sender': msg.sender.toString()
+      },
     );
   } catch (e) {
     print(e);

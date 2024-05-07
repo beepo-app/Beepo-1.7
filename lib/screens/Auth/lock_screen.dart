@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:Beepo/components/bottom_nav.dart';
 import 'package:Beepo/providers/account_provider.dart';
 import 'package:Beepo/providers/auth_provider.dart';
+import 'package:Beepo/providers/chat_provider.dart';
 import 'package:Beepo/providers/wallet_provider.dart';
 import 'package:Beepo/session/foreground_session.dart';
 import 'package:Beepo/widgets/commons.dart';
@@ -73,35 +74,46 @@ class _LockScreenState extends State<LockScreen> {
 
   logUserIn(response) async {
     final walletProvider = Provider.of<WalletProvider>(context, listen: false);
-    final accountProvider = Provider.of<AccountProvider>(context, listen: false);
+    final accountProvider =
+        Provider.of<AccountProvider>(context, listen: false);
+    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
 
     fullScreenLoader("Logging In!");
+
+    print('object 0000');
 
     if (response.contains('privKey')) {
       Map data = jsonDecode(response);
       await walletProvider.initMPCWalletState(data);
       await accountProvider.initAccountState();
-      EthPrivateKey credentials = EthPrivateKey.fromHex(walletProvider.ethPrivateKey!);
+      var ds = await chatProvider.getAllStatus(accountProvider.db);
+      print(ds);
+      EthPrivateKey credentials =
+          EthPrivateKey.fromHex(walletProvider.ethPrivateKey!);
       if (session.initialized == false) {
         await session.authorize(credentials.asSigner());
       }
 
       Future.delayed(const Duration(seconds: 3));
       Hive.box('Beepo2.0').put('isLocked', false);
+
       Get.to(
         () => const BottomNavHome(),
       );
       return;
     }
-
+    print('object 111');
     await walletProvider.initWalletState(response);
-    EthPrivateKey credentials = EthPrivateKey.fromHex(walletProvider.ethPrivateKey!);
+    EthPrivateKey credentials =
+        EthPrivateKey.fromHex(walletProvider.ethPrivateKey!);
 
     if (session.initialized == false) {
       await session.authorize(credentials.asSigner());
     }
     //await session.authorize(credentials.asSigner());
     await accountProvider.initAccountState();
+    var ds = await chatProvider.getAllStatus(accountProvider.db);
+    print(ds);
     Hive.box('Beepo2.0').put('isLocked', false);
     Get.to(
       () => const BottomNavHome(),

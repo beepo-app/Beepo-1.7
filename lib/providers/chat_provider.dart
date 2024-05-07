@@ -19,7 +19,8 @@ class ChatProvider extends ChangeNotifier {
     return d;
   }
 
-  Future<String> uploadStatus(base64Image, db, text, privacy, ethAddress) async {
+  Future<String> uploadStatus(
+      base64Image, db, text, privacy, ethAddress) async {
     try {
       await dbUploadStatus(base64Image, db, text, privacy, ethAddress);
       saveStatuses(db);
@@ -49,6 +50,7 @@ class ChatProvider extends ChangeNotifier {
 
   void saveStatuses(db) async {
     var event = await dbGetAllStatus(db);
+    print(event);
     try {
       var data = event.map((e) {
         return {
@@ -73,7 +75,8 @@ class ChatProvider extends ChangeNotifier {
     // print(event.length);
     if (event.isEmpty) return;
     if (messages != null && messages!.isNotEmpty) {
-      if (messages![0].sentAt == event[0].sentAt && messages![0].sender == event[0].sender) {
+      if (messages![0].sentAt == event[0].sentAt &&
+          messages![0].sender == event[0].sender) {
         messages = event;
         notifyListeners();
         return;

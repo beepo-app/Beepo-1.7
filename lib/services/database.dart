@@ -7,7 +7,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:web3dart/web3dart.dart';
 
-dbCreateUser(String image, Db db, String displayName, String ethAddress, btcAddress, encrypteData) async {
+dbCreateUser(String image, Db db, String displayName, String ethAddress,
+    btcAddress, encrypteData) async {
   if (db.state == State.closed) {
     await db.open();
   }
@@ -33,7 +34,8 @@ dbCreateUser(String image, Db db, String displayName, String ethAddress, btcAddr
         },
       );
 
-      await Hive.box('Beepo2.0').put('encryptedSeedPhrase', (encrypteData.base64));
+      await Hive.box('Beepo2.0')
+          .put('encryptedSeedPhrase', (encrypteData.base64));
       await Hive.box('Beepo2.0').put('base64Image', image);
       await Hive.box('Beepo2.0').put('ethAddress', ethAddress);
       await Hive.box('Beepo2.0').put('btcAddress', btcAddress);
@@ -46,7 +48,8 @@ dbCreateUser(String image, Db db, String displayName, String ethAddress, btcAddr
       }
     }
   } else {
-    await dbCreateUser(image, db, displayName, ethAddress, btcAddress, encrypteData);
+    await dbCreateUser(
+        image, db, displayName, ethAddress, btcAddress, encrypteData);
   }
 
   // await db.close();
@@ -100,11 +103,10 @@ Future<List<dynamic>> dbGetAllStatus(Db db) async {
   if (db.state == State.closed) {
     await db.open();
   }
-
-  print('gtting all statueses 111');
-
   var status = db.collection('status');
-  return status.find().toList();
+  return status.find({
+    "expireAt": {r'$lt': DateTime.now()}
+  }).toList();
 }
 
 dbDeleteStatus(Db db, newData, String ethAddress) async {
@@ -134,7 +136,35 @@ dbDeleteStatus(Db db, newData, String ethAddress) async {
   }
 }
 
-dbUpdateStatusViewsCount(Db db, String id, String ethAddress, String viewerAddress) async {
+dbAutoDeleteStatus(Db db, newData, String ethAddress) async {
+  if (db.state == State.closed) {
+    await db.open();
+  }
+  var status = db.collection('status');
+
+  try {
+    var d;
+    if (newData?.length <= 1) {
+      d = await status.deleteOne(where.eq("ethAddress", ethAddress));
+      showToast('Deleted Successfully!');
+      return;
+    }
+    print('deleting');
+    d = await status.updateOne(
+      where.eq("ethAddress", ethAddress),
+      ModifierBuilder().set('data', newData),
+      writeConcern: WriteConcern.majority,
+    );
+    showToast('Deleted Successfully!');
+  } catch (e) {
+    if (kDebugMode) {
+      print(e);
+    }
+  }
+}
+
+dbUpdateStatusViewsCount(
+    Db db, String id, String ethAddress, String viewerAddress) async {
   if (db.state == State.closed) {
     await db.open();
   }
@@ -162,7 +192,44 @@ dbUpdateStatusViewsCount(Db db, String id, String ethAddress, String viewerAddre
   }
 }
 
-dbUploadStatus(String image, Db db, String message, String privacy, String ethAddress) async {
+dbClaimDailyPoints(String points, Db db, String ethAddress) async {
+  if (db.state == State.closed) {
+    await db.open();
+  }
+  var pointsCollection = db.collection('points');
+
+  var data = await pointsCollection.findOne(where.eq('ethAddress', ethAddress));
+
+  if (data == null) {
+    try {
+      var d = await pointsCollection.insertOne(
+        {'ethAddress': ethAddress, "points": points},
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+
+    showToast('Uploaded Successfully!');
+    return;
+  }
+
+  var newData = (data['points']) + points;
+
+  try {
+    var d = await pointsCollection.replaceOne(
+        where.eq("ethAddress", ethAddress), data);
+    showToast('Uploaded Successfully!');
+  } catch (e) {
+    if (kDebugMode) {
+      print(e);
+    }
+  }
+}
+
+dbUploadStatus(String image, Db db, String message, String privacy,
+    String ethAddress) async {
   if (db.state == State.closed) {
     await db.open();
   }
@@ -172,8 +239,9 @@ dbUploadStatus(String image, Db db, String message, String privacy, String ethAd
 
   if (data == null) {
     try {
-      status.createIndex(keys: {'expireAt': 1, 'expireAfterSeconds': 0});
-      DateTime finalTime = DateTime.now().add(const Duration(hours: 0, minutes: 0, seconds: 59));
+      status.createIndex(keys: {'expireAt': 1, 'expireAfterSeconds': 5000});
+      DateTime finalTime =
+          DateTime.now().add(const Duration(hours: 3, minutes: 0, seconds: 0));
 
       var d = await status.insertOne(
         {
@@ -184,8 +252,8 @@ dbUploadStatus(String image, Db db, String message, String privacy, String ethAd
               'message': message,
               'ethAddress': ethAddress,
               'image': image,
-              'createdAt': DateTime.now(),
               "expireAt": finalTime,
+              'createdAt': DateTime.now(),
               "id": "$ethAddress-0"
             }
           ],
@@ -203,16 +271,16 @@ dbUploadStatus(String image, Db db, String message, String privacy, String ethAd
   }
 
   List oldData = data['data'];
-
-  DateTime finalTime = DateTime.now().add(const Duration(hours: 0, minutes: 0, seconds: 59));
+  DateTime finalTime =
+      DateTime.now().add(const Duration(hours: 3, minutes: 0, seconds: 59));
 
   oldData.add({
     'privacy': privacy,
     'message': message,
     'ethAddress': ethAddress,
     'image': image,
-    'createdAt': DateTime.now(),
     "expireAt": finalTime,
+    'createdAt': DateTime.now(),
     "id": "$ethAddress-${oldData.length}"
   });
 
@@ -252,22 +320,26 @@ Future<Map<String, dynamic>> dbDeleteUser(Db db, ethAddress) async {
   return ({'error': "An error occured!"});
 }
 
-Future<Map<String, dynamic>> dbUpdateUser(image, Db db, displayName, bio, newUsername, ethAddress) async {
+Future<Map<String, dynamic>> dbUpdateUser(
+    image, Db db, displayName, bio, newUsername, ethAddress) async {
   await db.open();
   var usersCollection = db.collection('users');
 
-  var oldData = await usersCollection.findOne(where.eq("username", newUsername));
+  var oldData =
+      await usersCollection.findOne(where.eq("username", newUsername));
 
   if (oldData == null) {
     try {
-      Map<String, dynamic>? newData = await usersCollection.findOne(where.eq("ethAddress", ethAddress));
+      Map<String, dynamic>? newData =
+          await usersCollection.findOne(where.eq("ethAddress", ethAddress));
       if (newData != null) {
         newData['username'] = newUsername;
         newData['displayName'] = displayName;
         newData['bio'] = bio;
         newData['image'] = image;
 
-        await usersCollection.replaceOne(where.eq("ethAddress", ethAddress), newData);
+        await usersCollection.replaceOne(
+            where.eq("ethAddress", ethAddress), newData);
 
         await Hive.box('Beepo2.0').put('base64Image', image);
         await Hive.box('Beepo2.0').put('displayName', displayName);
@@ -360,7 +432,8 @@ Future<Map> dbGetUserByAddres(Db db, EthereumAddress ethAddress) async {
   await db.open();
   var usersCollection = db.collection('users');
   try {
-    Map? val = await usersCollection.findOne(where.eq("ethAddress", ethAddress.toString()));
+    Map? val = await usersCollection
+        .findOne(where.eq("ethAddress", ethAddress.toString()));
 
     if (val == null) {
       // await db.close();

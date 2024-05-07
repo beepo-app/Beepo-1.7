@@ -33,15 +33,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   List<Map<String, String>> body = [
     {
       'image': 'assets/onboard1.png',
-      'text': 'Beepo  is a decentralized social media platform that prioritizes anonymity with small-scale business capabilities.'
+      'text':
+          'Beepo  is a decentralized social media platform that prioritizes anonymity with small-scale business capabilities.'
     },
     {
       'image': 'assets/onboard2.png',
-      'text': 'Beepo enables seamless communication and media sharing with family and friends using an enhanced E2EE protocol.'
+      'text':
+          'Beepo enables seamless communication and media sharing with family and friends using an enhanced E2EE protocol.'
     },
     {
       'image': 'assets/onboard3.png',
-      'text': 'Beepo is designed to meet the needs of small scale business owners and freelancers for secured and decentralized transactions'
+      'text':
+          'Beepo is designed to meet the needs of small scale business owners and freelancers for secured and decentralized transactions'
     }
   ];
 
@@ -61,6 +64,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   // static get image => null;
   @override
   Widget build(BuildContext context) {
+    print('object');
+    print('object');
     return PopScope(
       canPop: false,
       child: Scaffold(
@@ -124,11 +129,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           curve: Curves.easeInOut,
                         );
                       }
-                      controller.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeIn);
+                      controller.nextPage(
+                          duration: const Duration(milliseconds: 500),
+                          curve: Curves.easeIn);
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all(
-                        check == body.length - 1 ? secondaryColor : primaryColor,
+                        check == body.length - 1
+                            ? secondaryColor
+                            : primaryColor,
                       ),
                       shape: MaterialStateProperty.all(
                         RoundedRectangleBorder(
