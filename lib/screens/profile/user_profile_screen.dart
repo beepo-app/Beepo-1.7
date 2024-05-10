@@ -181,6 +181,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   ),
                 ],
               ),
+
+                
+
             ),
             SizedBox(height: 20.h),
             Expanded(
@@ -189,6 +192,27 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                     const Text('Beeper Rank',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xff0E014C),
+                    ),),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                      const Row(
+                        children: [
+                       Icon(Icons.star,
+                        color: Colors.amber,
+                      ),
+                          Text('Novice')
+                        ],
+
+
+                      ),
+
+
                     Center(
                       child: AppText(
                         text: user['bio'] ?? 'No Bio Available',

@@ -58,6 +58,7 @@ class _BottomNavHomeState extends State<BottomNavHome> {
               icon: Icon(Iconsax.security_user),
               label: 'Profile',
             ),
+            
           ],
         ),
       ),
