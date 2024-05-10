@@ -192,42 +192,6 @@ dbUpdateStatusViewsCount(
   }
 }
 
-dbClaimDailyPoints(String points, Db db, String ethAddress) async {
-  if (db.state == State.closed) {
-    await db.open();
-  }
-  var pointsCollection = db.collection('points');
-
-  var data = await pointsCollection.findOne(where.eq('ethAddress', ethAddress));
-
-  if (data == null) {
-    try {
-      var d = await pointsCollection.insertOne(
-        {'ethAddress': ethAddress, "points": points},
-      );
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-    }
-
-    showToast('Uploaded Successfully!');
-    return;
-  }
-
-  var newData = (data['points']) + points;
-
-  try {
-    var d = await pointsCollection.replaceOne(
-        where.eq("ethAddress", ethAddress), data);
-    showToast('Uploaded Successfully!');
-  } catch (e) {
-    if (kDebugMode) {
-      print(e);
-    }
-  }
-}
-
 dbUploadStatus(String image, Db db, String message, String privacy,
     String ethAddress) async {
   if (db.state == State.closed) {
@@ -445,4 +409,219 @@ Future<Map> dbGetUserByAddres(Db db, EthereumAddress ethAddress) async {
   } catch (e) {
     return {'error acctProv': e};
   }
+}
+
+dbClaimDailyPoints(int points, String ethAddress) async {
+  Db db = await Db.create(
+      'mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
+
+  if (db.state == State.closed || db.state == State.init) {
+    await db.open();
+  }
+
+  var pointsCollection = db.collection('points');
+
+  var data = await pointsCollection.findOne(where.eq('ethAddress', ethAddress));
+
+  if (data == null) {
+    try {
+      var d = await pointsCollection.insertOne(
+        {
+          'ethAddress': ethAddress,
+          "points": points,
+          "lastClaim": DateTime.now(),
+          'referrals': 0
+        },
+      );
+    } catch (e) {
+      print(e);
+    }
+    return;
+  }
+
+  data['points'] = data['points'] + points;
+  DateTime lastClaim = data['lastClaim'] ?? DateTime.now();
+  if (lastClaim.compareTo(lastClaim.add(const Duration(days: 1))) >= 0) {
+    data['lastClaim'] = DateTime.now();
+    try {
+      var d = await pointsCollection.replaceOne(
+          where.eq("ethAddress", ethAddress), data);
+      print('Daily points claimed Successfully!');
+      dbFetchPoints(ethAddress);
+    } catch (e) {
+      print(e);
+    }
+  }
+  print("Please come back after " +
+      (lastClaim.add(const Duration(days: 1)).hour).toString() +
+      " hours!");
+}
+
+dbWithdrawPoints(String ethAddress) async {
+  Db db = await Db.create(
+      'mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
+
+  if (db.state == State.closed || db.state == State.init) {
+    await db.open();
+  }
+
+  var pointsCollection = db.collection('points');
+
+  var data = await pointsCollection.findOne(where.eq('ethAddress', ethAddress));
+
+  if (data == null) {
+    try {
+      return {'error': "data not found"};
+    } catch (e) {
+      print(e);
+    }
+    return;
+  }
+
+  data['points'] = 0;
+
+  try {
+    var d = await pointsCollection.replaceOne(
+        where.eq("ethAddress", ethAddress), data);
+    print('Points Withdrwn Successfully!');
+    return dbFetchPoints(ethAddress);
+  } catch (e) {
+    print(e);
+  }
+}
+
+dbUpdatePoints(int points, String ethAddress) async {
+  Db db = await Db.create(
+      'mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
+
+  if (db.state == State.closed || db.state == State.init) {
+    await db.open();
+  }
+
+  var pointsCollection = db.collection('points');
+
+  var data = await pointsCollection.findOne(where.eq('ethAddress', ethAddress));
+
+  if (data == null) {
+    try {
+      var d = await pointsCollection.insertOne(
+        {
+          'ethAddress': ethAddress,
+          "points": points,
+          "lastClaim": DateTime.now(),
+          'referrals': 0
+        },
+      );
+    } catch (e) {
+      print(e);
+    }
+    return;
+  }
+
+  data['points'] = data['points'] + points;
+
+  try {
+    var d = await pointsCollection.replaceOne(
+        where.eq("ethAddress", ethAddress), data);
+
+    return dbFetchPoints(ethAddress);
+  } catch (e) {
+    print(e);
+  }
+
+//   print('Please come back after 24 hours!');
+}
+
+dbFetchPoints(String ethAddress) async {
+  Db db = await Db.create(
+      'mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
+
+  if (db.state == State.closed || db.state == State.init) {
+    await db.open();
+  }
+
+  print('running fetch points');
+  var pointsCollection = db.collection('points');
+
+  var data = await pointsCollection.findOne(where.eq('ethAddress', ethAddress));
+
+  if (data == null) {
+    try {
+      return {"error": 'not found'};
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  try {
+    return data;
+  } catch (e) {
+    print(e);
+  }
+}
+
+dbUpdateReferrals(String refId) async {
+  Db db = await Db.create(
+      'mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
+
+  if (db.state == State.closed || db.state == State.init) {
+    await db.open();
+  }
+
+  print('update refs fetch points');
+  var pointsCollection = db.collection('points');
+  var usersCollection = db.collection('users');
+
+  var data = await usersCollection.findOne(where.eq('username', refId));
+
+  if (data == null) {
+    try {
+      return {"error": 'user not found'};
+    } catch (e) {
+      print(e);
+    }
+    return;
+  }
+
+  var ethAddress = data['ethAddress'];
+  var pointsData =
+      await pointsCollection.findOne(where.eq('ethAddress', ethAddress));
+
+  if (pointsData == null) {
+    try {
+      var d = await pointsCollection.insertOne(
+        {'ethAddress': ethAddress, "points": 100, 'referrals': 1},
+      );
+    } catch (e) {
+      print(e);
+    }
+    return;
+  }
+
+  pointsData['points'] = pointsData['points'] + 100;
+  pointsData['referrals'] = pointsData['referrals'] + 1;
+
+  try {
+    var d = await pointsCollection.replaceOne(
+        where.eq("ethAddress", ethAddress), pointsData);
+    print('ref added Successfully!');
+    dbFetchPoints(ethAddress);
+  } catch (e) {
+    print(e);
+  }
+
+  print('Please come back after 24 hours!');
+}
+
+String setRank(int points) {
+  if (points < 5000) return 'Novice';
+  if (points >= 5000 && points < 10000) return 'Amateur';
+  if (points >= 10000 && points < 18000) return 'Senior';
+  if (points >= 18000 && points < 30000) return 'Enthusiast';
+  if (points >= 30000 && points < 38000) return 'Professional';
+  if (points >= 38000 && points < 50000) return 'Expert';
+  if (points >= 50000 && points < 100000) return 'Leader';
+  if (points >= 100000 && points < 500000) return 'Veteran';
+  if (points >= 500000) return 'Master';
+  return "";
 }
