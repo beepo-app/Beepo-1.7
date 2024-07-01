@@ -11,7 +11,8 @@ import 'background_manager.dart';
 /// This contains the dispatch table for all [XmtpIsolate] commands.
 /// When a command is received by the isolate in the background,
 /// these are invoked to hand it off to the [BackgroundManager].
-Map<String, Future<Object?> Function(BackgroundManager manager, List args)> _commands = {
+Map<String, Future<Object?> Function(BackgroundManager manager, List args)>
+    _commands = {
   "kill": (manager, args) => manager.stop(),
   "refreshConversations": (manager, args) => manager.refreshConversations(
         since: args[0] as DateTime?,
@@ -54,7 +55,8 @@ void _mainXmtpIsolate(List args) async {
         var args = command[2] ?? [];
         debugPrint('worker received command: $method');
         try {
-          checkState(_commands.containsKey(method), message: "unknown command $method");
+          checkState(_commands.containsKey(method),
+              message: "unknown command $method");
           var res = await _commands[method]!(manager, args);
           responsePort.send(["complete", id, true, res]);
         } catch (err) {
@@ -110,8 +112,10 @@ class XmtpIsolate {
     // it as the [sendToWorker] named port.
 
     _foregroundReceiver.listenForResponses();
-    await Isolate.spawn(_mainXmtpIsolate, [_foregroundReceiver.port.sendPort, keys]);
-    var sendToWorker = await _foregroundReceiver.listeningForPort.future.timeout(commandTimeout);
+    await Isolate.spawn(
+        _mainXmtpIsolate, [_foregroundReceiver.port.sendPort, keys]);
+    var sendToWorker = await _foregroundReceiver.listeningForPort.future
+        .timeout(commandTimeout);
     return XmtpIsolate.fromPort(sendToWorker);
   }
 
@@ -171,7 +175,8 @@ class ForegroundReceiver {
   /// the returned [Future] will fail with a [TimeoutException].
   Future<T> waitForIdentifiedResult<T>(String id) {
     Completer<T> completer = (pending[id] = Completer<T>());
-    return completer.future.timeout(_commandTimeout)..whenComplete(() => pending.remove(id));
+    return completer.future.timeout(_commandTimeout)
+      ..whenComplete(() => pending.remove(id));
   }
 
   /// This listens for messages from the background isolate.
@@ -193,7 +198,8 @@ class ForegroundReceiver {
           if (type == "port") {
             _handlePort(res[1] as SendPort);
           } else if (type == "complete") {
-            _handleCompletion(res[1] as String, res[2] as bool, res[3] as Object?);
+            _handleCompletion(
+                res[1] as String, res[2] as bool, res[3] as Object?);
           } else {
             debugPrint('unexpected response: $res');
           }

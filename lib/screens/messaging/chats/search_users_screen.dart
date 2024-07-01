@@ -52,13 +52,19 @@ class _SearchScreenState extends State<SearchScreen> {
     if (searchOnStoppedTyping != null) {
       setState(() => searchOnStoppedTyping!.cancel());
     }
-    setState(() => searchOnStoppedTyping = Timer(duration, () => search(value)));
+    setState(
+        () => searchOnStoppedTyping = Timer(duration, () => search(value)));
   }
 
   search(value) async {
     if (selectedItem == 'Usernames') {
       if (value.length > 0) {
-        List datas = users.where((e) => e['username'].toString().toLowerCase().startsWith(value.toString().toLowerCase())).toList();
+        List datas = users
+            .where((e) => e['username']
+                .toString()
+                .toLowerCase()
+                .startsWith(value.toString().toLowerCase()))
+            .toList();
 
         if (datas.isNotEmpty) {
           setState(() {
@@ -75,7 +81,7 @@ class _SearchScreenState extends State<SearchScreen> {
           searching = true;
         });
         // Map res = await session.newConversation(value);
-        // print(res);
+        // beepoPrint(res);
         // if (res['success']) {
         //   setState(() {
         //     searching = false;
@@ -137,7 +143,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                   child: Text(
                                     item,
                                     style: const TextStyle(
-                                      color: AppColors.black, // Change text color
+                                      color:
+                                          AppColors.black, // Change text color
                                     ),
                                   ),
                                 );
@@ -176,31 +183,37 @@ class _SearchScreenState extends State<SearchScreen> {
                     top: 10.h,
                   ),
                   child: TextField(
-                    style: const TextStyle(color: Color(0xff697077), fontSize: 15),
+                    style:
+                        const TextStyle(color: Color(0xff697077), fontSize: 15),
                     controller: _textFieldController,
                     onChanged: _onChangeHandler,
                     decoration: InputDecoration(
                       hintText: 'Start Typing ...',
-                      hintStyle: const TextStyle(color: Color(0xff697077), fontSize: 15),
+                      hintStyle: const TextStyle(
+                          color: Color(0xff697077), fontSize: 15),
                       prefixIcon: const Icon(
                         Icons.search,
                         color: AppColors.white,
                       ),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                      contentPadding: EdgeInsets.symmetric(
+                          horizontal: 16.w, vertical: 10.h),
                       border: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.white, width: 0.0),
+                        borderSide:
+                            const BorderSide(color: Colors.white, width: 0.0),
                         borderRadius: BorderRadius.all(
                           Radius.circular(10.r),
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.white, width: 0.0),
+                        borderSide:
+                            const BorderSide(color: Colors.white, width: 0.0),
                         borderRadius: BorderRadius.all(
                           Radius.circular(10.r),
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.white, width: 0.0),
+                        borderSide:
+                            const BorderSide(color: Colors.white, width: 0.0),
                         borderRadius: BorderRadius.all(
                           Radius.circular(10.r),
                         ),
@@ -218,30 +231,40 @@ class _SearchScreenState extends State<SearchScreen> {
               padding: const EdgeInsets.all(15),
               width: double.infinity,
               child: Column(
-                mainAxisAlignment: isFound ? MainAxisAlignment.start : MainAxisAlignment.center,
+                mainAxisAlignment: isFound
+                    ? MainAxisAlignment.start
+                    : MainAxisAlignment.center,
                 children: [
                   searching
                       ? const CircularProgressIndicator()
                       : isFound
-                          ? selectedItem == "Usernames" && userDataArray!.length > 1
+                          ? selectedItem == "Usernames" &&
+                                  userDataArray!.length > 1
                               ? ListView.builder(
                                   shrinkWrap: true,
                                   padding: EdgeInsets.zero,
                                   itemCount: userDataArray!.length,
                                   itemBuilder: (context, index) {
-                                    Future<String> newConvo(userAddress) async => await session.newConversation(userAddress);
+                                    Future<String> newConvo(
+                                            userAddress) async =>
+                                        await session
+                                            .newConversation(userAddress);
 
                                     return GestureDetector(
                                       onTap: () async {
-                                        String userAddress = userDataArray![index]['ethAddress'].toString();
+                                        String userAddress =
+                                            userDataArray![index]['ethAddress']
+                                                .toString();
 
                                         if (me == userAddress) {
-                                          showToast('no self-messaging, sender and recipient must be different');
+                                          showToast(
+                                              'no self-messaging, sender and recipient must be different');
                                           return;
                                         }
 
                                         try {
-                                          var data = await newConvo(userAddress);
+                                          var data =
+                                              await newConvo(userAddress);
                                           Get.to(
                                             () => ChatDmScreen(
                                               topic: data,
@@ -250,8 +273,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                             ),
                                           );
                                         } catch (e) {
-                                          if (e.toString().contains('no self-messaging')) {
-                                            showToast('no self-messaging, sender and recipient must be different');
+                                          if (e
+                                              .toString()
+                                              .contains('no self-messaging')) {
+                                            showToast(
+                                                'no self-messaging, sender and recipient must be different');
                                             return;
                                           }
                                         }
@@ -262,9 +288,12 @@ class _SearchScreenState extends State<SearchScreen> {
                                         child: Row(
                                           children: [
                                             ClipRRect(
-                                              borderRadius: BorderRadius.circular(100),
+                                              borderRadius:
+                                                  BorderRadius.circular(100),
                                               child: Image.memory(
-                                                base64Decode(userDataArray![index]['image']),
+                                                base64Decode(
+                                                    userDataArray![index]
+                                                        ['image']),
                                                 height: 45,
                                                 width: 45,
                                                 fit: BoxFit.cover,
@@ -276,18 +305,25 @@ class _SearchScreenState extends State<SearchScreen> {
                                             Row(
                                               children: [
                                                 Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                      userDataArray![index]['displayName'],
+                                                      userDataArray![index]
+                                                          ['displayName'],
                                                       maxLines: 1,
-                                                      overflow: TextOverflow.ellipsis,
-                                                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: const TextStyle(
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.w700),
                                                     ),
                                                     Text(
                                                       '@${userDataArray![index]['username']}',
                                                       maxLines: 1,
-                                                      overflow: TextOverflow.ellipsis,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
                                                       style: const TextStyle(
                                                         fontSize: 14,
                                                       ),
@@ -304,12 +340,18 @@ class _SearchScreenState extends State<SearchScreen> {
                               : GestureDetector(
                                   onTap: () async {
                                     if (selectedItem == "Usernames") {
-                                      String userAddress = userDataArray![0]['ethAddress'].toString();
+                                      String userAddress = userDataArray![0]
+                                              ['ethAddress']
+                                          .toString();
 
-                                      Future<String> newConvo(userAddress) async => await session.newConversation(userAddress);
+                                      Future<String> newConvo(
+                                              userAddress) async =>
+                                          await session
+                                              .newConversation(userAddress);
 
                                       if (me == userAddress) {
-                                        showToast('no self-messaging, sender and recipient must be different');
+                                        showToast(
+                                            'no self-messaging, sender and recipient must be different');
                                         return;
                                       }
 
@@ -323,8 +365,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                           ),
                                         );
                                       } catch (e) {
-                                        if (e.toString().contains('no self-messaging')) {
-                                          showToast('no self-messaging, sender and recipient must be different');
+                                        if (e
+                                            .toString()
+                                            .contains('no self-messaging')) {
+                                          showToast(
+                                              'no self-messaging, sender and recipient must be different');
                                           return;
                                         }
                                       }
@@ -344,19 +389,25 @@ class _SearchScreenState extends State<SearchScreen> {
                                       children: [
                                         selectedItem == 'Usernames'
                                             ? ClipRRect(
-                                                borderRadius: BorderRadius.circular(100),
+                                                borderRadius:
+                                                    BorderRadius.circular(100),
                                                 child: Image.memory(
-                                                  base64Decode(userDataArray![0]['image']),
+                                                  base64Decode(userDataArray![0]
+                                                      ['image']),
                                                   height: 45,
                                                   width: 45,
                                                   fit: BoxFit.cover,
                                                 ),
                                               )
                                             : CircleAvatar(
-                                                backgroundColor: ColorUtils.stringToColor(address!),
+                                                backgroundColor:
+                                                    ColorUtils.stringToColor(
+                                                        address!),
                                                 child: Text(
-                                                  _textFieldController.text.substring(0, 2),
-                                                  style: const TextStyle(color: Colors.white),
+                                                  _textFieldController.text
+                                                      .substring(0, 2),
+                                                  style: const TextStyle(
+                                                      color: Colors.white),
                                                 ),
                                               ),
                                         const SizedBox(
@@ -365,21 +416,32 @@ class _SearchScreenState extends State<SearchScreen> {
                                         selectedItem == 'Usernames'
                                             ? Row(
                                                 mainAxisSize: MainAxisSize.max,
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
                                                 children: [
                                                   Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
                                                     children: [
                                                       Text(
-                                                        userDataArray![0]['displayName'],
+                                                        userDataArray![0]
+                                                            ['displayName'],
                                                         maxLines: 1,
-                                                        overflow: TextOverflow.ellipsis,
-                                                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style: const TextStyle(
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w700),
                                                       ),
                                                       Text(
                                                         '@${userDataArray![0]['username']}',
                                                         maxLines: 1,
-                                                        overflow: TextOverflow.ellipsis,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
                                                         style: const TextStyle(
                                                           fontSize: 14,
                                                         ),
@@ -392,7 +454,10 @@ class _SearchScreenState extends State<SearchScreen> {
                                                 '${_textFieldController.text.substring(0, 3)}...${_textFieldController.text.substring(_textFieldController.text.length - 7, _textFieldController.text.length)}',
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
-                                                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                                                style: const TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                        FontWeight.w500),
                                               ),
                                       ],
                                     ),

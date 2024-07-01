@@ -1,4 +1,5 @@
 import 'package:Beepo/services/database.dart';
+import 'package:Beepo/utils/logger.dart';
 import 'package:async/async.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -14,11 +15,12 @@ class AccountProvider extends ChangeNotifier {
 
   Future<String> initDB() async {
     try {
-      db = await Db.create('mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
+      db = await Db.create(
+          'mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
       await db!.open();
       notifyListeners();
       getAllUsers();
-      print('DB init');
+      beepoPrint('DB init');
       return "DB init";
     } catch (e) {
       return ('Act Prov19  ${e.toString()}');
@@ -43,15 +45,15 @@ class AccountProvider extends ChangeNotifier {
   }
 
   Future<Map> getAllUsers() async {
-    print('running');
+    beepoPrint('running');
     try {
-      print('running 22222');
+      beepoPrint('running 22222');
       Map data = await dbGetAllUsers(db!);
-      print(data);
+      beepoPrint(data);
       return {'success': "done"};
     } catch (e) {
       if (kDebugMode) {
-        print(e);
+        beepoPrint(e);
         return ({'error': e.toString()});
       }
     }
@@ -60,13 +62,14 @@ class AccountProvider extends ChangeNotifier {
 
   Future<Map> getUser() async {
     try {
-      db ??= await Db.create('mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
+      db ??= await Db.create(
+          'mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
       Map data = await dbGetUser(db!, username!);
-      print(data);
+      beepoPrint(data);
       return {'success': "done"};
     } catch (e) {
       if (kDebugMode) {
-        print(e);
+        beepoPrint(e);
         return ({'error': e.toString()});
       }
     }
@@ -75,26 +78,29 @@ class AccountProvider extends ChangeNotifier {
 
   Future<Map> getUserByAddress(EthereumAddress address) async {
     try {
-      db ??= await Db.create('mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
+      db ??= await Db.create(
+          'mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
       Map data = await dbGetUserByAddres(db!, address);
       return data;
     } catch (e) {
       if (kDebugMode) {
-        print(e);
+        beepoPrint(e);
         return ({'error 63': e.toString()});
       }
     }
     return ({'error': 'Not done'});
   }
 
-  Future<String> createUser(base64Image, db, displayName, ethAddress, btcAddress, encrypteData) async {
+  Future<String> createUser(base64Image, db, displayName, ethAddress,
+      btcAddress, encrypteData) async {
     try {
-      await dbCreateUser(base64Image, db, displayName, ethAddress, btcAddress, encrypteData);
+      await dbCreateUser(
+          base64Image, db, displayName, ethAddress, btcAddress, encrypteData);
 
       return "done";
     } catch (e) {
       if (kDebugMode) {
-        print(e);
+        beepoPrint(e);
         return (e.toString());
       }
     }
@@ -103,7 +109,8 @@ class AccountProvider extends ChangeNotifier {
 
   Future<Map> updateUser(base64Image, db, displayName, bio, newUsername) async {
     try {
-      var data = await dbUpdateUser(base64Image, db, displayName, bio, newUsername, ethAddress);
+      var data = await dbUpdateUser(
+          base64Image, db, displayName, bio, newUsername, ethAddress);
       await initAccountState();
       if (data['error'] == null) {
         return {'success': data};
@@ -112,7 +119,7 @@ class AccountProvider extends ChangeNotifier {
       }
     } catch (e) {
       if (kDebugMode) {
-        print(e);
+        beepoPrint(e);
         return ({'error': e.toString()});
       }
     }
@@ -130,7 +137,7 @@ class AccountProvider extends ChangeNotifier {
       }
     } catch (e) {
       if (kDebugMode) {
-        print(e);
+        beepoPrint(e);
         return ({'error': e.toString()});
       }
     }

@@ -2,6 +2,7 @@ import 'package:Beepo/app.dart';
 
 import 'package:Beepo/services/database.dart';
 import 'package:Beepo/session/foreground_session.dart';
+import 'package:Beepo/utils/logger.dart';
 import 'package:async/async.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -27,7 +28,7 @@ class ChatProvider extends ChangeNotifier {
       return "done";
     } catch (e) {
       if (kDebugMode) {
-        print(e);
+        beepoPrint(e);
         return (e.toString());
       }
     }
@@ -41,7 +42,7 @@ class ChatProvider extends ChangeNotifier {
       return "done";
     } catch (e) {
       if (kDebugMode) {
-        print(e);
+        beepoPrint(e);
         return (e.toString());
       }
     }
@@ -50,7 +51,7 @@ class ChatProvider extends ChangeNotifier {
 
   void saveStatuses(db) async {
     var event = await dbGetAllStatus(db);
-    print(event);
+    beepoPrint(event);
     try {
       var data = event.map((e) {
         return {
@@ -64,15 +65,15 @@ class ChatProvider extends ChangeNotifier {
       statuses = data.toList();
       notifyListeners();
 
-      print(statuses.last['data'].last);
-      print(data.last['data'].last);
+      beepoPrint(statuses.last['data'].last);
+      beepoPrint(data.last['data'].last);
     } catch (e) {
       debugPrint(" chat ln 52 ${e.toString()}");
     }
   }
 
   void updateMessages(List<DecodedMessage> event) async {
-    // print(event.length);
+    // beepoPrint(event.length);
     if (event.isEmpty) return;
     if (messages != null && messages!.isNotEmpty) {
       if (messages![0].sentAt == event[0].sentAt &&
@@ -101,7 +102,7 @@ class ChatProvider extends ChangeNotifier {
 
   Stream<dynamic> findAndWatchAllStatuses(Db? db) {
     if (db != null) {
-      print('hiiiii   2');
+      beepoPrint('hiiiii   2');
       return _useLookupStream(
         () => dbGetAllStatus(db),
         () => dbWatchAllStatus(db),

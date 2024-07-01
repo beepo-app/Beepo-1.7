@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:Beepo/screens/messaging/chats/chat_dm_screen.dart';
 import 'package:Beepo/session/foreground_session.dart';
+import 'package:Beepo/utils/logger.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:Beepo/constants/constants.dart';
 import 'package:flutter/foundation.dart';
@@ -31,7 +32,9 @@ class NotificationService {
         ),
       ],
       channelGroups: [
-        NotificationChannelGroup(channelGroupKey: 'ChatChannelGroup', channelGroupName: 'Chat Group 1'),
+        NotificationChannelGroup(
+            channelGroupKey: 'ChatChannelGroup',
+            channelGroupName: 'Chat Group 1'),
       ],
       debug: true,
     );
@@ -54,10 +57,12 @@ class NotificationService {
 
   static Future<void> onActionReceivedMethod(received) async {
     debugPrint('onreceid no');
-    print(received);
+    beepoPrint(received);
     final payload = received.payload ?? {};
     if (received.buttonKeyInput.length > 0) {
-      session.sendMessage(payload['topic'], received.buttonKeyInput).whenComplete(() => AwesomeNotifications().cancel(received.id));
+      session
+          .sendMessage(payload['topic'], received.buttonKeyInput)
+          .whenComplete(() => AwesomeNotifications().cancel(received.id));
       return;
     }
     if (payload['navigate'] == 'true') {
@@ -72,15 +77,18 @@ class NotificationService {
     }
   }
 
-  static Future<void> onDismissActionReceivedMethod(ReceivedNotification received) async {
+  static Future<void> onDismissActionReceivedMethod(
+      ReceivedNotification received) async {
     debugPrint('on dismissed no');
   }
 
-  static Future<void> onNotificationCreatedMethod(ReceivedNotification received) async {
+  static Future<void> onNotificationCreatedMethod(
+      ReceivedNotification received) async {
     debugPrint('on createdon  no');
   }
 
-  static Future<void> onNotificationDisplayedMethod(ReceivedNotification received) async {
+  static Future<void> onNotificationDisplayedMethod(
+      ReceivedNotification received) async {
     debugPrint('on display no');
   }
 

@@ -22,7 +22,7 @@ class _WalletPhraseScreenState extends State<WalletPhraseScreen> {
     setState(() {
       seedPhrase = walletProvider.mnemonic!.split(' ');
     });
-    //print(seedPhrase);
+    //beepoPrint(seedPhrase);
   }
 
   @override
@@ -125,7 +125,8 @@ class _WalletPhraseScreenState extends State<WalletPhraseScreen> {
                 SizedBox(height: 30.h),
                 BeepoFilledButtons(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
                       return const ProfileScreen();
                     }));
                   },

@@ -57,7 +57,7 @@
 //         body: json.encode(body),
 //       );
 
-//       print(response.body);
+//       beepoPrint(response.body);
 //       if (response.statusCode == 201 || response.statusCode == 200) {
 //         var data = json.decode(response.body);
 
@@ -73,7 +73,7 @@
 //         return false;
 //       }
 //     } catch (e) {
-//       print(e);
+//       beepoPrint(e);
 //       // showToast(e.toString());
 //       return false;
 //     }

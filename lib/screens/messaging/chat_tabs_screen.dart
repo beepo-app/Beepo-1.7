@@ -26,7 +26,8 @@ class ChatTabsScreen extends StatefulWidget {
   State<ChatTabsScreen> createState() => _ChatTabsScreenState();
 }
 
-class _ChatTabsScreenState extends State<ChatTabsScreen> with TickerProviderStateMixin {
+class _ChatTabsScreenState extends State<ChatTabsScreen>
+    with TickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -82,7 +83,7 @@ class _MyTabBarState extends State<MyTabBar> {
   void initState() {
     super.initState();
     widget.controller.addListener(() {
-      // print("CHANGED");
+      // beepoPrint("CHANGED");
       pageIndex = widget.controller.index;
       setState(() {});
     });
@@ -92,7 +93,7 @@ class _MyTabBarState extends State<MyTabBar> {
   void dispose() {
     super.dispose();
     widget.controller.addListener(() {
-      // print("REVERSED");
+      // beepoPrint("REVERSED");
       pageIndex = widget.controller.index;
       // setState(() {});
     });
@@ -175,7 +176,8 @@ class _StatusesState extends State<Statuses> {
 
     String? me = (context.read<AccountProvider>().ethAddress);
 
-    var dd = statuses?.firstWhereOrNull((e) => e['ethAddress'] == me.toString());
+    var dd =
+        statuses?.firstWhereOrNull((e) => e['ethAddress'] == me.toString());
     if (dd != null) {
       statuses?.remove(dd);
       statuses?.add(dd);
@@ -240,7 +242,8 @@ class _StatusesState extends State<Statuses> {
                       itemBuilder: (context, index) {
                         List data = (statuses![index]['data']);
 
-                        var userData = users.firstWhereOrNull((e) => e['ethAddress'] == data.last['ethAddress']);
+                        var userData = users.firstWhereOrNull(
+                            (e) => e['ethAddress'] == data.last['ethAddress']);
 
                         return SizedBox(
                           width: 70,
@@ -251,7 +254,8 @@ class _StatusesState extends State<Statuses> {
                                 padding: EdgeInsets.symmetric(horizontal: 4.w),
                                 child: InkWell(
                                   onTap: () {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (context) {
                                       return BlankStatusScreen(
                                         data: {
                                           'data': statuses,
@@ -272,7 +276,8 @@ class _StatusesState extends State<Statuses> {
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(100),
                                       child: Image(
-                                        image: MemoryImage(base64Decode(data.last['image'])),
+                                        image: MemoryImage(
+                                            base64Decode(data.last['image'])),
                                         fit: BoxFit.cover,
                                       ),
                                     ),
@@ -281,7 +286,9 @@ class _StatusesState extends State<Statuses> {
                               ),
                               SizedBox(height: 6.5.h),
                               Text(
-                                me == (userData['ethAddress']) ? "You" : userData['displayName'] ?? 'hi',
+                                me == (userData['ethAddress'])
+                                    ? "You"
+                                    : userData['displayName'] ?? 'hi',
                                 style: TextStyle(
                                   overflow: TextOverflow.ellipsis,
                                   color: const Color(0xb2ffffff),

@@ -3,6 +3,7 @@ import 'package:Beepo/providers/wallet_provider.dart';
 import 'package:Beepo/screens/wallet/token_screen_scan.dart';
 import 'package:Beepo/screens/wallet/send_token_screen.dart';
 import 'package:Beepo/screens/wallet/transfer_info.dart';
+import 'package:Beepo/utils/logger.dart';
 import 'package:Beepo/widgets/app_text.dart';
 import 'package:Beepo/widgets/toast.dart';
 import 'package:flutter/foundation.dart';
@@ -28,7 +29,8 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
 
   getAssests() async {
     try {
-      final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+      final walletProvider =
+          Provider.of<WalletProvider>(context, listen: false);
       var type = widget.data!['native'] ? 'EVM' : 'TOKEN';
       var data = await walletProvider.getTxs(widget.data!['chainID'], type);
       setState(() {
@@ -36,7 +38,7 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
       });
     } catch (e) {
       if (kDebugMode) {
-        print(e);
+        beepoPrint(e);
       }
     }
   }
@@ -49,7 +51,7 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.data);
+    beepoPrint(widget.data);
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -83,7 +85,9 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
                 widget.data!['24h_price_change'] != null
                     ? AppText(
                         text: '${widget.data!['24h_price_change'].toString()}%',
-                        color: widget.data!['24h_price_change'] > 0 ? AppColors.activeTextColor : AppColors.favouriteButtonRed,
+                        color: widget.data!['24h_price_change'] > 0
+                            ? AppColors.activeTextColor
+                            : AppColors.favouriteButtonRed,
                       )
                     : const AppText(
                         text: 'null',
@@ -128,7 +132,8 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
                           angle: 24.5,
                           child: IconButton(
                             onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
                                 return SendToken(data: widget.data!);
                               }));
                             },
@@ -152,7 +157,8 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
                       children: [
                         IconButton(
                           onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
                               return TokenScreenScan(data: widget.data!);
                             }));
                           },
@@ -196,7 +202,8 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
             ),
             trailing: IconButton(
               onPressed: () async {
-                await Clipboard.setData(ClipboardData(text: widget.data!['address']));
+                await Clipboard.setData(
+                    ClipboardData(text: widget.data!['address']));
                 showToast('Address Copied To Clipboard!');
               },
               icon: const Icon(
@@ -238,13 +245,19 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
                           return ListTile(
                             minLeadingWidth: 10,
                             leading: Icon(
-                              tx![i]['type'] == 'Send' ? Icons.arrow_upward : Icons.arrow_downward,
+                              tx![i]['type'] == 'Send'
+                                  ? Icons.arrow_upward
+                                  : Icons.arrow_downward,
                               size: 20,
-                              color: tx![i]['type'] == 'Send' ? Colors.red : Colors.green,
+                              color: tx![i]['type'] == 'Send'
+                                  ? Colors.red
+                                  : Colors.green,
                             ),
                             onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                return TransferInfo(data: {'tx': tx![i], 'data': widget.data});
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return TransferInfo(
+                                    data: {'tx': tx![i], 'data': widget.data});
                               }));
                             },
                             title: Row(
@@ -258,10 +271,13 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
                                   ),
                                 ),
                                 AppText(
-                                  text: "${tx![i]['value']} ${widget.data!['ticker']}",
+                                  text:
+                                      "${tx![i]['value']} ${widget.data!['ticker']}",
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.w600,
-                                  color: tx![i]['type'] == 'Send' ? Colors.red : Colors.green,
+                                  color: tx![i]['type'] == 'Send'
+                                      ? Colors.red
+                                      : Colors.green,
                                 ),
                               ],
                             ),
@@ -269,7 +285,9 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    tx![i]['type'] == 'Send' ? "To: ${tx![i]['to']}" : "From: ${tx![i]['from']}",
+                                    tx![i]['type'] == 'Send'
+                                        ? "To: ${tx![i]['to']}"
+                                        : "From: ${tx![i]['from']}",
                                     style: TextStyle(
                                       color: const Color(0x7f0e014c),
                                       fontSize: 10.sp,
@@ -278,7 +296,9 @@ class _WalletTokenScreenState extends State<WalletTokenScreen> {
                                 ),
                                 const SizedBox(width: 10),
                                 Text(
-                                  DateFormat('M-d-yyyy hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(tx![i]['timestamp'] * 1000)),
+                                  DateFormat('M-d-yyyy hh:mm a').format(
+                                      DateTime.fromMillisecondsSinceEpoch(
+                                          tx![i]['timestamp'] * 1000)),
                                   style: TextStyle(
                                     color: const Color(0x7f0e014c),
                                     fontSize: 10.sp,

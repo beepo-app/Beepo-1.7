@@ -1,20 +1,21 @@
 import 'dart:convert';
-
-import 'package:Beepo/components/bottom_nav.dart';
 import 'package:Beepo/providers/account_provider.dart';
 import 'package:Beepo/providers/chat_provider.dart';
+import 'package:Beepo/providers/claim_daily_points_provider.dart';
+import 'package:Beepo/providers/total_points_provider.dart';
+import 'package:Beepo/providers/update_active_time.dart';
+import 'package:Beepo/providers/update_referral_provider.dart';
+import 'package:Beepo/providers/updated_points_provider.dart';
 import 'package:Beepo/providers/wallet_provider.dart';
+import 'package:Beepo/providers/withdraw_points_provider.dart';
 import 'package:Beepo/screens/Auth/lock_screen.dart';
 import 'package:Beepo/screens/auth/onboarding_screen.dart';
-import 'package:Beepo/screens/browser/browser.dart';
 import 'package:Beepo/services/notification_service.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:Beepo/utils/logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_utils/src/extensions/export.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:xmtp/xmtp.dart' as xmtp;
@@ -52,7 +53,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       });
     } catch (e) {
       if (kDebugMode) {
-        print(e);
+        beepoPrint(e);
       }
     }
   }
@@ -63,6 +64,24 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         AppLifecycleListener(onStateChange: _onLifeCycleChanged);
     checkState();
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!context.mounted) return;
+
+      final withdrawPoint = context.read<WithDrawPointsProvider>();
+      final updatePoint = context.read<UpdatedPointsProvider>();
+      final pointDaily = context.read<ClaimDailyPointsProvider>();
+      final stayPoint = context.read<UpdateActiveTimeProvider>();
+      final referPoint = context.read<UpdateReferralProvider>();
+
+      context.read<TotalPointProvider>().updateTotalPoints(
+            dailyPoints: pointDaily.points,
+            withdrawPoints: withdrawPoint.points,
+            pointProviderPoints: updatePoint.points,
+            activeTimePoints: stayPoint.points,
+            referralPoints: referPoint.points,
+          );
+    });
   }
 
   @override
@@ -76,7 +95,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
 
     Hive.box('Beepo2.0').watch(key: "isLocked").listen((event) {
-      //print("BoxEvent | key: ${event.key}, value: ${event.value}, deleted: ${event.deleted},");
+      //beepoPrint("BoxEvent | key: ${event.key}, value: ${event.value}, deleted: ${event.deleted},");
       setState(() {
         isLocked = event.value;
       });
@@ -116,27 +135,27 @@ void _onLifeCycleChanged(AppLifecycleState state) async {
   if (isAutoLockSwitch) {
     switch (state) {
       case AppLifecycleState.resumed:
-        print('Back to app');
+        beepoPrint('Back to app');
         break;
       case AppLifecycleState.paused:
         Hive.box('Beepo2.0').put('isLocked', true);
         Get.to(() => const LockScreen());
-        print('left app paused');
+        beepoPrint('left app paused');
         break;
       case AppLifecycleState.detached:
         Hive.box('Beepo2.0').put('isLocked', true);
         Get.to(() => const LockScreen());
-        print('left app detached');
+        beepoPrint('left app detached');
         break;
       case AppLifecycleState.inactive:
         // Hive.box('Beepo2.0').put('isLocked', true);
         // Get.to(() => const LockScreen());
-        print('left app inactive');
+        beepoPrint('left app inactive');
         break;
       case AppLifecycleState.hidden:
         Hive.box('Beepo2.0').put('isLocked', true);
         Get.to(() => const LockScreen());
-        print('left app hidden');
+        beepoPrint('left app hidden');
         break;
     }
   }
@@ -151,7 +170,7 @@ void sendWalletNotification(Map data) async {
       payload: {'navigate': "true", "destination": "Wallet"},
     );
   } catch (e) {
-    print(e);
+    beepoPrint(e);
   }
 }
 
@@ -175,6 +194,6 @@ void sendNotification(xmtp.DecodedMessage msg) async {
       },
     );
   } catch (e) {
-    print(e);
+    beepoPrint(e);
   }
 }

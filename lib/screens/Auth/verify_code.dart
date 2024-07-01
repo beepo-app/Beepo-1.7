@@ -6,6 +6,7 @@ import 'package:Beepo/providers/wallet_provider.dart';
 
 import 'package:Beepo/services/encryption.dart';
 import 'package:Beepo/session/foreground_session.dart';
+import 'package:Beepo/utils/logger.dart';
 import 'package:Beepo/utils/styles.dart';
 import 'package:Beepo/widgets/commons.dart';
 import 'package:Beepo/widgets/toast.dart';
@@ -27,7 +28,15 @@ class VerifyCode extends StatefulWidget {
   final String? type;
   final String pin;
   final String? mnemonic;
-  const VerifyCode({key, required this.image, this.mnemonic, this.data, this.type, required this.name, required this.pin}) : super(key: key);
+  const VerifyCode(
+      {key,
+      required this.image,
+      this.mnemonic,
+      this.data,
+      this.type,
+      required this.name,
+      required this.pin})
+      : super(key: key);
 
   @override
   State<VerifyCode> createState() => _VerifyCodeState();
@@ -106,22 +115,27 @@ class _VerifyCodeState extends State<VerifyCode> {
             BeepoFilledButtons(
               text: 'Continue',
               onPressed: () async {
-                //print(widget.pin);
+                //beepoPrint(widget.pin);
                 if (widget.pin == otp.text) {
                   fullScreenLoader("Creating Your Account!");
-                  final walletProvider = Provider.of<WalletProvider>(context, listen: false);
-                  final accountProvider = Provider.of<AccountProvider>(context, listen: false);
+                  final walletProvider =
+                      Provider.of<WalletProvider>(context, listen: false);
+                  final accountProvider =
+                      Provider.of<AccountProvider>(context, listen: false);
 
-                  String mnemonic = widget.mnemonic ?? walletProvider.generateMnemonic();
+                  String mnemonic =
+                      widget.mnemonic ?? walletProvider.generateMnemonic();
 
                   String padding = "000000000000";
-                  Encrypted encrypteData = encryptWithAES('${otp.text}$padding', mnemonic);
+                  Encrypted encrypteData =
+                      encryptWithAES('${otp.text}$padding', mnemonic);
                   var mpcRes = walletProvider.mpcResponse;
 
                   if (mpcRes != null) {
-                    encrypteData = encryptWithAES('${otp.text}$padding', jsonEncode(mpcRes));
+                    encrypteData = encryptWithAES(
+                        '${otp.text}$padding', jsonEncode(mpcRes));
 
-                    // print(mpcRes.privKey);
+                    // beepoPrint(mpcRes.privKey);
                     await walletProvider.initMPCWalletState((mpcRes).toJson());
 
                     EthereumAddress? ethAddress = walletProvider.ethAddress;
@@ -131,12 +145,18 @@ class _VerifyCodeState extends State<VerifyCode> {
                     if (ethAddress != null && accountProvider.db != null) {
                       try {
                         if (widget.data != null) {
-                          await Hive.box('Beepo2.0').put('encryptedSeedPhrase', (encrypteData.base64));
-                          await Hive.box('Beepo2.0').put('base64Image', base64Image);
-                          await Hive.box('Beepo2.0').put('ethAddress', ethAddress.toString());
-                          await Hive.box('Beepo2.0').put('btcAddress', btcAddress);
-                          await Hive.box('Beepo2.0').put('displayName', widget.data!['response']['displayName']);
-                          await Hive.box('Beepo2.0').put('username', widget.data!['response']['username']);
+                          await Hive.box('Beepo2.0').put(
+                              'encryptedSeedPhrase', (encrypteData.base64));
+                          await Hive.box('Beepo2.0')
+                              .put('base64Image', base64Image);
+                          await Hive.box('Beepo2.0')
+                              .put('ethAddress', ethAddress.toString());
+                          await Hive.box('Beepo2.0')
+                              .put('btcAddress', btcAddress);
+                          await Hive.box('Beepo2.0').put('displayName',
+                              widget.data!['response']['displayName']);
+                          await Hive.box('Beepo2.0').put(
+                              'username', widget.data!['response']['username']);
                           await Hive.box('Beepo2.0').put('isSignedUp', true);
                         } else {
                           await accountProvider.createUser(
@@ -149,7 +169,8 @@ class _VerifyCodeState extends State<VerifyCode> {
                           );
                         }
 
-                        EthPrivateKey credentials = EthPrivateKey.fromHex(walletProvider.ethPrivateKey!);
+                        EthPrivateKey credentials = EthPrivateKey.fromHex(
+                            walletProvider.ethPrivateKey!);
                         if (session.initialized == false) {
                           await session.authorize(credentials.asSigner());
                         }
@@ -164,7 +185,7 @@ class _VerifyCodeState extends State<VerifyCode> {
                         return;
                       } catch (e) {
                         if (kDebugMode) {
-                          print(e.toString());
+                          beepoPrint(e.toString());
                         }
                       }
                     }
@@ -178,8 +199,8 @@ class _VerifyCodeState extends State<VerifyCode> {
                   String? btcAddress = walletProvider.btcAddress;
                   String base64Image = base64Encode(widget.image);
 
-                  // print(mpcRes);
-                  // print(mnemonic);
+                  // beepoPrint(mpcRes);
+                  // beepoPrint(mnemonic);
                   if (ethAddress != null && accountProvider.db != null) {
                     try {
                       await accountProvider.createUser(
@@ -191,7 +212,8 @@ class _VerifyCodeState extends State<VerifyCode> {
                         encrypteData,
                       );
 
-                      EthPrivateKey credentials = EthPrivateKey.fromHex(walletProvider.ethPrivateKey!);
+                      EthPrivateKey credentials =
+                          EthPrivateKey.fromHex(walletProvider.ethPrivateKey!);
                       if (session.initialized == false) {
                         await session.authorize(credentials.asSigner());
                       }
@@ -203,7 +225,7 @@ class _VerifyCodeState extends State<VerifyCode> {
                       );
                     } catch (e) {
                       if (kDebugMode) {
-                        print(e.toString());
+                        beepoPrint(e.toString());
                       }
                     }
                   }

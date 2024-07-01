@@ -1,3 +1,4 @@
+import 'package:Beepo/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 
@@ -24,7 +25,7 @@ class CameraState extends State<Camera> {
       await widget.controller.initialize();
       _capturePhotoAfterDelay();
     } catch (e) {
-      print('Error initializing camera: $e');
+      beepoPrint('Error initializing camera: $e');
     }
   }
 
@@ -34,7 +35,7 @@ class CameraState extends State<Camera> {
       try {
         final image = await widget.controller.takePicture();
         // Do something with the captured image
-        print('Image captured: ${image.path}');
+        beepoPrint('Image captured: ${image.path}');
 
         Future.delayed(const Duration(seconds: 2), () {
           _handleBackPressed();
@@ -44,7 +45,7 @@ class CameraState extends State<Camera> {
           isCaptured = true;
         });
       } catch (e) {
-        print('Error capturing photo: $e');
+        beepoPrint('Error capturing photo: $e');
       }
     }
   }
@@ -63,7 +64,9 @@ class CameraState extends State<Camera> {
 
   @override
   Widget build(BuildContext context) {
-    final scale = 1 / (widget.controller.value.aspectRatio * MediaQuery.of(context).size.aspectRatio);
+    final scale = 1 /
+        (widget.controller.value.aspectRatio *
+            MediaQuery.of(context).size.aspectRatio);
     if (!widget.controller.value.isInitialized) {
       return const Scaffold(
         body: Center(

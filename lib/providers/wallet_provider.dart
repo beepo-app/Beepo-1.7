@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:Beepo/app.dart';
 import 'package:Beepo/networks/erc20.dart';
 import 'package:Beepo/networks/networks.dart';
+import 'package:Beepo/utils/logger.dart';
 import 'package:Beepo/widgets/toast.dart';
 import 'package:decimal/decimal.dart';
 import 'package:ed25519_hd_key/ed25519_hd_key.dart';
@@ -46,7 +47,7 @@ class WalletProvider extends ChangeNotifier {
         await getAssets();
         await watchTxs().then((value) {});
       } catch (error) {
-        print("Error in periodicUpdates: $error");
+        beepoPrint("Error in periodicUpdates: $error");
       }
     });
     return '';
@@ -89,20 +90,22 @@ class WalletProvider extends ChangeNotifier {
       final address = wallet.bitcoin.createAddress(publicKey);
       btcAddress = address;
     } catch (e) {
-      print(e);
+      beepoPrint(e);
     }
   }
 
   Future getBTCPrivateKey(mnemonic_) async {
     try {
-      final seed = wallet.mnemonicToSeed(mnemonic_.split(' '), passphrase: '0000');
+      final seed =
+          wallet.mnemonicToSeed(mnemonic_.split(' '), passphrase: '0000');
       final master = wallet.ExtendedPrivateKey.master(seed, wallet.xprv);
 
       final root = master.forPath("m/44'/60'/0'/0");
-      final privateKey = wallet.PrivateKey((root as wallet.ExtendedPrivateKey).key);
+      final privateKey =
+          wallet.PrivateKey((root as wallet.ExtendedPrivateKey).key);
       return privateKey;
     } catch (e) {
-      print(e);
+      beepoPrint(e);
     }
   }
 
@@ -152,7 +155,10 @@ class WalletProvider extends ChangeNotifier {
 
           totalBal = totalBal + (bal ?? 0);
 
-          Map? curAsset = prices.isNotEmpty ? prices.firstWhereOrNull((ele) => ele['displayName'] == value['ticker']) : null;
+          Map? curAsset = prices.isNotEmpty
+              ? prices.firstWhereOrNull(
+                  (ele) => ele['displayName'] == value['ticker'])
+              : null;
 
           Map<String, dynamic> assetData = {
             'displayName': value['displayName'],
@@ -165,14 +171,22 @@ class WalletProvider extends ChangeNotifier {
             'native': native,
             'address': address,
             'contractAddress': value['address'],
-            "24h_price_change": curAsset != null ? double.parse(curAsset['price_change_percentage_24h'].toStringAsFixed(2)) : null,
-            "current_price": curAsset != null ? double.parse(curAsset['current_price'].toStringAsFixed(2)) : null,
+            "24h_price_change": curAsset != null
+                ? double.parse(
+                    curAsset['price_change_percentage_24h'].toStringAsFixed(2))
+                : null,
+            "current_price": curAsset != null
+                ? double.parse(curAsset['current_price'].toStringAsFixed(2))
+                : null,
           };
 
-          String? price =
-              assetData['current_price'] != null ? (assetData['current_price'] * double.parse(assetData['bal'])).toStringAsFixed(2) : null;
+          String? price = assetData['current_price'] != null
+              ? (assetData['current_price'] * double.parse(assetData['bal']))
+                  .toStringAsFixed(2)
+              : null;
 
-          totalBal = price != null ? totalBal + double.parse(price) : totalBal + 0;
+          totalBal =
+              price != null ? totalBal + double.parse(price) : totalBal + 0;
           assetData['bal_to_price'] = price;
           data.add(assetData);
           totalBalance = totalBal.toStringAsFixed(2);
@@ -188,21 +202,21 @@ class WalletProvider extends ChangeNotifier {
 
       return data;
     } catch (e) {
-      print({"error 120": e});
+      beepoPrint({"error 120": e});
     }
   }
 
   Future<double> getBTCBalance(address) async {
     try {
-      var url =
-          Uri.parse("https://api.coingecko.com/api/v3/coins/bitcoin?localization=false&community_data=false&developer_data=false&sparkline=false");
+      var url = Uri.parse(
+          "https://api.coingecko.com/api/v3/coins/bitcoin?localization=false&community_data=false&developer_data=false&sparkline=false");
       var response = await http.get(url);
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      beepoPrint('Response status: ${response.statusCode}');
+      beepoPrint('Response body: ${response.body}');
 
       return 0.0;
     } catch (e) {
-      print(e);
+      beepoPrint(e);
       return 0.0;
     }
   }
@@ -215,7 +229,7 @@ class WalletProvider extends ChangeNotifier {
       double bal = balance.getValueInUnit(EtherUnit.ether);
       return bal;
     } catch (e) {
-      print({"error   142": e});
+      beepoPrint({"error   142": e});
       return 0.0;
     }
   }
@@ -230,23 +244,24 @@ class WalletProvider extends ChangeNotifier {
       var bal = await erc20Contract.getBalance(ethAddress!, ethClient, address);
       return bal;
     } catch (e) {
-      print(rpc);
-      print({"error   158": e});
+      beepoPrint(rpc);
+      beepoPrint({"error   158": e});
     }
   }
 
   Future<Map> getTxs(chainID, type) async {
     try {
-      var url = Uri.parse("https://get-transactions.vercel.app/api/getTxs?address=$ethAddress&chainID=$chainID&type=$type");
+      var url = Uri.parse(
+          "https://get-transactions.vercel.app/api/getTxs?address=$ethAddress&chainID=$chainID&type=$type");
       var response = await http.get(url);
-      print(response.body);
+      beepoPrint(response.body);
       if (response.statusCode == 200) {
         Map res = json.decode(response.body);
         return res;
       }
       return {};
     } catch (e) {
-      print({"error   getPrices": e});
+      beepoPrint({"error   getPrices": e});
       return {};
     }
   }
@@ -260,7 +275,12 @@ class WalletProvider extends ChangeNotifier {
       var res = assets!.map((asset) async {
         var type = asset['native'] ? 'EVM' : 'TOKEN';
         var data = await getTxs(asset['chainID'], type);
-        return ({"ticker": asset['ticker'], 'data': data['data'] != null && data['data'].isEmpty ? [] : data['data'][0]});
+        return ({
+          "ticker": asset['ticker'],
+          'data': data['data'] != null && data['data'].isEmpty
+              ? []
+              : data['data'][0]
+        });
       });
 
       var txs = (await Future.wait(res));
@@ -270,19 +290,21 @@ class WalletProvider extends ChangeNotifier {
 
         if (localTxs != null) {
           for (var tx in localTxs) {
-            print('tx');
-            print(tx);
-            print('tx');
-            Map curAsset = txs.firstWhere((element) => element['ticker'] == tx['ticker']);
-            print(curAsset);
-            if (curAsset.isNotEmpty && (tx['data']["timestamp"] < curAsset['data']["timestamp"])) {
-              print('true');
-              print('true 22');
-              print('true');
-              print('true 222');
-              print('true');
-              print('true 22');
-              print('true');
+            beepoPrint('tx');
+            beepoPrint(tx);
+            beepoPrint('tx');
+            Map curAsset =
+                txs.firstWhere((element) => element['ticker'] == tx['ticker']);
+            beepoPrint(curAsset);
+            if (curAsset.isNotEmpty &&
+                (tx['data']["timestamp"] < curAsset['data']["timestamp"])) {
+              beepoPrint('true');
+              beepoPrint('true 22');
+              beepoPrint('true');
+              beepoPrint('true 222');
+              beepoPrint('true');
+              beepoPrint('true 22');
+              beepoPrint('true');
               updateData = true;
               sendWalletNotification(curAsset);
             }
@@ -294,7 +316,7 @@ class WalletProvider extends ChangeNotifier {
         }
       }
     } catch (error) {
-      print("Error in watch tx: $error");
+      beepoPrint("Error in watch tx: $error");
     }
   }
 
@@ -308,7 +330,7 @@ class WalletProvider extends ChangeNotifier {
       }
       return [];
     } catch (e) {
-      print({"error   getPrices": e});
+      beepoPrint({"error   getPrices": e});
       return [];
     }
   }
@@ -338,8 +360,13 @@ class WalletProvider extends ChangeNotifier {
       ERC20 erc20 = ERC20();
       BigInt newAmount = BigInt.from(double.parse(amount) * 1e+18);
 
-      var response =
-          await erc20.sendERC20Token("transfer", [EthereumAddress.fromHex(toAddress), newAmount], ethClient, key, contractAddress, ethAddress);
+      var response = await erc20.sendERC20Token(
+          "transfer",
+          [EthereumAddress.fromHex(toAddress), newAmount],
+          ethClient,
+          key,
+          contractAddress,
+          ethAddress);
       await getAssets();
       return response;
     } catch (e) {
@@ -359,7 +386,7 @@ class WalletProvider extends ChangeNotifier {
 
       return (Decimal.parse((gasPrice.getInWei.toInt() / 1e+18).toString()));
     } catch (e) {
-      print({"error (Wallet Provider)  220": e});
+      beepoPrint({"error (Wallet Provider)  220": e});
       if (e.toString().contains('invalid address')) {
         showToast("Invalid Address Entered!");
       }
@@ -384,8 +411,10 @@ class WalletProvider extends ChangeNotifier {
           to: EthereumAddress.fromHex(toAddress),
           gasPrice: gasPrice,
           maxGas: 100000,
-          value: EtherAmount.fromInt(EtherUnit.wei, (double.parse(amount) * 1e+18).toInt()),
-          nonce: await ethClient.getTransactionCount(ethAddress!, atBlock: const BlockNum.pending()),
+          value: EtherAmount.fromInt(
+              EtherUnit.wei, (double.parse(amount) * 1e+18).toInt()),
+          nonce: await ethClient.getTransactionCount(ethAddress!,
+              atBlock: const BlockNum.pending()),
           from: ethAddress,
         ),
         chainId: chainID.toInt(),
@@ -409,10 +438,10 @@ class WalletProvider extends ChangeNotifier {
       // var response = await client.get(Uri.parse('https://api.opensea.io/api/v2/chain/$chain/account/$address/nfts'),
       //     headers: {"x-api-key": "a20f84e1347745a4b949d14162ee58a3"});
 
-      var response = await client
-          .get(Uri.parse('https://eth-mainnet.g.alchemy.com/nft/v3/HDQnQBbyr2HtgKSym1OqrbGED_H7Ev2N/getNFTsForOwner?owner=$address&pageSize=10'));
+      var response = await client.get(Uri.parse(
+          'https://eth-mainnet.g.alchemy.com/nft/v3/HDQnQBbyr2HtgKSym1OqrbGED_H7Ev2N/getNFTsForOwner?owner=$address&pageSize=10'));
 
-      print(response.body);
+      beepoPrint(response.body);
       if (response.body.isNotEmpty) {
         var nfts = jsonDecode(response.body);
         return nfts['nfts'];
@@ -435,7 +464,8 @@ class WalletProvider extends ChangeNotifier {
 
     await Web3AuthFlutter.init(
       Web3AuthOptions(
-        clientId: "BGaNpqXhzeQ8oKLtXECjffo6ynnBA-APd63zn9fTn9FsPmAqC1FzGdWoI4Yjumz73b9zqqYst3G_o9_iUo1KnLs",
+        clientId:
+            "BGaNpqXhzeQ8oKLtXECjffo6ynnBA-APd63zn9fTn9FsPmAqC1FzGdWoI4Yjumz73b9zqqYst3G_o9_iUo1KnLs",
         network: Network.testnet,
         redirectUrl: redirectUrls,
       ),
@@ -444,10 +474,11 @@ class WalletProvider extends ChangeNotifier {
 
   Future<Map> web3AuthLogin() async {
     try {
-      final Web3AuthResponse response =
-          await Web3AuthFlutter.login(LoginParams(loginProvider: Provider.google, extraLoginOptions: ExtraLoginOptions(login_hint: 'Beepo')));
+      final Web3AuthResponse response = await Web3AuthFlutter.login(LoginParams(
+          loginProvider: Provider.google,
+          extraLoginOptions: ExtraLoginOptions(login_hint: 'Beepo')));
       mpcResponse = response;
-      print(response);
+      beepoPrint(response);
       return response.toJson();
     } catch (e) {
       return {'error': e};

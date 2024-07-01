@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:Beepo/session/foreground_session.dart';
+import 'package:Beepo/utils/logger.dart';
 import 'package:Beepo/widgets/toast.dart';
 import 'package:async/async.dart';
 import 'package:flutter/foundation.dart';
@@ -44,7 +45,7 @@ dbCreateUser(String image, Db db, String displayName, String ethAddress,
       await Hive.box('Beepo2.0').put('isSignedUp', true);
     } catch (e) {
       if (kDebugMode) {
-        print(e);
+        beepoPrint(e);
       }
     }
   } else {
@@ -72,7 +73,7 @@ Stream<dynamic> dbWatchTx(Db db) {
     }
   ], changeStreamOptions: ChangeStreamOptions(fullDocument: 'updateLookup'));
 
-  print('watching all statueses 222');
+  beepoPrint('watching all statueses 222');
 
   return StreamGroup.mergeBroadcast([update, insert]);
 }
@@ -94,7 +95,7 @@ Stream<dynamic> dbWatchAllStatus(Db db) {
     }
   ], changeStreamOptions: ChangeStreamOptions(fullDocument: 'updateLookup'));
 
-  print('watching all statueses 222');
+  beepoPrint('watching all statueses 222');
 
   return StreamGroup.mergeBroadcast([update, insert]);
 }
@@ -114,7 +115,7 @@ dbDeleteStatus(Db db, newData, String ethAddress) async {
     await db.open();
   }
   var status = db.collection('status');
-  print(newData?.length);
+  beepoPrint(newData?.length);
   try {
     var d;
     if (newData?.length <= 1) {
@@ -122,7 +123,7 @@ dbDeleteStatus(Db db, newData, String ethAddress) async {
       showToast('Deleted Successfully!');
       return;
     }
-    print('deleting');
+    beepoPrint('deleting');
     d = await status.updateOne(
       where.eq("ethAddress", ethAddress),
       ModifierBuilder().set('data', newData),
@@ -131,7 +132,7 @@ dbDeleteStatus(Db db, newData, String ethAddress) async {
     showToast('Deleted Successfully!');
   } catch (e) {
     if (kDebugMode) {
-      print(e);
+      beepoPrint(e);
     }
   }
 }
@@ -149,7 +150,7 @@ dbAutoDeleteStatus(Db db, newData, String ethAddress) async {
       showToast('Deleted Successfully!');
       return;
     }
-    print('deleting');
+    beepoPrint('deleting');
     d = await status.updateOne(
       where.eq("ethAddress", ethAddress),
       ModifierBuilder().set('data', newData),
@@ -158,7 +159,7 @@ dbAutoDeleteStatus(Db db, newData, String ethAddress) async {
     showToast('Deleted Successfully!');
   } catch (e) {
     if (kDebugMode) {
-      print(e);
+      beepoPrint(e);
     }
   }
 }
@@ -187,7 +188,7 @@ dbUpdateStatusViewsCount(
     );
   } catch (e) {
     if (kDebugMode) {
-      print(e);
+      beepoPrint(e);
     }
   }
 }
@@ -226,7 +227,7 @@ dbUploadStatus(String image, Db db, String message, String privacy,
       );
     } catch (e) {
       if (kDebugMode) {
-        print(e);
+        beepoPrint(e);
       }
     }
 
@@ -257,7 +258,7 @@ dbUploadStatus(String image, Db db, String message, String privacy,
     showToast('Uploaded Successfully!');
   } catch (e) {
     if (kDebugMode) {
-      print(e);
+      beepoPrint(e);
     }
   }
 }
@@ -269,15 +270,15 @@ Future<Map<String, dynamic>> dbDeleteUser(Db db, ethAddress) async {
 
   try {
     var d = await usersCollection.deleteOne(where.eq("ethAddress", ethAddress));
-    print(d);
+    beepoPrint(d);
     d = await status.deleteOne(where.eq("ethAddress", ethAddress));
     showToast('Account Deleted Successfully!');
     session.clear();
     Hive.deleteBoxFromDisk("Beepo2.0");
-    print(d);
+    beepoPrint(d);
   } catch (e) {
     if (kDebugMode) {
-      print(e);
+      beepoPrint(e);
     }
   }
 
@@ -315,7 +316,7 @@ Future<Map<String, dynamic>> dbUpdateUser(
       }
     } catch (e) {
       if (kDebugMode) {
-        print(e);
+        beepoPrint(e);
       }
     }
   } else {
@@ -330,7 +331,7 @@ Future<Map> dbGetAllUsers(Db db) async {
     if (db.state == State.closed) {
       await db.open();
     }
-    print('fetchig sers');
+    beepoPrint('fetchig sers');
     var usersCollection = db.collection('users');
 
     List<Map>? val = await usersCollection.find().toList();
@@ -352,7 +353,7 @@ Future<Map> dbGetAllUsers(Db db) async {
       return {'success': "done", "data": val};
     }
   } catch (e) {
-    print(e);
+    beepoPrint(e);
     return {};
   }
 }
@@ -434,7 +435,7 @@ dbClaimDailyPoints(int points, String ethAddress) async {
         },
       );
     } catch (e) {
-      print(e);
+      beepoPrint(e);
     }
     return;
   }
@@ -446,13 +447,13 @@ dbClaimDailyPoints(int points, String ethAddress) async {
     try {
       var d = await pointsCollection.replaceOne(
           where.eq("ethAddress", ethAddress), data);
-      print('Daily points claimed Successfully!');
+      beepoPrint('Daily points claimed Successfully!');
       dbFetchPoints(ethAddress);
     } catch (e) {
-      print(e);
+      beepoPrint(e);
     }
   }
-  print("Please come back after " +
+  beepoPrint("Please come back after " +
       (lastClaim.add(const Duration(days: 1)).hour).toString() +
       " hours!");
 }
@@ -473,7 +474,7 @@ dbWithdrawPoints(String ethAddress) async {
     try {
       return {'error': "data not found"};
     } catch (e) {
-      print(e);
+      beepoPrint(e);
     }
     return;
   }
@@ -483,10 +484,10 @@ dbWithdrawPoints(String ethAddress) async {
   try {
     var d = await pointsCollection.replaceOne(
         where.eq("ethAddress", ethAddress), data);
-    print('Points Withdrwn Successfully!');
+    beepoPrint('Points Withdrwn Successfully!');
     return dbFetchPoints(ethAddress);
   } catch (e) {
-    print(e);
+    beepoPrint(e);
   }
 }
 
@@ -513,7 +514,7 @@ dbUpdatePoints(int points, String ethAddress) async {
         },
       );
     } catch (e) {
-      print(e);
+      beepoPrint(e);
     }
     return;
   }
@@ -526,10 +527,10 @@ dbUpdatePoints(int points, String ethAddress) async {
 
     return dbFetchPoints(ethAddress);
   } catch (e) {
-    print(e);
+    beepoPrint(e);
   }
 
-//   print('Please come back after 24 hours!');
+//   beepoPrint('Please come back after 24 hours!');
 }
 
 dbFetchPoints(String ethAddress) async {
@@ -540,7 +541,7 @@ dbFetchPoints(String ethAddress) async {
     await db.open();
   }
 
-  print('running fetch points');
+  beepoPrint('running fetch points');
   var pointsCollection = db.collection('points');
 
   var data = await pointsCollection.findOne(where.eq('ethAddress', ethAddress));
@@ -549,14 +550,14 @@ dbFetchPoints(String ethAddress) async {
     try {
       return {"error": 'not found'};
     } catch (e) {
-      print(e);
+      beepoPrint(e);
     }
   }
 
   try {
     return data;
   } catch (e) {
-    print(e);
+    beepoPrint(e);
   }
 }
 
@@ -568,7 +569,7 @@ dbUpdateReferrals(String refId) async {
     await db.open();
   }
 
-  print('update refs fetch points');
+  beepoPrint('update refs fetch points');
   var pointsCollection = db.collection('points');
   var usersCollection = db.collection('users');
 
@@ -578,7 +579,7 @@ dbUpdateReferrals(String refId) async {
     try {
       return {"error": 'user not found'};
     } catch (e) {
-      print(e);
+      beepoPrint(e);
     }
     return;
   }
@@ -593,7 +594,7 @@ dbUpdateReferrals(String refId) async {
         {'ethAddress': ethAddress, "points": 100, 'referrals': 1},
       );
     } catch (e) {
-      print(e);
+      beepoPrint(e);
     }
     return;
   }
@@ -604,24 +605,85 @@ dbUpdateReferrals(String refId) async {
   try {
     var d = await pointsCollection.replaceOne(
         where.eq("ethAddress", ethAddress), pointsData);
-    print('ref added Successfully!');
+    beepoPrint('ref added Successfully!');
     dbFetchPoints(ethAddress);
   } catch (e) {
-    print(e);
+    beepoPrint(e);
   }
 
-  print('Please come back after 24 hours!');
+  beepoPrint('Please come back after 24 hours!');
 }
 
-String setRank(int points) {
-  if (points < 5000) return 'Novice';
-  if (points >= 5000 && points < 10000) return 'Amateur';
-  if (points >= 10000 && points < 18000) return 'Senior';
-  if (points >= 18000 && points < 30000) return 'Enthusiast';
-  if (points >= 30000 && points < 38000) return 'Professional';
-  if (points >= 38000 && points < 50000) return 'Expert';
-  if (points >= 50000 && points < 100000) return 'Leader';
-  if (points >= 100000 && points < 500000) return 'Veteran';
-  if (points >= 500000) return 'Master';
-  return "";
+Future<void> dbUpdateActiveTime(String ethAddress, int activeTimeToAdd) async {
+  Db db = await Db.create(
+      'mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
+
+  if (db.state == State.closed || db.state == State.init) {
+    await db.open();
+  }
+
+  var pointsCollection = db.collection('points');
+  var data = await pointsCollection.findOne(where.eq('ethAddress', ethAddress));
+
+  if (data == null) {
+    try {
+      await pointsCollection.insertOne(
+        {
+          'ethAddress': ethAddress,
+          'points': 0,
+          'lastClaim': DateTime.now(),
+          'referrals': 0,
+          'dailyActiveTime': activeTimeToAdd,
+          'lastActiveCheck': DateTime.now(),
+        },
+      );
+      dbFetchPoints(ethAddress);
+    } catch (e) {
+      beepoPrint(e);
+    }
+    return;
+  }
+
+  if (data.containsKey('points')) {
+    DateTime lastActiveCheck =
+        (data['lastActiveCheck'] as DateTime?) ?? DateTime.now();
+    int dailyActiveTime = data['dailyActiveTime'] ?? 0;
+
+    if (lastActiveCheck.day != DateTime.now().day) {
+      dailyActiveTime = 0; // Reset daily active time if it's a new day
+    }
+
+    dailyActiveTime += activeTimeToAdd;
+    data['dailyActiveTime'] = dailyActiveTime;
+    data['lastActiveCheck'] = DateTime.now();
+
+    if (dailyActiveTime >= 10800) {
+      // 10800 seconds = 3 hours
+      data['points'] = data['points'] + 500; // Reward 500 points
+      data['dailyActiveTime'] = 0; // Reset active time after rewarding
+      beepoPrint(
+          "Congrats you've earned 500p for staying active for 3hrs on Beepo today.");
+    }
+
+    try {
+      await pointsCollection.replaceOne(
+          where.eq("ethAddress", ethAddress), data);
+      beepoPrint('Active time updated successfully!');
+    } catch (e) {
+      beepoPrint(e);
+    }
+  }
 }
+
+// String setRank(int points) {
+//   if (points < 5000) return 'Novice';
+//   if (points >= 5000 && points < 10000) return 'Amateur';
+//   if (points >= 10000 && points < 18000) return 'Senior';
+//   if (points >= 18000 && points < 30000) return 'Enthusiast';
+//   if (points >= 30000 && points < 38000) return 'Professional';
+//   if (points >= 38000 && points < 50000) return 'Expert';
+//   if (points >= 50000 && points < 100000) return 'Leader';
+//   if (points >= 100000 && points < 500000) return 'Veteran';
+//   if (points >= 500000) return 'Master';
+//   return "";
+// }

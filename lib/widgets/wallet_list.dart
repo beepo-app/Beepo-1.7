@@ -1,11 +1,11 @@
 import 'package:Beepo/constants/constants.dart';
 import 'package:Beepo/providers/wallet_provider.dart';
 import 'package:Beepo/screens/wallet/wallet_token_screen.dart';
+import 'package:Beepo/utils/logger.dart';
 import 'package:Beepo/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:pull_to_refresh_notification/pull_to_refresh_notification.dart';
 
 class WalletList extends StatefulWidget {
   final List<dynamic> assets_;
@@ -25,16 +25,16 @@ class _WalletListState extends State<WalletList> {
   Future<bool> onRefresh() async {
     final walletProvider = Provider.of<WalletProvider>(context, listen: false);
     var data = await walletProvider.getAssets();
-    print('data');
-    print(data);
-    print('data');
+    beepoPrint('data');
+    beepoPrint(data);
+    beepoPrint('data');
     return true;
   }
 
   @override
   Widget build(BuildContext context) {
     List<dynamic> assets = widget.assets_;
-    // print(widget.assets_);
+    // beepoPrint(widget.assets_);
 
     return ListView.separated(
       itemCount: assets.length,
@@ -58,7 +58,10 @@ class _WalletListState extends State<WalletList> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(10), topRight: Radius.circular(10), bottomLeft: Radius.circular(10), bottomRight: Radius.circular(10)),
+                  topLeft: Radius.circular(10),
+                  topRight: Radius.circular(10),
+                  bottomLeft: Radius.circular(10),
+                  bottomRight: Radius.circular(10)),
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.5),
@@ -90,10 +93,13 @@ class _WalletListState extends State<WalletList> {
                   assets[index]['24h_price_change'] != null
                       ? Row(
                           children: [
-                            AppText(text: '\$${assets[index]['current_price'].toString()}'),
+                            AppText(
+                                text:
+                                    '\$${assets[index]['current_price'].toString()}'),
                             SizedBox(width: 8.w),
                             AppText(
-                              text: '${assets[index]['24h_price_change'].toString()}%',
+                              text:
+                                  '${assets[index]['24h_price_change'].toString()}%',
                               color: assets[index]['24h_price_change'] != null
                                   ? assets[index]['24h_price_change'] > 0
                                       ? AppColors.activeTextColor
@@ -113,7 +119,8 @@ class _WalletListState extends State<WalletList> {
                           ],
                         ),
                   assets[index]['bal_to_price'] != null
-                      ? AppText(text: "\$${assets[index]['bal_to_price'].toString()}")
+                      ? AppText(
+                          text: "\$${assets[index]['bal_to_price'].toString()}")
                       : const AppText(text: "null"),
                 ],
               ),

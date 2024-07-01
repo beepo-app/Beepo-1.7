@@ -6,6 +6,7 @@ import 'package:Beepo/providers/auth_provider.dart';
 import 'package:Beepo/providers/chat_provider.dart';
 import 'package:Beepo/providers/wallet_provider.dart';
 import 'package:Beepo/session/foreground_session.dart';
+import 'package:Beepo/utils/logger.dart';
 import 'package:Beepo/widgets/commons.dart';
 import 'package:Beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +45,7 @@ class _LockScreenState extends State<LockScreen> {
   //       _authorized = 'Authenticating';
   //     });
   //     authenticated = await auth.authenticate(
-  //       localizedReason: 'Scan your fingerprint (or face or whatever) to authenticate',
+  //       localizedReason: 'Scan your fingerbeepoPrint (or face or whatever) to authenticate',
   //       options: const AuthenticationOptions(
   //         stickyAuth: true,
   //         // biometricOnly: true,
@@ -55,7 +56,7 @@ class _LockScreenState extends State<LockScreen> {
   //       _authorized = 'Authenticating';
   //     });
   //   } on PlatformException catch (e) {
-  //     print(e);
+  //     beepoPrint(e);
   //     setState(() {
   //       _isAuthenticating = false;
   //       _authorized = 'Error - ${e.message}';
@@ -80,14 +81,14 @@ class _LockScreenState extends State<LockScreen> {
 
     fullScreenLoader("Logging In!");
 
-    print('object 0000');
+    beepoPrint('object 0000');
 
     if (response.contains('privKey')) {
       Map data = jsonDecode(response);
       await walletProvider.initMPCWalletState(data);
       await accountProvider.initAccountState();
       var ds = await chatProvider.getAllStatus(accountProvider.db);
-      print(ds);
+      beepoPrint(ds);
       EthPrivateKey credentials =
           EthPrivateKey.fromHex(walletProvider.ethPrivateKey!);
       if (session.initialized == false) {
@@ -102,7 +103,7 @@ class _LockScreenState extends State<LockScreen> {
       );
       return;
     }
-    print('object 111');
+    beepoPrint('object 111');
     await walletProvider.initWalletState(response);
     EthPrivateKey credentials =
         EthPrivateKey.fromHex(walletProvider.ethPrivateKey!);
@@ -113,7 +114,7 @@ class _LockScreenState extends State<LockScreen> {
     //await session.authorize(credentials.asSigner());
     await accountProvider.initAccountState();
     var ds = await chatProvider.getAllStatus(accountProvider.db);
-    print(ds);
+    beepoPrint(ds);
     Hive.box('Beepo2.0').put('isLocked', false);
     Get.to(
       () => const BottomNavHome(),
@@ -199,8 +200,8 @@ class _LockScreenState extends State<LockScreen> {
               //   onTap: () async {
               //     var canAuthenticateWithBiometrics = await auth.canCheckBiometrics;
               //     var canAuthenticate = canAuthenticateWithBiometrics || await auth.isDeviceSupported();
-              //     print(canAuthenticate);
-              //     print(canAuthenticateWithBiometrics);
+              //     beepoPrint(canAuthenticate);
+              //     beepoPrint(canAuthenticateWithBiometrics);
               //     if (canAuthenticateWithBiometrics) {
               //       await authenticateWithBiometrics();
               //     }

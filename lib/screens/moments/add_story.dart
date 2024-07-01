@@ -1,6 +1,7 @@
 import 'package:Beepo/constants/constants.dart';
 import 'package:Beepo/screens/moments/blank_screen.dart';
 import 'package:Beepo/utils/functions.dart';
+import 'package:Beepo/utils/logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -29,8 +30,8 @@ class _AddStoryState extends State<AddStory> {
       try {
         final snappedImage = await widget.controller.takePicture();
         if (kDebugMode) {
-          print('Image captured: ${snappedImage.path}');
-          print('Image captured: ${await snappedImage.length() / 1024}');
+          beepoPrint('Image captured: ${snappedImage.path}');
+          beepoPrint('Image captured: ${await snappedImage.length() / 1024}');
         }
 
         img.Image image = img.decodeImage(await snappedImage.readAsBytes())!;
@@ -46,9 +47,10 @@ class _AddStoryState extends State<AddStory> {
           width = (image.width / image.height * 800).round();
         }
 
-        img.Image resizedImage = img.copyResize(image, width: width, height: height);
+        img.Image resizedImage =
+            img.copyResize(image, width: width, height: height);
         List<int> compressedBytes = img.encodeJpg(resizedImage, quality: 65);
-        print(compressedBytes.length / 1024);
+        beepoPrint(compressedBytes.length / 1024);
 
         Get.to(
           () => BlankScreen(
@@ -58,7 +60,7 @@ class _AddStoryState extends State<AddStory> {
         );
       } catch (e) {
         if (kDebugMode) {
-          print('Error capturing photo: $e');
+          beepoPrint('Error capturing photo: $e');
         }
       }
     }
@@ -66,7 +68,7 @@ class _AddStoryState extends State<AddStory> {
 
   @override
   Widget build(BuildContext context) {
-    // print(widget.controller.description.lensDirection);
+    // beepoPrint(widget.controller.description.lensDirection);
     return Scaffold(
       backgroundColor: Colors.black,
       resizeToAvoidBottomInset: false,
@@ -101,11 +103,14 @@ class _AddStoryState extends State<AddStory> {
                           children: [
                             IconButton(
                               onPressed: () {
-                                ImageUtil().pickImageFromGallery().then((value) async {
+                                ImageUtil()
+                                    .pickImageFromGallery()
+                                    .then((value) async {
                                   try {
                                     if (value == null) return;
                                     if (kDebugMode) {
-                                      print('Image captured: ${value.length / 1024}');
+                                      beepoPrint(
+                                          'Image captured: ${value.length / 1024}');
                                     }
 
                                     img.Image image = img.decodeImage(value)!;
@@ -115,15 +120,22 @@ class _AddStoryState extends State<AddStory> {
 
                                     if (image.width > image.height) {
                                       width = 800;
-                                      height = (image.height / image.width * 800).round();
+                                      height =
+                                          (image.height / image.width * 800)
+                                              .round();
                                     } else {
                                       height = 800;
-                                      width = (image.width / image.height * 800).round();
+                                      width = (image.width / image.height * 800)
+                                          .round();
                                     }
 
-                                    img.Image resizedImage = img.copyResize(image, width: width, height: height);
-                                    List<int> compressedBytes = img.encodeJpg(resizedImage, quality: 75);
-                                    print(compressedBytes.length / 1024);
+                                    img.Image resizedImage = img.copyResize(
+                                        image,
+                                        width: width,
+                                        height: height);
+                                    List<int> compressedBytes = img
+                                        .encodeJpg(resizedImage, quality: 75);
+                                    beepoPrint(compressedBytes.length / 1024);
 
                                     Get.to(
                                       () => BlankScreen(
@@ -133,7 +145,7 @@ class _AddStoryState extends State<AddStory> {
                                     );
                                   } catch (e) {
                                     if (kDebugMode) {
-                                      print('Error capturing photo: $e');
+                                      beepoPrint('Error capturing photo: $e');
                                     }
                                   }
                                 });
@@ -142,7 +154,8 @@ class _AddStoryState extends State<AddStory> {
                                 height: 30.h,
                                 width: 40.w,
                                 decoration: BoxDecoration(
-                                  color: const Color.fromARGB(255, 230, 208, 175),
+                                  color:
+                                      const Color.fromARGB(255, 230, 208, 175),
                                   borderRadius: BorderRadius.circular(10.r),
                                 ),
                                 // child:MemoryImage(bytes),
@@ -158,13 +171,19 @@ class _AddStoryState extends State<AddStory> {
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: const Color(0xFFE6E9EE),
-                                  border: Border.all(color: Colors.orange, width: 2),
+                                  border: Border.all(
+                                      color: Colors.orange, width: 2),
                                 ),
                               ),
                             ),
                             GestureDetector(
                               onTap: () {
-                                Get.back(result: widget.controller.description.lensDirection == CameraLensDirection.front ? true : false);
+                                Get.back(
+                                    result: widget.controller.description
+                                                .lensDirection ==
+                                            CameraLensDirection.front
+                                        ? true
+                                        : false);
                               },
                               child: SvgPicture.asset('assets/Rotate.svg'),
                             ),

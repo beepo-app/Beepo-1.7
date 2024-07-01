@@ -1,4 +1,5 @@
 import 'package:Beepo/constants/constants.dart';
+import 'package:Beepo/utils/logger.dart';
 import 'package:Beepo/widgets/app_text.dart';
 import 'package:Beepo/widgets/toast.dart';
 import 'package:flutter/material.dart';
@@ -11,11 +12,12 @@ import 'package:url_launcher/url_launcher.dart';
 class TransferInfo extends StatelessWidget {
   final String? walletTicker;
   final Map? data;
-  const TransferInfo({Key? key, this.walletTicker, this.data}) : super(key: key);
+  const TransferInfo({Key? key, this.walletTicker, this.data})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    print(data);
+    beepoPrint(data);
     return Scaffold(
       backgroundColor: AppColors.backgroundGrey,
       body: Container(
@@ -67,12 +69,15 @@ class TransferInfo extends StatelessWidget {
             AppText(
               text: "${data!['tx']['value']} ${data!['data']['ticker']}",
               fontWeight: FontWeight.w900,
-              color: data!['tx']['type'] == 'Send' ? Colors.red : Colors.green.shade500,
+              color: data!['tx']['type'] == 'Send'
+                  ? Colors.red
+                  : Colors.green.shade500,
               fontSize: 20.sp,
             ),
             SizedBox(height: 5.h),
             AppText(
-              text: "~ \$${(data!['tx']['value'] * data!['data']['current_price']).toStringAsFixed(2)}",
+              text:
+                  "~ \$${(data!['tx']['value'] * data!['data']['current_price']).toStringAsFixed(2)}",
               fontWeight: FontWeight.w900,
               color: AppColors.textGrey,
               fontSize: 14.sp,
@@ -90,7 +95,9 @@ class TransferInfo extends StatelessWidget {
                     fontSize: 14.sp,
                   ),
                   AppText(
-                    text: DateFormat('M-d-yyyy hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(data!['tx']['timestamp'] * 1000)),
+                    text: DateFormat('M-d-yyyy hh:mm a').format(
+                        DateTime.fromMillisecondsSinceEpoch(
+                            data!['tx']['timestamp'] * 1000)),
                     fontWeight: FontWeight.w900,
                     color: AppColors.textGrey,
                     fontSize: 14.sp,
@@ -162,7 +169,8 @@ class TransferInfo extends StatelessWidget {
                   Expanded(
                     child: GestureDetector(
                       onTap: () async {
-                        await Clipboard.setData(ClipboardData(text: data!['tx']['to'].toString()));
+                        await Clipboard.setData(
+                            ClipboardData(text: data!['tx']['to'].toString()));
                         showToast('Address Copied To Clipboard!');
                       },
                       child: Text(

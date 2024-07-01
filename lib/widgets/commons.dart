@@ -2,6 +2,7 @@ import 'package:Beepo/components/beepo_filled_button.dart';
 import 'package:Beepo/constants/constants.dart';
 import 'package:Beepo/providers/wallet_provider.dart';
 import 'package:Beepo/screens/wallet/send_token_confirm_screen.dart';
+import 'package:Beepo/utils/logger.dart';
 import 'package:Beepo/widgets/toast.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
@@ -54,7 +55,17 @@ class _InChatTxState extends State<InChatTx> {
   late final TextEditingController amount;
 
   final List<String> walletItems = ['Crypto', 'Fiat'];
-  final List<String> curItems = ['BNB', 'ETH', "CELO", "BEEP", "Brise", "MATIC", "CMP", "USDT", "HLUSD"];
+  final List<String> curItems = [
+    'BNB',
+    'ETH',
+    "CELO",
+    "BEEP",
+    "Brise",
+    "MATIC",
+    "CMP",
+    "USDT",
+    "HLUSD"
+  ];
 
   String selectedWalletItem = 'Crypto';
   String selectedCurItem = 'BNB';
@@ -72,13 +83,16 @@ class _InChatTxState extends State<InChatTx> {
   Widget build(BuildContext context) {
     final walletProvider = Provider.of<WalletProvider>(context, listen: false);
     String userId = widget.user['displayName'];
-    Map? asset = widget.assets.firstWhereOrNull((element) => element['ticker'] == selectedCurItem);
+    Map? asset = widget.assets
+        .firstWhereOrNull((element) => element['ticker'] == selectedCurItem);
 
-    userId = userId.length > 30 ? '${userId.substring(0, 3)}...${userId.substring(userId.length - 7, userId.length)}' : userId;
+    userId = userId.length > 30
+        ? '${userId.substring(0, 3)}...${userId.substring(userId.length - 7, userId.length)}'
+        : userId;
 
     String address = widget.user["ethAddress"];
 
-    print(asset);
+    beepoPrint(asset);
 
     return Center(
       child: Container(
@@ -186,7 +200,7 @@ class _InChatTxState extends State<InChatTx> {
                         position: PopupMenuPosition.under,
                         initialValue: selectedCurItem,
                         onSelected: (String item) {
-                          // print(item);
+                          // beepoPrint(item);
                           setState(() {
                             selectedCurItem = item;
                           });
@@ -279,7 +293,8 @@ class _InChatTxState extends State<InChatTx> {
                         )),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(8.r)),
-                      borderSide: const BorderSide(width: 1, color: Colors.grey),
+                      borderSide:
+                          const BorderSide(width: 1, color: Colors.grey),
                     ),
                   ),
                 ),
@@ -305,18 +320,27 @@ class _InChatTxState extends State<InChatTx> {
                   text: 'Send',
                   onPressed: () async {
                     if (asset == null) return;
-                    Decimal res = await walletProvider.estimateGasPrice(asset['rpc']);
+                    Decimal res =
+                        await walletProvider.estimateGasPrice(asset['rpc']);
 
                     var amountToSend = res + Decimal.parse(amount.text);
 
-                    if (amountToSend > Decimal.parse(asset['bal']) || double.parse(asset['bal']) == 0) {
+                    if (amountToSend > Decimal.parse(asset['bal']) ||
+                        double.parse(asset['bal']) == 0) {
                       showToast("Insufficient Funds!");
                       return;
                     }
 
                     Get.back();
                     Get.to(
-                      () => SendTokenConfirmScreen(asset: asset, data: {'amount': amount.text, 'gasFee': res, "address": address}, type: 'inChatTx'),
+                      () => SendTokenConfirmScreen(
+                          asset: asset,
+                          data: {
+                            'amount': amount.text,
+                            'gasFee': res,
+                            "address": address
+                          },
+                          type: 'inChatTx'),
                     );
                   },
                 ),

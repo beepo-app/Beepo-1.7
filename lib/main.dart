@@ -1,7 +1,13 @@
 import 'package:Beepo/app.dart';
 import 'package:Beepo/providers/account_provider.dart';
 import 'package:Beepo/providers/chat_provider.dart';
+import 'package:Beepo/providers/claim_daily_points_provider.dart';
+import 'package:Beepo/providers/total_points_provider.dart';
+import 'package:Beepo/providers/update_active_time.dart';
+import 'package:Beepo/providers/update_referral_provider.dart';
+import 'package:Beepo/providers/updated_points_provider.dart';
 import 'package:Beepo/providers/wallet_provider.dart';
+import 'package:Beepo/providers/withdraw_points_provider.dart';
 import 'package:Beepo/services/notification_service.dart';
 import 'package:Beepo/utils/encrypted_seed.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +43,26 @@ void main() async {
           ),
           ChangeNotifierProvider(
             create: (_) => AccountProvider(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => ClaimDailyPointsProvider(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => WithDrawPointsProvider(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => UpdatedPointsProvider(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => UpdateReferralProvider(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => TotalPointProvider(
+              
+            ),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => UpdateActiveTimeProvider(),
           ),
         ],
         builder: (context, _) {

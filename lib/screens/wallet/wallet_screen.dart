@@ -2,6 +2,7 @@ import 'package:Beepo/constants/constants.dart';
 import 'package:Beepo/providers/wallet_provider.dart';
 import 'package:Beepo/screens/wallet/received_assets_screen.dart';
 import 'package:Beepo/screens/wallet/send_assets_screen.dart';
+import 'package:Beepo/utils/logger.dart';
 import 'package:Beepo/widgets/app_text.dart';
 import 'package:Beepo/widgets/nft_list.dart';
 import 'package:Beepo/widgets/wallet_icon.dart';
@@ -44,7 +45,8 @@ class _WalletScreenState extends State<WalletScreen> {
 
   getAssests() async {
     try {
-      final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+      final walletProvider =
+          Provider.of<WalletProvider>(context, listen: false);
       // var res = await walletProvider.getAssets();
       List<dynamic>? assets_ = walletProvider.assets;
       setState(() {
@@ -54,7 +56,7 @@ class _WalletScreenState extends State<WalletScreen> {
       });
     } catch (e) {
       if (kDebugMode) {
-        print(e);
+        beepoPrint(e);
       }
     }
   }
@@ -71,7 +73,7 @@ class _WalletScreenState extends State<WalletScreen> {
 
     // walletProvider.watchTxs();
 
-    // print(assets);
+    // beepoPrint(assets);
     // nftAssets = walletProvider.nftAssets;
 
     return DefaultTabController(
@@ -96,7 +98,7 @@ class _WalletScreenState extends State<WalletScreen> {
                 // icon: Icon,
                 onSelected: (value) {
                   // Handle menu item selection here
-                  print('Selected: $value');
+                  beepoPrint('Selected: $value');
                 },
               ),
             ],
@@ -147,7 +149,8 @@ class _WalletScreenState extends State<WalletScreen> {
                             icon: Icons.send_outlined,
                             angle: 5.7,
                             onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
                                 return SendAssetsScreen(assets_: assets!);
                               }));
                             },
@@ -156,7 +159,8 @@ class _WalletScreenState extends State<WalletScreen> {
                             text: 'Receive',
                             icon: Icons.file_download_sharp,
                             onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
                                 return ReceivedAssetScreen(assets_: assets!);
                               }));
                             },
@@ -203,11 +207,15 @@ class _WalletScreenState extends State<WalletScreen> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(15.0),
-                        child: assets == null ? const Center(child: CircularProgressIndicator()) : WalletList(assets_: assets!),
+                        child: assets == null
+                            ? const Center(child: CircularProgressIndicator())
+                            : WalletList(assets_: assets!),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(15.0),
-                        child: nftAssets == null ? const Center(child: CircularProgressIndicator()) : NFTList(assets_: nftAssets!),
+                        child: nftAssets == null
+                            ? const Center(child: CircularProgressIndicator())
+                            : NFTList(assets_: nftAssets!),
                       ),
                     ],
                   ),

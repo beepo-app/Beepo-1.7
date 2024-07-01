@@ -27,7 +27,7 @@ class _SendTokenConfirmScreenState extends State<SendTokenConfirmScreen> {
     Map data = widget.data!;
     Map asset = widget.asset!;
 
-    //print(asset);
+    //beepoPrint(asset);
 
     return Scaffold(
       backgroundColor: AppColors.backgroundGrey,
@@ -105,12 +105,18 @@ class _SendTokenConfirmScreenState extends State<SendTokenConfirmScreen> {
                 String amtInUSD = (Decimal.tryParse(data['amount']) == null
                         ? int.tryParse(data['amount']) == null
                             ? 0
-                            : int.tryParse(data['amount'])! * int.parse(asset['current_price'])
-                        : Decimal.tryParse(data['amount'])! * Decimal.parse(asset['current_price'].toString()))
+                            : int.tryParse(data['amount'])! *
+                                int.parse(asset['current_price'])
+                        : Decimal.tryParse(data['amount'])! *
+                            Decimal.parse(asset['current_price'].toString()))
                     .toString();
 
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return SendTokenPinScreen(txData: {'asset': asset, 'data': data, "amtInUSD": amtInUSD}, type: widget.type);
+                  return SendTokenPinScreen(txData: {
+                    'asset': asset,
+                    'data': data,
+                    "amtInUSD": amtInUSD
+                  }, type: widget.type);
                 }));
               },
             ),

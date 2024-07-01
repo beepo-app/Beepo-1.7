@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:Beepo/components/Beepo_filled_button.dart';
 import 'package:Beepo/constants/constants.dart';
-import 'package:Beepo/screens/messaging/chats/chat_tab.dart';
+import 'package:Beepo/providers/total_points_provider.dart';
 import 'package:Beepo/widgets/app_text.dart';
 import 'package:Beepo/widgets/cache_memory_image_provider.dart';
 import 'package:Beepo/widgets/toast.dart';
@@ -10,8 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/get_navigation.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:provider/provider.dart';
 
 class UserProfileScreen extends StatefulWidget {
   final Map? user;
@@ -27,6 +27,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   @override
   Widget build(BuildContext context) {
     var user = widget.user;
+    final totalPointEarn = Provider.of<TotalPointProvider>(context);
 
     return Scaffold(
       backgroundColor: AppColors.backgroundGrey,
@@ -63,7 +64,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(100),
                     child: Image(
-                      image: CacheMemoryImageProvider(user!['image'], base64Decode(user['image'])),
+                      image: CacheMemoryImageProvider(
+                          user!['image'], base64Decode(user['image'])),
                       height: 100,
                       width: 100,
                       fit: BoxFit.cover,
@@ -131,7 +133,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     content: Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 20),
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 20),
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
@@ -189,6 +192,33 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Text(
+                      'Beeper Rank',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xff0E014C),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Row(
+                      children: [
+                        Icon(
+                          totalPointEarn.rankEntry.value,
+                          color: Colors.amber,
+                        ),
+                        Text(
+                          totalPointEarn.rankEntry.key,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xff0E014C),
+                          ),
+                        ),
+                      ],
+                    ),
                     Center(
                       child: AppText(
                         text: user['bio'] ?? 'No Bio Available',

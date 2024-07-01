@@ -51,7 +51,8 @@ class LoginScreen extends StatelessWidget {
               minLines: 5,
               maxLines: null,
               decoration: InputDecoration(
-                hintText: 'Enter your secret phrase, seperated by a comma and space ie (` `)',
+                hintText:
+                    'Enter your secret phrase, seperated by a comma and space ie (` `)',
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -88,11 +89,11 @@ class LoginScreen extends StatelessWidget {
 // if(user['error'] != null){
 
 // }
-//                   print(user);
-//                   print('user 87 above');
-//                   print(address);
-//                   print(walletProvider.generateMnemonic());
-//                   print(phraseController.text);
+//                   beepoPrint(user);
+//                   beepoPrint('user 87 above');
+//                   beepoPrint(address);
+//                   beepoPrint(walletProvider.generateMnemonic());
+//                   beepoPrint(phraseController.text);
 
 //                   // Get.to(
 //                   //   fullScreenLoader('Verifying Seedphrase...'),
@@ -100,7 +101,8 @@ class LoginScreen extends StatelessWidget {
 //                   // );
 //                   // bool result = await AuthService().loginWithSecretPhrase(phrase);
 //                   // AuthService().verifyPhrase(phrase);
-                  Get.to(() => CreateAccountScreen(mnemonic: phraseController.text));
+                  Get.to(() =>
+                      CreateAccountScreen(mnemonic: phraseController.text));
 
                   // Get.back();
                   // if (result) {

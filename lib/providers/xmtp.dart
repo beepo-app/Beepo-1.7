@@ -36,7 +36,7 @@
 //   Future<xmtp.Client> getClient(String? privateKey) async {
 //     var key = _box.get('xmpt_key');
 //     bool isSignedUp = _box.get('isSignedUp', defaultValue: false);
-//     print(isSignedUp);
+//     beepoPrint(isSignedUp);
 
 //     if (isSignedUp) {
 //       if (key != null) {
@@ -65,7 +65,7 @@
 //       return client;
 //     } catch (e) {
 //       if (kDebugMode) {
-//         print({"error xmtp 61": e});
+//         beepoPrint({"error xmtp 61": e});
 //       }
 //       rethrow;
 //     }
@@ -74,7 +74,7 @@
 //   Future<xmtp.Client> initClientFromKey() async {
 //     Uint8List key = Hive.box('Beepo2.0').get('xmpt_key');
 
-//     print('object');
+//     beepoPrint('object');
 //     var privateKey = xmtp.PrivateKeyBundle.fromBuffer(key);
 
 //     var api = xmtp.Api.create(host: 'production.xmtp.network');
@@ -94,10 +94,10 @@
 //     try {
 //       await client.sendMessage(convo!, content!);
 
-//       print('msg sent');
+//       beepoPrint('msg sent');
 //       notifyListeners();
 //     } catch (e) {
-//       print(e);
+//       beepoPrint(e);
 //     }
 //   }
 
@@ -115,10 +115,10 @@
 //       // client = await getClient(privateKey);
 //       _conversations = await client.listConversations();
 //       notifyListeners();
-//       // print(convos);
+//       // beepoPrint(convos);
 //       return _conversations;
 //     } catch (e) {
-//       print(e);
+//       beepoPrint(e);
 //       return [];
 //     }
 //   }
@@ -129,7 +129,7 @@
 //       var msgs = await client.listMessages(convo!);
 //       return msgs;
 //     } catch (e) {
-//       print(e);
+//       beepoPrint(e);
 //       rethrow;
 //     }
 //   }
@@ -159,7 +159,7 @@
 //   //check if can chat
 //   Future<bool> checkAddress(String address) async {
 //     try {
-//       print(client.address);
+//       beepoPrint(client.address);
 //       return await client.canMessage(address);
 //     } catch (e) {
 //       return false;
@@ -185,14 +185,14 @@
 //         }),
 //       ));
 
-//       print('list');
-//       print(await d);
-//       print('list');
+//       beepoPrint('list');
+//       beepoPrint(await d);
+//       beepoPrint('list');
 //       await Hive.box('Beepo2.0').put('messages', (await d));
 
 //       return msg;
 //     } catch (e) {
-//       print('${e.toString()} xmtp 168');
+//       beepoPrint('${e.toString()} xmtp 168');
 //       rethrow;
 //     }
 //   }
@@ -216,9 +216,9 @@
 //       };
 // // "topic":msg[0].,
 
-//       print(jsonDecode(msgJson.toString()));
+//       beepoPrint(jsonDecode(msgJson.toString()));
 //     } catch (e) {
-//       print('${e.toString()} xmtp 180');
+//       beepoPrint('${e.toString()} xmtp 180');
 //       rethrow;
 //     }
 //   }
