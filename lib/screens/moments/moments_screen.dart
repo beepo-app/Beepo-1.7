@@ -71,7 +71,7 @@ class _MomentsScreensState extends State<MomentsScreens> {
       Hive.box('Beepo2.0').put('viewedStatuses', v);
 
       dbUpdateStatusViewsCount(acctProvider.db!, statuses[_activePage]['id'], allStatuses[sIndex]['ethAddress'], acctProvider.ethAddress!);
-    }
+    }     
 
     String? me = (context.read<AccountProvider>().ethAddress);
 

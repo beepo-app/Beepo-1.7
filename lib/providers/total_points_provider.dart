@@ -21,7 +21,7 @@ class TotalPointProvider extends ChangeNotifier {
   }
 
   MapEntry<String, IconData> setRank(int points) {
-    if (points >= 0 && points <= 200) {
+    if (points >= 0 && points <= 500) {
       return const MapEntry('Novice', Icons.sentiment_satisfied);
     }
     if (points >= 5000 && points < 10000) {
@@ -46,6 +46,6 @@ class TotalPointProvider extends ChangeNotifier {
       return const MapEntry('Veteran', Icons.shield);
     }
     if (points >= 500000) return const MapEntry('Master', Icons.school);
-    return const MapEntry("", Icons.error);
+    return const MapEntry("Great", Icons.error);
   }
 }

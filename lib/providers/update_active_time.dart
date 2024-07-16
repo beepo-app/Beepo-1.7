@@ -10,7 +10,6 @@ class UpdateActiveTimeProvider extends ChangeNotifier {
   bool isLoading = false;
   int points = 0;
   int dailyActiveTime = 0;
-  DateTime lastClaim = DateTime.now().subtract(const Duration(days: 1));
   Timer? _timer;
   DateTime _lastPaused = DateTime.now();
 
@@ -19,10 +18,13 @@ class UpdateActiveTimeProvider extends ChangeNotifier {
       initActivityTimer();
     });
     points = Hive.box('Beepo2.0').get('points', defaultValue: 0);
+    dailyActiveTime =
+        Hive.box('Beepo2.0').get('dailyActiveTime', defaultValue: 0);
+    beepoPrint(
+        'Initial points: $points, Initial daily active time: $dailyActiveTime');
   }
 
   Future<void> initActivityTimer() async {
-    WidgetsBinding.instance.lifecycleState;
     _startTimer();
   }
 
@@ -30,7 +32,6 @@ class UpdateActiveTimeProvider extends ChangeNotifier {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       dailyActiveTime++;
       if (dailyActiveTime >= 10800) {
-        // 10800 seconds = 3 hours
         _rewardPoints();
       }
       notifyListeners();
@@ -51,6 +52,10 @@ class UpdateActiveTimeProvider extends ChangeNotifier {
       points += 500; // Add points for 3 hours of activity
       dailyActiveTime = 0; // Reset daily active time after rewarding points
       await Hive.box('Beepo2.0').put('points', points); // Save points to Hive
+      await Hive.box('Beepo2.0').put(
+          'dailyActiveTime', dailyActiveTime); // Save daily active time to Hive
+      beepoPrint(
+          'Updated points: $points, Updated daily active time: $dailyActiveTime');
     } catch (e) {
       beepoPrint(e);
     } finally {
@@ -75,79 +80,3 @@ class UpdateActiveTimeProvider extends ChangeNotifier {
     updateDailyActiveTime();
   }
 }
-
-
-// class UpdateActiveTimeProvider extends ChangeNotifier {
-//   bool isLoading = false;
-//   int points = 0;
-//   int dailyActiveTime = 0;
-//   DateTime lastClaim = DateTime.now().subtract(const Duration(days: 1));
-//   Timer? _timer;
-//   DateTime _lastPaused = DateTime.now();
-
-//   UpdateActiveTimeProvider() {
-//     SchedulerBinding.instance.addPostFrameCallback((_) {
-//       initActivityTimer();
-//     });
-//     points = Hive.box('Beepo2.0').get('points', defaultValue: 0);
-//   }
-
-//   Future<void> initActivityTimer() async {
-//     WidgetsBinding.instance.addObserver(LifecycleEventHandler(
-//       onResume:  onResumed,
-//       onPause: onPaused,
-//     ));
-//     _startTimer();
-//   }
-
-//   void _startTimer() {
-//     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-//       dailyActiveTime++;
-//       if (dailyActiveTime >= 10800) {
-//         _rewardPoints();
-//       }
-//       notifyListeners();
-//     });
-//   }
-
-//   void _stopTimer() {
-//     _timer?.cancel();
-//   }
-
-//   Future<void> _rewardPoints() async {
-//     isLoading = true;
-//     notifyListeners();
-
-//     try {
-//       await dbUpdateActiveTime(
-//           AccountProvider().ethAddress.toString(), dailyActiveTime);
-//       points += 500;
-//       dailyActiveTime = 0; // Reset daily active time after rewarding points
-//       await Hive.box('Beepo2.0').put('points', points); // Save points to Hive
-//     } catch (e) {
-//       beepoPrint(e);
-//     } finally {
-//       isLoading = false;
-//       notifyListeners();
-//     }
-//   }
-
-//   void updateDailyActiveTime() {
-//     dailyActiveTime += DateTime.now().difference(_lastPaused).inSeconds;
-//     _lastPaused = DateTime.now();
-//     notifyListeners();
-//   }
-
-//   Future<void> onResumed() async{
-//     _startTimer();
-//     _lastPaused = DateTime.now();
-//   }
-
-//   Future<void> onPaused() {
-//     _stopTimer();
-//    return updateDailyActiveTime();
-//   }
-// }
-
-
-

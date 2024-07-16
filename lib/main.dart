@@ -57,9 +57,7 @@ void main() async {
             create: (_) => UpdateReferralProvider(),
           ),
           ChangeNotifierProvider(
-            create: (_) => TotalPointProvider(
-              
-            ),
+            create: (_) => TotalPointProvider(),
           ),
           ChangeNotifierProvider(
             create: (_) => UpdateActiveTimeProvider(),

@@ -21,11 +21,6 @@ class ClaimDailyPointsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> savePointsToHive(num newPoints, DateTime newLastClaim) async {
-    await Hive.box('Beepo2.0').put('points', newPoints);
-    await Hive.box('Beepo2.0').put('lastClaim', newLastClaim);
-  }
-
   Future<void> claimPoints(String ethAddress) async {
     if (!canClaim) return;
 
@@ -33,8 +28,8 @@ class ClaimDailyPointsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await dbClaimDailyPoints(10, ethAddress);
-      points += 10;
+      await dbClaimDailyPoints(20, ethAddress); // Pass 20 points as parameter
+      points += 20; // Assume 20 points are added in dbClaimDailyPoints
       lastClaim = DateTime.now();
       canClaim = false;
       await savePointsToHive(points, lastClaim);
@@ -44,6 +39,11 @@ class ClaimDailyPointsProvider extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<void> savePointsToHive(int newPoints, DateTime newLastClaim) async {
+    await Hive.box('Beepo2.0').put('points', newPoints);
+    await Hive.box('Beepo2.0').put('lastClaim', newLastClaim);
   }
 
   DateTime get nextClaimTime => lastClaim.add(const Duration(days: 1));

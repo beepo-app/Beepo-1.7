@@ -110,6 +110,16 @@ Future<List<dynamic>> dbGetAllStatus(Db db) async {
   }).toList();
 }
 
+Future<List<dynamic>> dbGetAllPoints(Db db) async {
+  if (db.state == State.closed) {
+    await db.open();
+  }
+  var status = db.collection('points');
+  return status.find({
+    "expireAt": {r'$lt': DateTime.now()}
+  }).toList();
+}
+
 dbDeleteStatus(Db db, newData, String ethAddress) async {
   if (db.state == State.closed) {
     await db.open();
@@ -412,6 +422,7 @@ Future<Map> dbGetUserByAddres(Db db, EthereumAddress ethAddress) async {
   }
 }
 
+
 dbClaimDailyPoints(int points, String ethAddress) async {
   Db db = await Db.create(
       'mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
@@ -434,6 +445,8 @@ dbClaimDailyPoints(int points, String ethAddress) async {
           'referrals': 0
         },
       );
+      await Hive.box('Beepo2.0').put('ethAddress', ethAddress);
+      await Hive.box('Beepo2.0').put('ethAddress', points);
     } catch (e) {
       beepoPrint(e);
     }
@@ -453,9 +466,8 @@ dbClaimDailyPoints(int points, String ethAddress) async {
       beepoPrint(e);
     }
   }
-  beepoPrint("Please come back after " +
-      (lastClaim.add(const Duration(days: 1)).hour).toString() +
-      " hours!");
+  beepoPrint(
+      "Please come back after ${lastClaim.add(const Duration(days: 1)).hour} hours!");
 }
 
 dbWithdrawPoints(String ethAddress) async {
@@ -476,6 +488,7 @@ dbWithdrawPoints(String ethAddress) async {
     } catch (e) {
       beepoPrint(e);
     }
+    await Hive.box('Beepo2.0').put('ethAddress', ethAddress);
     return;
   }
 
@@ -513,6 +526,8 @@ dbUpdatePoints(int points, String ethAddress) async {
           'referrals': 0
         },
       );
+      await Hive.box('Beepo2.0').put('ethAddress', ethAddress);
+      await Hive.box('Beepo2.0').put('ethAddress', points);
     } catch (e) {
       beepoPrint(e);
     }
@@ -627,16 +642,14 @@ Future<void> dbUpdateActiveTime(String ethAddress, int activeTimeToAdd) async {
 
   if (data == null) {
     try {
-      await pointsCollection.insertOne(
-        {
-          'ethAddress': ethAddress,
-          'points': 0,
-          'lastClaim': DateTime.now(),
-          'referrals': 0,
-          'dailyActiveTime': activeTimeToAdd,
-          'lastActiveCheck': DateTime.now(),
-        },
-      );
+      await pointsCollection.insertOne({
+        'ethAddress': ethAddress,
+        'points': 0,
+        'lastClaim': DateTime.now(),
+        'referrals': 0,
+        'dailyActiveTime': activeTimeToAdd,
+        'lastActiveCheck': DateTime.now(),
+      });
       dbFetchPoints(ethAddress);
     } catch (e) {
       beepoPrint(e);
@@ -644,36 +657,37 @@ Future<void> dbUpdateActiveTime(String ethAddress, int activeTimeToAdd) async {
     return;
   }
 
-  if (data.containsKey('points')) {
-    DateTime lastActiveCheck =
-        (data['lastActiveCheck'] as DateTime?) ?? DateTime.now();
-    int dailyActiveTime = data['dailyActiveTime'] ?? 0;
+  DateTime lastActiveCheck =
+      (data['lastActiveCheck'] as DateTime?) ?? DateTime.now();
+  int dailyActiveTime = data['dailyActiveTime'] ?? 0;
 
-    if (lastActiveCheck.day != DateTime.now().day) {
-      dailyActiveTime = 0; // Reset daily active time if it's a new day
-    }
+  if (lastActiveCheck.day != DateTime.now().day) {
+    dailyActiveTime = 0; // Reset daily active time if it's a new day
+  }
 
-    dailyActiveTime += activeTimeToAdd;
-    data['dailyActiveTime'] = dailyActiveTime;
-    data['lastActiveCheck'] = DateTime.now();
+  dailyActiveTime += activeTimeToAdd;
+  data['dailyActiveTime'] = dailyActiveTime;
+  data['lastActiveCheck'] = DateTime.now();
 
-    if (dailyActiveTime >= 10800) {
-      // 10800 seconds = 3 hours
-      data['points'] = data['points'] + 500; // Reward 500 points
-      data['dailyActiveTime'] = 0; // Reset active time after rewarding
-      beepoPrint(
-          "Congrats you've earned 500p for staying active for 3hrs on Beepo today.");
-    }
+  if (dailyActiveTime >= 10800) {
+    // 10800 seconds = 3 hours
+    data['points'] = data['points'] + 500; // Reward 500 points
+    data['dailyActiveTime'] = 0; // Reset active time after rewarding
+    showToast(
+        "Congrats you've earned 500 points for staying active for 3 hours on Beepo today.");
+  }
 
-    try {
-      await pointsCollection.replaceOne(
-          where.eq("ethAddress", ethAddress), data);
-      beepoPrint('Active time updated successfully!');
-    } catch (e) {
-      beepoPrint(e);
-    }
+  try {
+    await pointsCollection.replaceOne(where.eq("ethAddress", ethAddress), data);
+    await Hive.box('Beepo2.0').put('points', data['points']);
+    await Hive.box('Beepo2.0').put('dailyActiveTime', data['dailyActiveTime']);
+    showToast("Active time updated successfully!");
+    beepoPrint('Active time updated successfully!');
+  } catch (e) {
+    beepoPrint(e);
   }
 }
+
 
 // String setRank(int points) {
 //   if (points < 5000) return 'Novice';

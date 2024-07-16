@@ -65,8 +65,6 @@
 //   }
 // }
 
-
-
 import 'package:Beepo/screens/activity/activity_hub.dart';
 import 'package:Beepo/screens/profile/profile_screen.dart';
 import 'package:Beepo/screens/wallet/wallet_screen.dart';
@@ -135,4 +133,3 @@ class _BottomNavHomeState extends State<BottomNavHome> {
     );
   }
 }
-
