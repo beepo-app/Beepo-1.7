@@ -7,6 +7,7 @@ class ActivityButton extends StatelessWidget {
     required this.buttontext,
     this.press,
     required this.icon,
+    this.subtitle,
     required this.checkStatus,
   });
 
@@ -14,6 +15,7 @@ class ActivityButton extends StatelessWidget {
   final String buttontext;
   final IconData icon;
   final bool checkStatus;
+  final String? subtitle;
   final VoidCallback? press;
 
   @override
@@ -69,3 +71,9 @@ class ActivityButton extends StatelessWidget {
     );
   }
 }
+
+
+//  Text(
+//             'Time Spent: ${timeBasedPointsProvider.timeSpent} seconds',
+//             style: TextStyle(fontSize: 16),
+//           ),

@@ -1,13 +1,7 @@
 import 'dart:convert';
 import 'package:Beepo/providers/account_provider.dart';
 import 'package:Beepo/providers/chat_provider.dart';
-import 'package:Beepo/providers/claim_daily_points_provider.dart';
-import 'package:Beepo/providers/total_points_provider.dart';
-import 'package:Beepo/providers/update_active_time.dart';
-import 'package:Beepo/providers/update_referral_provider.dart';
-import 'package:Beepo/providers/updated_points_provider.dart';
 import 'package:Beepo/providers/wallet_provider.dart';
-import 'package:Beepo/providers/withdraw_points_provider.dart';
 import 'package:Beepo/screens/Auth/lock_screen.dart';
 import 'package:Beepo/screens/auth/onboarding_screen.dart';
 import 'package:Beepo/services/notification_service.dart';
@@ -64,24 +58,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         AppLifecycleListener(onStateChange: _onLifeCycleChanged);
     checkState();
     super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!context.mounted) return;
-
-      final withdrawPoint = context.read<WithDrawPointsProvider>();
-      final updatePoint = context.read<UpdatedPointsProvider>();
-      final pointDaily = context.read<ClaimDailyPointsProvider>();
-      final stayPoint = context.read<UpdateActiveTimeProvider>();
-      final referPoint = context.read<UpdateReferralProvider>();
-
-      context.read<TotalPointProvider>().updateTotalPoints(
-            dailyPoints: pointDaily.points,
-            withdrawPoints: withdrawPoint.points,
-            pointProviderPoints: updatePoint.points,
-            activeTimePoints: stayPoint.points,
-            referralPoints: referPoint.points,
-          );
-    });
   }
 
   @override

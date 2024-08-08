@@ -422,9 +422,8 @@ Future<Map> dbGetUserByAddres(Db db, EthereumAddress ethAddress) async {
   }
 }
 
-
-dbClaimDailyPoints(int points, String ethAddress) async {
-  Db db = await Db.create(
+Future<void> dbClaimDailyPoints(int points, String ethAddress) async {
+  var db = await Db.create(
       'mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
 
   if (db.state == State.closed || db.state == State.init) {
@@ -437,7 +436,7 @@ dbClaimDailyPoints(int points, String ethAddress) async {
 
   if (data == null) {
     try {
-      var d = await pointsCollection.insertOne(
+      await pointsCollection.insertOne(
         {
           'ethAddress': ethAddress,
           "points": points,
@@ -445,29 +444,31 @@ dbClaimDailyPoints(int points, String ethAddress) async {
           'referrals': 0
         },
       );
-      await Hive.box('Beepo2.0').put('ethAddress', ethAddress);
-      await Hive.box('Beepo2.0').put('ethAddress', points);
+      var box = await Hive.openBox('Beepo2.0');
+      await box.put('ethAddress', ethAddress);
+      await box.put('points', points);
     } catch (e) {
-      beepoPrint(e);
+      print(e);
     }
     return;
   }
 
-  data['points'] = data['points'] + points;
-  DateTime lastClaim = data['lastClaim'] ?? DateTime.now();
-  if (lastClaim.compareTo(lastClaim.add(const Duration(days: 1))) >= 0) {
-    data['lastClaim'] = DateTime.now();
+  DateTime lastClaim =
+      data['lastClaim'] ?? DateTime.fromMillisecondsSinceEpoch(0);
+  DateTime now = DateTime.now();
+  if (now.difference(lastClaim).inDays >= 1) {
+    data['points'] = data['points'] + points;
+    data['lastClaim'] = now;
     try {
-      var d = await pointsCollection.replaceOne(
+      await pointsCollection.replaceOne(
           where.eq("ethAddress", ethAddress), data);
-      beepoPrint('Daily points claimed Successfully!');
-      dbFetchPoints(ethAddress);
+      print('Daily points claimed successfully!');
     } catch (e) {
-      beepoPrint(e);
+      print(e);
     }
+  } else {
+    print("Please come back later!");
   }
-  beepoPrint(
-      "Please come back after ${lastClaim.add(const Duration(days: 1)).hour} hours!");
 }
 
 dbWithdrawPoints(String ethAddress) async {
@@ -576,57 +577,157 @@ dbFetchPoints(String ethAddress) async {
   }
 }
 
-dbUpdateReferrals(String refId) async {
-  Db db = await Db.create(
+Future<Map<String, dynamic>> dbUpdateReferrals(String refId) async {
+  var db = await Db.create(
       'mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
 
   if (db.state == State.closed || db.state == State.init) {
     await db.open();
   }
 
-  beepoPrint('update refs fetch points');
   var pointsCollection = db.collection('points');
   var usersCollection = db.collection('users');
 
-  var data = await usersCollection.findOne(where.eq('username', refId));
+  var user = await usersCollection.findOne(where.eq('username', refId));
 
-  if (data == null) {
-    try {
-      return {"error": 'user not found'};
-    } catch (e) {
-      beepoPrint(e);
-    }
-    return;
+  if (user == null) {
+    return {"error": 'User not found'};
   }
 
-  var ethAddress = data['ethAddress'];
+  var ethAddress = user['ethAddress'];
   var pointsData =
       await pointsCollection.findOne(where.eq('ethAddress', ethAddress));
 
   if (pointsData == null) {
     try {
-      var d = await pointsCollection.insertOne(
-        {'ethAddress': ethAddress, "points": 100, 'referrals': 1},
-      );
+      await pointsCollection.insertOne({
+        'ethAddress': ethAddress,
+        "points": 100, // Initial points for a new referral
+        'referrals': 1,
+      });
     } catch (e) {
-      beepoPrint(e);
+      print(e);
+      return {"error": e.toString()};
     }
-    return;
+  } else {
+    pointsData['points'] = pointsData['points'] + 100; // Update points
+    pointsData['referrals'] =
+        pointsData['referrals'] + 1; // Update referrals count
+
+    try {
+      await pointsCollection.replaceOne(
+          where.eq("ethAddress", ethAddress), pointsData);
+    } catch (e) {
+      print(e);
+      return {"error": e.toString()};
+    }
   }
 
-  pointsData['points'] = pointsData['points'] + 100;
-  pointsData['referrals'] = pointsData['referrals'] + 1;
+  return {"success": 'Referral added successfully!'};
+}
+
+Future<Map<String, dynamic>?> dbFetchReferrals(String ethAddress) async {
+  var db = await Db.create(
+      'mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
+
+  if (db.state == State.closed || db.state == State.init) {
+    await db.open();
+  }
+
+  var pointsCollection = db.collection('points');
 
   try {
-    var d = await pointsCollection.replaceOne(
-        where.eq("ethAddress", ethAddress), pointsData);
-    beepoPrint('ref added Successfully!');
-    dbFetchPoints(ethAddress);
+    var data =
+        await pointsCollection.findOne(where.eq('ethAddress', ethAddress));
+    return data;
   } catch (e) {
-    beepoPrint(e);
+    print("Error fetching referrals: $e");
+    return null;
+  } finally {
+    await db.close();
+  }
+}
+
+//HOURS STAY 3
+
+Future<void> dbUpdateTimeBasedPoints(String ethAddress, int timeSpent) async {
+  var db = await Db.create(
+      'mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
+
+  if (db.state == State.closed || db.state == State.init) {
+    await db.open();
   }
 
-  beepoPrint('Please come back after 24 hours!');
+  var pointsCollection = db.collection('points');
+
+  var pointsData =
+      await pointsCollection.findOne(where.eq('ethAddress', ethAddress));
+
+  if (pointsData == null) {
+    try {
+      await pointsCollection.insertOne({
+        'ethAddress': ethAddress,
+        'points': 0,
+        'timeSpent': 0, // Time spent in seconds
+      });
+    } catch (e) {
+      print("Error creating initial points data: $e");
+      return;
+    }
+  } else {
+    pointsData['timeSpent'] = (pointsData['timeSpent'] ?? 0) + timeSpent;
+
+    if (pointsData['timeSpent'] >= 3 * 3600) {
+      // 3 hours = 3 * 3600 seconds
+      pointsData['points'] =
+          pointsData['points'] + 300; // Add points for 3 hours spent
+      pointsData['timeSpent'] = 0; // Reset time spent after awarding points
+    }
+
+    try {
+      await pointsCollection.replaceOne(
+          where.eq('ethAddress', ethAddress), pointsData);
+    } catch (e) {
+      print("Error updating points data: $e");
+    }
+  }
+}
+
+//AWARD TWEET
+Future<void> dbAwardTweetPoints(String ethAddress, int points) async {
+  var db = await Db.create(
+      'mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
+
+  if (db.state == State.closed || db.state == State.init) {
+    await db.open();
+  }
+
+  var pointsCollection = db.collection('points');
+
+  var pointsData =
+      await pointsCollection.findOne(where.eq('ethAddress', ethAddress));
+
+  if (pointsData == null) {
+    try {
+      await pointsCollection.insertOne({
+        'ethAddress': ethAddress,
+        'points': points,
+      });
+    } catch (e) {
+      print("Error creating points data: $e");
+      return;
+    }
+  } else {
+    pointsData['points'] = (pointsData['points'] ?? 0) + points;
+
+    try {
+      await pointsCollection.replaceOne(
+          where.eq('ethAddress', ethAddress), pointsData);
+    } catch (e) {
+      print("Error updating points data: $e");
+    }
+  }
+  await db.close();
 }
 
 Future<void> dbUpdateActiveTime(String ethAddress, int activeTimeToAdd) async {

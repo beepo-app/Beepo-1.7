@@ -1,15 +1,14 @@
 import 'package:Beepo/providers/account_provider.dart';
-import 'package:Beepo/providers/update_active_time.dart';
-import 'package:Beepo/providers/claim_daily_points_provider.dart';
+import 'package:Beepo/providers/new_point_working.dart';
+import 'package:Beepo/providers/referral_provider.dart';
+import 'package:Beepo/providers/time_base_provider.dart';
 import 'package:Beepo/providers/total_points_provider.dart';
-import 'package:Beepo/providers/updated_points_provider.dart';
-import 'package:Beepo/providers/withdraw_points_provider.dart';
-import 'package:Beepo/providers/update_referral_provider.dart';
 import 'package:Beepo/widgets/activity_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ActivityHubScreen extends StatefulWidget {
   const ActivityHubScreen({super.key});
@@ -20,32 +19,42 @@ class ActivityHubScreen extends StatefulWidget {
 
 class _ActivityHubScreenState extends State<ActivityHubScreen> {
   @override
-  void initState() {
-    ClaimDailyPointsProvider().loadFromHive();
-    WithDrawPointsProvider().loadFromHive();
-    UpdateReferralProvider().init();
-    UpdatedPointsProvider().loadFromHive();
-    UpdateActiveTimeProvider().initActivityTimer();
-    TotalPointProvider().rankEntry;
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final dailyProvider = Provider.of<ClaimDailyPointsProvider>(context);
-    final withDrawPointProvider = Provider.of<WithDrawPointsProvider>(context);
-    final pointProvider = Provider.of<UpdatedPointsProvider>(context);
-    final totalPointEarn = Provider.of<TotalPointProvider>(context);
-    final activeTimeProvider = Provider.of<UpdateActiveTimeProvider>(context);
+    final accountProvider = Provider.of<AccountProvider>(context);
 
-    final referralTotalProvider = Provider.of<UpdateReferralProvider>(context);
-
-    final accountProvider = Provider.of<AccountProvider>(context, listen: true);
     final username = accountProvider.username;
 
     String getReferralLink(String? username) {
       return 'https://play.google.com/store/apps/details?id=com.beepo.app&referrer=$username';
     }
+
+    String referralLink = getReferralLink(username);
+
+    final dailyPointProvider = Provider.of<NewPointsProvider>(context).points;
+
+    final timeBasedPointsProvider =
+        Provider.of<TimeBasedPointsProvider>(context).points;
+
+    final referralPoints = Provider.of<ReferralProvider>(context).points;
+    final canClaimPoints = Provider.of<NewPointsProvider>(context).canClaim;
+
+    // Calculate total points
+    final totalPoints =
+        dailyPointProvider + timeBasedPointsProvider + referralPoints;
+
+    final totalPointProvider = Provider.of<TotalPointProvider>(context);
+    final rankDescriptions = {
+      'Novice': 'This is the starting rank. Earn more points to level up!',
+      'Amateur': 'You are gaining experience. Keep earning points!',
+      'Senior': 'You are becoming experienced. Continue the good work!',
+      'Enthusiast': 'You are passionate about your activities. Great job!',
+      'Professional': 'You are skilled and consistent. Keep pushing forward!',
+      'Expert': 'You have reached a high level of expertise. Impressive!',
+      'Leader': 'You are among the best. Others look up to you!',
+      'Veteran': 'You have a wealth of experience. True dedication!',
+      'Master': 'You have mastered the system. Few can match your skills!',
+      'Great': 'An exceptional rank, achieved by very few!',
+    };
 
     return Scaffold(
       appBar: AppBar(
@@ -92,7 +101,7 @@ class _ActivityHubScreenState extends State<ActivityHubScreen> {
                                 borderRadius: BorderRadius.circular(50),
                                 color: const Color.fromRGBO(231, 231, 231, 1)),
                             child: Icon(
-                              totalPointEarn.rankEntry.value,
+                              totalPointProvider.rankEntry.value,
                               color: const Color.fromRGBO(250, 145, 8, 1),
                             ),
                           ),
@@ -115,7 +124,7 @@ class _ActivityHubScreenState extends State<ActivityHubScreen> {
                                 height: 1,
                               ),
                               Text(
-                                totalPointEarn.rankEntry.key,
+                                totalPointProvider.rankEntry.key.toString(),
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500,
@@ -127,7 +136,29 @@ class _ActivityHubScreenState extends State<ActivityHubScreen> {
                         ],
                       ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Rank Information'),
+                                content: Text(
+                                  rankDescriptions[
+                                          totalPointProvider.rankEntry.key] ??
+                                      'No description available.',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    child: const Text('OK'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
                         icon: const Icon(
                           Iconsax.info_circle,
                         ),
@@ -178,7 +209,7 @@ class _ActivityHubScreenState extends State<ActivityHubScreen> {
                                 height: 1,
                               ),
                               Text(
-                                '${referralTotalProvider.referrals}',
+                                '$referralPoints',
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500,
@@ -193,22 +224,12 @@ class _ActivityHubScreenState extends State<ActivityHubScreen> {
                         children: [
                           IconButton(
                             onPressed: () async {
-                              if (username != null) {
-                                String referralLink = getReferralLink(username);
-                                Clipboard.setData(
-                                    ClipboardData(text: referralLink));
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text('Referral link copied!')),
-                                );
-                                await referralTotalProvider
-                                    .updateReferrals(referralLink);
-                              } else {
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(const SnackBar(
-                                  content: Text('Username is null!'),
-                                ));
-                              }
+                              Clipboard.setData(
+                                  ClipboardData(text: referralLink));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Referral link copied!')),
+                              );
                             },
                             icon: const Icon(
                               Iconsax.copy,
@@ -216,7 +237,7 @@ class _ActivityHubScreenState extends State<ActivityHubScreen> {
                           ),
                           IconButton(
                             onPressed: () async {
-                              getReferralLink(username);
+                              Share.share(referralLink, subject: 'Join Beepo!');
                             },
                             icon: const Icon(
                               Iconsax.global,
@@ -270,7 +291,7 @@ class _ActivityHubScreenState extends State<ActivityHubScreen> {
                                 height: 1,
                               ),
                               Text(
-                                "Total Points: ${dailyProvider.points + withDrawPointProvider.points + pointProvider.points}",
+                                "$totalPoints",
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500,
@@ -282,7 +303,7 @@ class _ActivityHubScreenState extends State<ActivityHubScreen> {
                         ],
                       ),
                       Opacity(
-                        opacity: 0.5,
+                        opacity: totalPoints > 0 ? 1.0 : 0.5,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
@@ -292,14 +313,8 @@ class _ActivityHubScreenState extends State<ActivityHubScreen> {
                             foregroundColor: const Color(0xff263238),
                             fixedSize: const Size(120, 1),
                           ),
-                          onPressed: null,
-                          // withDrawPointProvider.isLoading
-                          //     ? null
-                          //     : () => withDrawPointProvider.withdrawPoints(
-                          //         accountProvider.ethAddress.toString()),
-                          child: withDrawPointProvider.isLoading
-                              ? const CircularProgressIndicator()
-                              : const Text('Withdraw'),
+                          onPressed: totalPoints > 0 ? () {} : null,
+                          child: const Text('Withdraw'),
                         ),
                       ),
                     ],
@@ -334,7 +349,7 @@ class _ActivityHubScreenState extends State<ActivityHubScreen> {
                             width: 10,
                           ),
                           Text(
-                            'Daily Login Point: ${dailyProvider.points}',
+                            'Daily Login Point: $dailyPointProvider',
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
@@ -343,36 +358,27 @@ class _ActivityHubScreenState extends State<ActivityHubScreen> {
                           ),
                         ],
                       ),
-                      dailyProvider.canClaim
-                          ? ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                backgroundColor: const Color(0xffD9D9D9),
-                                foregroundColor: const Color(0xff263238),
-                                fixedSize: const Size(120, 1),
-                              ),
-                              onPressed: dailyProvider.isLoading
-                                  ? null
-                                  : () => dailyProvider.claimPoints(
-                                      accountProvider.ethAddress.toString()),
-                              child: dailyProvider.isLoading
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                          strokeWidth: 2.0),
-                                    )
-                                  : const Text('Claim'),
-                            )
-                          : Text(
-                              'Next claim in ${dailyProvider.nextClaimTime.difference(DateTime.now()).inHours} hours',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          backgroundColor: canClaimPoints
+                              ? const Color(0xffD9D9D9)
+                              : Colors.grey,
+                          foregroundColor: const Color(0xff263238),
+                          fixedSize: const Size(120, 1),
+                        ),
+                        onPressed: canClaimPoints
+                            ? () {
+                                Provider.of<NewPointsProvider>(context,
+                                        listen: false)
+                                    .claimPoints(300,
+                                        accountProvider.ethAddress.toString());
+                              }
+                            : null,
+                        child: const Text('Claim'),
+                      ),
                     ],
                   ),
                 ),
@@ -399,7 +405,7 @@ class _ActivityHubScreenState extends State<ActivityHubScreen> {
               ),
               ActivityButton(
                 checkStatus: true,
-                mytext: 'Send 100 messages',
+                mytext: 'Send a tweet ‘bout us',
                 buttontext: '100p',
                 press: () {},
                 icon: Iconsax.send_1,
@@ -410,7 +416,7 @@ class _ActivityHubScreenState extends State<ActivityHubScreen> {
               ActivityButton(
                 checkStatus: false,
                 mytext: 'Stay active for 3hrs',
-                buttontext: activeTimeProvider.points.toString(),
+                buttontext: 'Points: $timeBasedPointsProvider',
                 icon: Iconsax.tick_circle,
               ),
               const SizedBox(

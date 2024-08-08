@@ -1,22 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart'; 
+import 'package:mongo_dart/mongo_dart.dart' as mongo; 
 
 class TotalPointProvider extends ChangeNotifier {
   int totalPoints = 0;
   MapEntry<String, IconData> rankEntry = const MapEntry('', Icons.error);
 
-  void updateTotalPoints({
+  Future<void> updateTotalPoints({
     required int dailyPoints,
     required int withdrawPoints,
     required int pointProviderPoints,
     required int activeTimePoints,
     required int referralPoints,
-  }) {
+    required String ethAddress,
+  }) async {
     totalPoints = dailyPoints +
         withdrawPoints +
         pointProviderPoints +
         activeTimePoints +
         referralPoints;
     rankEntry = setRank(totalPoints);
+
+    // Save to database and local storage
+    await saveRankToDatabase(ethAddress);
+    saveRankToLocal(totalPoints, rankEntry.key);
+
     notifyListeners();
   }
 
@@ -47,5 +55,42 @@ class TotalPointProvider extends ChangeNotifier {
     }
     if (points >= 500000) return const MapEntry('Master', Icons.school);
     return const MapEntry("Great", Icons.error);
+  }
+
+  Future<void> saveRankToDatabase(String ethAddress) async {
+    var db = await mongo.Db.create(
+        'mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
+
+    if (db.state == mongo.State.closed || db.state == mongo.State.init) {
+      await db.open();
+    }
+
+    var userCollection = db.collection('users');
+
+    try {
+      await userCollection.update(
+        mongo.where.eq('ethAddress', ethAddress),
+        mongo.modify.set('totalPoints', totalPoints).set('rank', rankEntry.key),
+        upsert: true,
+      );
+    } catch (e) {
+      print('Error saving rank to database: $e');
+    } finally {
+      await db.close();
+    }
+  }
+
+  void saveRankToLocal(int points, String rank) async {
+    var box = await Hive.openBox('BeepoRankData');
+    await box.put('totalPoints', points);
+    await box.put('rank', rank);
+  }
+
+  Future<void> loadRankFromLocal() async {
+    var box = await Hive.openBox('BeepoRankData');
+    totalPoints = box.get('totalPoints', defaultValue: 0);
+    String rank = box.get('rank', defaultValue: 'Novice');
+    rankEntry = setRank(totalPoints);
+    notifyListeners();
   }
 }
