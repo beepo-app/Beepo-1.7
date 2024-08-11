@@ -124,7 +124,7 @@ class _ActivityHubScreenState extends State<ActivityHubScreen> {
                                 height: 1,
                               ),
                               Text(
-                                totalPointProvider.rankEntry.key.toString(),
+                                totalPointProvider.rankEntry.key,
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500,

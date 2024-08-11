@@ -24,49 +24,39 @@ void main() async {
 
   await Hive.initFlutter();
   Hive.registerAdapter(EncryptSeedAdapter());
-  await Hive.openBox('beepo2.0');
+
+  // Attempt to handle large data more efficiently
+  try {
+    await Hive.openBox('beepo2.0');
+  } catch (e) {
+    print('Failed to open Hive box: $e');
+    // Consider clearing or migrating data if necessary
+  }
+
   await dotenv.load(fileName: ".env");
 
   await session.loadSaved();
   _monitorTotalUnreadBadge();
-  await dotenv.load();
 
   runApp(
     MultiProvider(
-        providers: [
-          ChangeNotifierProvider(
-            create: (_) => WalletProvider(),
-          ),
-          ChangeNotifierProvider(
-            create: (_) => ChatProvider(),
-          ),
-          ChangeNotifierProvider(
-            create: (_) => AccountProvider(),
-          ),
-          ChangeNotifierProvider(
-            create: (_) => TotalPointProvider(),
-          ),
-          ChangeNotifierProvider(
-            create: (_) => WithDrawPointsProvider(),
-          ),
-          ChangeNotifierProvider(
-            create: (_) => NewPointsProvider(),
-          ),
-          ChangeNotifierProvider(
-            create: (_) => ReferralProvider(),
-          ),
-          ChangeNotifierProvider(
-            create: (_) => TotalPointProvider(),
-          ),
-          ChangeNotifierProvider(
-            create: (_) => TimeBasedPointsProvider(),
-          ),
-        ],
-        builder: (context, _) {
-          return const GetMaterialApp(
-            home: MyApp(),
-          );
-        }),
+      providers: [
+        ChangeNotifierProvider(create: (_) => WalletProvider()),
+        ChangeNotifierProvider(create: (_) => ChatProvider()),
+        ChangeNotifierProvider(create: (_) => AccountProvider()),
+        ChangeNotifierProvider(create: (_) => WithDrawPointsProvider()),
+        ChangeNotifierProvider(create: (_) => NewPointsProvider()),
+        ChangeNotifierProvider(create: (_) => ReferralProvider()),
+        ChangeNotifierProvider(create: (_) => TotalPointProvider()),
+        ChangeNotifierProvider(create: (_) => TimeBasedPointsProvider()),
+      ],
+      builder: (context, _) {
+        return const GetMaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: MyApp(),
+        );
+      },
+    ),
   );
 }
 

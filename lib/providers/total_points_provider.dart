@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart'; 
-import 'package:mongo_dart/mongo_dart.dart' as mongo; 
+import 'package:hive/hive.dart';
+import 'package:mongo_dart/mongo_dart.dart' as mongo;
 
 class TotalPointProvider extends ChangeNotifier {
   int totalPoints = 0;
   MapEntry<String, IconData> rankEntry = const MapEntry('', Icons.error);
+
+  TotalPointProvider() {
+    // Load rank and points when the provider is first created
+    loadRankFromLocal();
+  }
 
   Future<void> updateTotalPoints({
     required int dailyPoints,
@@ -89,7 +94,7 @@ class TotalPointProvider extends ChangeNotifier {
   Future<void> loadRankFromLocal() async {
     var box = await Hive.openBox('BeepoRankData');
     totalPoints = box.get('totalPoints', defaultValue: 0);
-    String rank = box.get('rank', defaultValue: 'Novice');
+    // String rank = box.get('rank', defaultValue: 'Novice');
     rankEntry = setRank(totalPoints);
     notifyListeners();
   }
