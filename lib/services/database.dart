@@ -471,6 +471,7 @@ Future<void> dbClaimDailyPoints(int points, String ethAddress) async {
   }
 }
 
+
 dbWithdrawPoints(String ethAddress) async {
   Db db = await Db.create(
       'mongodb+srv://admin:admin1234@cluster0.x31efel.mongodb.net/?retryWrites=true&w=majority');
@@ -682,6 +683,10 @@ Future<void> dbUpdateTimeBasedPoints(String ethAddress, int timeSpent) async {
       pointsData['points'] =
           pointsData['points'] + 300; // Add points for 3 hours spent
       pointsData['timeSpent'] = 0; // Reset time spent after awarding points
+
+      // Update the local _points variable and save to Hive
+      var box = await Hive.openBox('Beepo2.0');
+      box.put('points', pointsData['points']);
     }
 
     try {

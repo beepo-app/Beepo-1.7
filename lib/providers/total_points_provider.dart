@@ -1,14 +1,36 @@
+import 'package:Beepo/providers/new_point_working.dart';
+import 'package:Beepo/providers/referral_provider.dart';
+import 'package:Beepo/providers/time_base_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:mongo_dart/mongo_dart.dart' as mongo;
 
 class TotalPointProvider extends ChangeNotifier {
+
   int totalPoints = 0;
+  final NewPointsProvider pointsProvider;
+  final ReferralProvider referralProvider;
+  final TimeBasedPointsProvider timeBasedPointsProvider;
+
+  TotalPointProvider({
+    required this.pointsProvider,
+    required this.referralProvider,
+    required this.timeBasedPointsProvider,
+  }) {
+    loadRankFromLocal();
+  }
+  
   MapEntry<String, IconData> rankEntry = const MapEntry('', Icons.error);
 
-  TotalPointProvider() {
-    // Load rank and points when the provider is first created
-    loadRankFromLocal();
+  void resetPoints() {
+    totalPoints = 0;
+    saveTotalPointsToHive();
+    notifyListeners();
+  }
+
+  Future<void> saveTotalPointsToHive() async {
+    var box = await Hive.openBox('BeepoRankData');
+    await box.put('totalPoints', totalPoints);
   }
 
   Future<void> updateTotalPoints({
@@ -28,7 +50,7 @@ class TotalPointProvider extends ChangeNotifier {
 
     // Save to database and local storage
     await saveRankToDatabase(ethAddress);
-    saveRankToLocal(totalPoints, rankEntry.key);
+    await saveRankToLocal(totalPoints, rankEntry.key);
 
     notifyListeners();
   }
@@ -85,7 +107,7 @@ class TotalPointProvider extends ChangeNotifier {
     }
   }
 
-  void saveRankToLocal(int points, String rank) async {
+  Future<void> saveRankToLocal(int points, String rank) async {
     var box = await Hive.openBox('BeepoRankData');
     await box.put('totalPoints', points);
     await box.put('rank', rank);

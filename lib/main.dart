@@ -44,10 +44,23 @@ void main() async {
         ChangeNotifierProvider(create: (_) => WalletProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
         ChangeNotifierProvider(create: (_) => AccountProvider()),
-        ChangeNotifierProvider(create: (_) => WithDrawPointsProvider()),
+        ChangeNotifierProvider(
+          create: (context) => TotalPointProvider(
+            pointsProvider: context.read<NewPointsProvider>(),
+            referralProvider: context.read<ReferralProvider>(),
+            timeBasedPointsProvider: context.read<TimeBasedPointsProvider>(),
+          ),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => WithDrawPointsProvider(
+            pointsProvider: context.read<NewPointsProvider>(),
+            referralProvider: context.read<ReferralProvider>(),
+            timeBasedPointsProvider: context.read<TimeBasedPointsProvider>(),
+            totalPointProvider: context.read<TotalPointProvider>(),
+          ),
+        ),
         ChangeNotifierProvider(create: (_) => NewPointsProvider()),
         ChangeNotifierProvider(create: (_) => ReferralProvider()),
-        ChangeNotifierProvider(create: (_) => TotalPointProvider()),
         ChangeNotifierProvider(create: (_) => TimeBasedPointsProvider()),
       ],
       builder: (context, _) {
